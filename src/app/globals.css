@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Paleta profesional — clínico-cálida */
+    --background:         45 21% 96%;    /* #F7F6F3 blanco cálido */
+    --foreground:         24 10% 10%;    /* #1C1917 casi negro cálido */
+    --card:               0 0% 100%;
+    --card-foreground:    24 10% 10%;
+    --popover:            0 0% 100%;
+    --popover-foreground: 24 10% 10%;
+    --primary:            213 43% 30%;   /* #2C4A6E azul marino */
+    --primary-foreground: 0 0% 100%;
+    --secondary:          45 15% 93%;
+    --secondary-foreground: 24 10% 20%;
+    --muted:              45 15% 93%;
+    --muted-foreground:   24 5% 45%;    /* #78716C gris cálido */
+    --accent:             213 20% 93%;
+    --accent-foreground:  213 43% 30%;
+    --destructive:        349 58% 36%;  /* #8B2635 burdeos */
+    --destructive-foreground: 0 0% 100%;
+    --border:             36 17% 86%;   /* #E2DDD6 borde cálido */
+    --input:              36 17% 86%;
+    --ring:               213 43% 35%;
+    --radius:             0.75rem;
+  }
+
+  .dark {
+    --background:         222.2 84% 4.9%;
+    --foreground:         210 40% 98%;
+    --card:               222.2 84% 4.9%;
+    --card-foreground:    210 40% 98%;
+    --popover:            222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary:            213 60% 65%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary:          217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted:              217.2 32.6% 17.5%;
+    --muted-foreground:   215 20.2% 65.1%;
+    --accent:             217.2 32.6% 17.5%;
+    --accent-foreground:  210 40% 98%;
+    --destructive:        0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border:             217.2 32.6% 17.5%;
+    --input:              217.2 32.6% 17.5%;
+    --ring:               213 43% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Semáforos — colores clínicos apagados */
+  .semaforo-verde   { background-color: #3D6B4F; }
+  .semaforo-amarillo { background-color: #92671A; }
+  .semaforo-rojo    { background-color: #8B2635; }
+
+  /* Cards */
+  .card-paciente {
+    @apply bg-white rounded-2xl border border-[#E2DDD6] shadow-sm p-4;
+  }
+
+  /* Botón primario global */
+  .btn-primary {
+    background-color: #2C4A6E;
+    @apply text-white font-semibold py-3 px-6 rounded-xl transition-colors;
+    &:hover { background-color: #1E3550; }
+    &:disabled { @apply opacity-60 cursor-not-allowed; }
+  }
+
+  /* Mobile safe area */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Animación de confirmación del check-in */
+@keyframes check-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+/* Respeta prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-check-pop,
+  .animate-ping,
+  .animate-pulse,
+  .animate-spin {
+    animation: none !important;
+  }
+}
