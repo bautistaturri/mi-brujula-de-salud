@@ -17,9 +17,9 @@ export default async function PatientLayout({ children }: { children: React.Reac
   if (profile?.role === 'facilitador') redirect('/dashboard')
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#EEEAE4]">
       <div className="max-w-lg mx-auto px-4 pt-2">
-        <div className="text-xs text-slate-400 text-right">
+        <div className="text-xs text-right text-[#78716C]">
           {user.email}
         </div>
       </div>

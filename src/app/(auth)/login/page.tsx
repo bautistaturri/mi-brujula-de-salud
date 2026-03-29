@@ -25,7 +25,7 @@ export default function LoginPage() {
     setError('')
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError('Email o contraseña incorrectos. Verificá tus datos e intentá de nuevo.')
@@ -33,7 +33,8 @@ export default function LoginPage() {
       return
     }
 
-    window.location.href = '/'
+    const role = data.user?.user_metadata?.role
+    window.location.href = role === 'facilitador' ? '/dashboard' : '/inicio'
   }
 
   return (

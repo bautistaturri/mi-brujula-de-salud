@@ -93,6 +93,39 @@ export type InsertAlerta = Omit<Alerta, 'id' | 'created_at' | 'resuelta_at' | 'r
 // calcularSemaforo vive en utils.ts — re-exportada para compatibilidad
 export { calcularSemaforo } from '@/lib/utils'
 
+// Registro semanal
+export type AdherenciaMedicacion = 'si' | 'no' | 'no_aplica'
+
+export interface RegistroSemanal {
+  id: string
+  paciente_id: string
+  semana_inicio: string
+  semana_fin: string
+  animo: number
+  sueno: number
+  energia: number
+  alimentacion: number
+  actividad_fisica: number
+  adherencia_medicacion: AdherenciaMedicacion
+  sintomas: string | null
+  logro_personal: string | null
+  dificultad: string | null
+  score: number | null
+  nivel_bienestar: string | null
+  requiere_atencion: boolean
+  created_at: string
+}
+
+export type InsertRegistroSemanal = Omit<RegistroSemanal, 'id' | 'created_at'>
+
+// Logros
+export interface LogroPaciente {
+  id: string
+  paciente_id: string
+  logro_key: string
+  desbloqueado_at: string
+}
+
 // Tipos para el formulario de check-in
 export interface CheckinFormData {
   conductas_completadas: string[]

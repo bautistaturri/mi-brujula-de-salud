@@ -99,6 +99,18 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
         </div>
       </div>
 
+      {/* Link a registros semanales */}
+      <Link
+        href={`/dashboard/paciente/${paciente.id}/registros`}
+        className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-2xl px-5 py-4 hover:bg-blue-100 transition-colors"
+      >
+        <div>
+          <p className="font-semibold text-blue-800 text-sm">📋 Registros semanales</p>
+          <p className="text-xs text-blue-500 mt-0.5">Ver evolución, gráfico de score y logros</p>
+        </div>
+        <span className="text-blue-400 text-lg">→</span>
+      </Link>
+
       {/* Stats rápidas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatFicha label="Check-ins" value={String(checkins.length)} icon="📅" />

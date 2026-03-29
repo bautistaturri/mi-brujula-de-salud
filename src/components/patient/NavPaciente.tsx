@@ -1,12 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const NAV_ITEMS = [
   { href: '/inicio', icon: '🏠', label: 'Inicio' },
   { href: '/checkin', icon: '✅', label: 'Check-in' },
+  { href: '/registro-semanal', icon: '📋', label: 'Semana' },
+  { href: '/logros', icon: '🏅', label: 'Logros' },
   { href: '/historial', icon: '📊', label: 'Historial' },
 ]
 
@@ -16,7 +18,6 @@ interface Props {
 
 export default function NavPaciente({ nombre }: Props) {
   const pathname = usePathname()
-  const router = useRouter()
 
   async function handleLogout() {
     const supabase = createClient()
@@ -25,7 +26,7 @@ export default function NavPaciente({ nombre }: Props) {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 safe-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#1C1917] border-t border-[#2C2420] safe-bottom">
       <div className="max-w-lg mx-auto flex">
         {NAV_ITEMS.map(item => {
           const activo = pathname === item.href
@@ -33,21 +34,21 @@ export default function NavPaciente({ nombre }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center py-3 gap-1 transition-colors ${
-                activo ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'
+              className={`flex-1 flex flex-col items-center py-3 gap-0.5 transition-colors ${
+                activo ? 'text-[#93C5FD]' : 'text-[#57534E] hover:text-[#A8A29E]'
               }`}
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className="text-xs font-medium">{item.label}</span>
+              <span className="text-lg">{item.icon}</span>
+              <span className="text-[9px] font-medium">{item.label}</span>
             </Link>
           )
         })}
         <button
           onClick={handleLogout}
-          className="flex-1 flex flex-col items-center py-3 gap-1 text-slate-400 hover:text-slate-600 transition-colors"
+          className="flex-1 flex flex-col items-center py-3 gap-0.5 text-[#57534E] hover:text-[#A8A29E] transition-colors"
         >
-          <span className="text-xl">🚪</span>
-          <span className="text-xs font-medium">Salir</span>
+          <span className="text-lg">🚪</span>
+          <span className="text-[9px] font-medium">Salir</span>
         </button>
       </div>
     </nav>
