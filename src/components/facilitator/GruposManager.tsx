@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { Grupo, User } from '@/types/database'
+import { GrupoSchema, EmailPacienteSchema } from '@/lib/validations'
 
 interface Props {
   grupos: Grupo[]
@@ -28,15 +29,31 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
     setLoading(true)
     setError('')
 
+    // Validar antes de enviar
+    const parsed = GrupoSchema.safeParse({ nombre, descripcion })
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message)
+      setLoading(false)
+      return
+    }
+
     const supabase = createClient()
+    // 🚨 SECURITY: facilitador_id viene del server component (user.id) via props,
+    // pero RLS en la tabla grupos verifica que auth.uid() === facilitador_id
     const { data, error: err } = await supabase
       .from('grupos')
-      .insert({ nombre, descripcion: descripcion || null, facilitador_id: facilitadorId })
+      .insert({
+        nombre: parsed.data.nombre,
+        descripcion: parsed.data.descripcion || null,
+        facilitador_id: facilitadorId,
+      })
       .select()
       .single()
 
     if (err) {
-      setError(err.message)
+      // 🚨 SECURITY: no exponer mensaje interno al usuario
+      if (process.env.NODE_ENV === 'development') console.error('[GruposManager] crearGrupo:', err)
+      setError('No se pudo crear el grupo. Intentá de nuevo.')
     } else {
       setGrupos(prev => [data as Grupo, ...prev])
       setNombre('')
@@ -49,27 +66,44 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
 
   async function agregarPaciente(grupoId: string) {
     setError('')
+
+    // Validar email antes de consultar
+    const parsed = EmailPacienteSchema.safeParse({ email: emailPaciente })
+    if (!parsed.success) {
+      setError('Ingresá un email válido')
+      return
+    }
+
     const supabase = createClient()
 
-    // Buscar paciente por email
-    const { data: paciente } = await supabase
-      .from('users')
-      .select('id, nombre')
-      .eq('email', emailPaciente.trim())
-      .eq('role', 'paciente')
-      .single()
+    // 🚨 SECURITY: la búsqueda por email puede exponer si un email está registrado
+    // (information disclosure). Mitigado porque:
+    // 1. Solo facilitadores autenticados llegan aquí (dashboard layout + RLS)
+    // 2. La función RPC `buscar_paciente_por_email` es SECURITY DEFINER y solo
+    //    retorna id + nombre de usuarios con role='paciente'
+    // 3. RLS en grupo_miembros verifica que el facilitador sea dueño del grupo
+    const { data: resultado, error: rpcErr } = await supabase
+      .rpc('buscar_paciente_por_email', { p_email: parsed.data.email })
 
-    if (!paciente) {
+    if (rpcErr || !resultado || resultado.length === 0) {
       setError('No se encontró un paciente con ese email')
       return
     }
+
+    const paciente = resultado[0] as { id: string; nombre: string }
 
     const { error: err } = await supabase
       .from('grupo_miembros')
       .insert({ grupo_id: grupoId, user_id: paciente.id })
 
     if (err) {
-      setError('Este paciente ya está en el grupo')
+      // El código 23505 es unique_violation (ya es miembro)
+      if (err.code === '23505') {
+        setError('Este paciente ya está en el grupo')
+      } else {
+        if (process.env.NODE_ENV === 'development') console.error('[GruposManager] agregarPaciente:', err)
+        setError('No se pudo agregar al paciente. Intentá de nuevo.')
+      }
     } else {
       setEmailPaciente('')
       router.refresh()
@@ -101,6 +135,7 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
               onChange={e => setNombre(e.target.value)}
               placeholder="Nombre del grupo"
               required
+              maxLength={100}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
             />
             <input
@@ -108,6 +143,7 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
               value={descripcion}
               onChange={e => setDescripcion(e.target.value)}
               placeholder="Descripción (opcional)"
+              maxLength={300}
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
@@ -135,7 +171,7 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
       {grupos.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
           <div className="text-4xl mb-3">👥</div>
-          <p className="text-slate-500">Crea tu primer grupo para empezar</p>
+          <p className="text-slate-500">Creá tu primer grupo para empezar</p>
         </div>
       ) : (
         grupos.map(grupo => {
@@ -181,6 +217,7 @@ export default function GruposManager({ grupos: gruposIniciales, miembros, pacie
                     value={emailPaciente}
                     onChange={e => setEmailPaciente(e.target.value)}
                     placeholder="Email del paciente"
+                    maxLength={255}
                     className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
                   />
                   <button

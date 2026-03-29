@@ -8,6 +8,7 @@ import { evaluarLogros, type RegistroParaLogros } from '@/lib/logros'
 import type { InsertRegistroSemanal } from '@/types/database'
 import ScoreDisplay from './ScoreDisplay'
 import LogroNotification from './LogroNotification'
+import { RegistroSemanalSchema } from '@/lib/validations'
 
 interface Props {
   pacienteId: string
@@ -139,6 +140,17 @@ export default function StepperForm({
     setLoading(true)
     setError('')
     try {
+      // Validar datos del formulario antes de enviar al servidor
+      const parsed = RegistroSemanalSchema.safeParse({
+        ...form,
+        semana_inicio: semanaInicio,
+        semana_fin: semanaFin,
+      })
+      if (!parsed.success) {
+        setError('Datos inválidos. Por favor revisá el formulario.')
+        return
+      }
+
       const supabase = createClient()
       const scoreResult = calcularScore({
         animo: form.animo,
@@ -171,7 +183,8 @@ export default function StepperForm({
         .from('registros_semanales')
         .insert(insert)
 
-      if (insertError) throw new Error(insertError.message + ' | code: ' + insertError.code)
+      // 🚨 SECURITY: no exponer detalles internos del error al usuario
+      if (insertError) throw new Error('SAVE_FAILED')
 
       const todosRegistros: RegistroParaLogros[] = [
         ...registrosAnteriores,
@@ -188,8 +201,11 @@ export default function StepperForm({
       setPaso('resultado')
       if (logrosNuevos.length > 0) setMostrarLogros(true)
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : JSON.stringify(e)
-      setError(`Error: ${msg}`)
+      // 🚨 SECURITY: nunca mostrar detalles técnicos al usuario
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[StepperForm] Error al guardar registro:', e)
+      }
+      setError('Ocurrió un error al guardar. Por favor intentá de nuevo.')
     } finally {
       setLoading(false)
     }

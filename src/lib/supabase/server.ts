@@ -1,3 +1,6 @@
+// Server-only: usa cookies() de Next.js — no importar en Client Components.
+// Variables: NEXT_PUBLIC_SUPABASE_URL (pública), NEXT_PUBLIC_SUPABASE_ANON_KEY (pública).
+// Las políticas RLS de Supabase protegen los datos según el usuario autenticado.
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 

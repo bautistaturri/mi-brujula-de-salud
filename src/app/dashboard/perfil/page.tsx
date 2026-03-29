@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { WhatsappSchema } from '@/lib/validations'
 
 export default function PerfilFacilitadorPage() {
   const [whatsapp, setWhatsapp] = useState('')
@@ -30,13 +31,22 @@ export default function PerfilFacilitadorPage() {
   async function guardar() {
     setGuardando(true)
     setMensaje(null)
+
+    // Validar formato de WhatsApp antes de guardar
+    const parsed = WhatsappSchema.safeParse({ whatsapp: whatsapp.trim() })
+    if (!parsed.success) {
+      setMensaje({ tipo: 'error', texto: parsed.error.issues[0].message })
+      setGuardando(false)
+      return
+    }
+
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
     const { error } = await supabase
       .from('users')
-      .update({ whatsapp: whatsapp.trim() || null })
+      .update({ whatsapp: parsed.data.whatsapp || null })
       .eq('id', user.id)
 
     if (error) {
