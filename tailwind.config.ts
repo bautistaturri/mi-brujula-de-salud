@@ -11,15 +11,22 @@ const config: Config = {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
+      // DESIGN: Fuentes del sistema
+      fontFamily: {
+        sans:    ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-heading)', 'var(--font-inter)', 'sans-serif'],
+        metric:  ['var(--font-metric)', 'ui-monospace', 'monospace'],
+      },
+
+      // DESIGN: Paleta del sistema de diseño
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        // shadcn/ui tokens (necesarios para componentes)
+        border:     "hsl(var(--border))",
+        input:      "hsl(var(--input))",
+        ring:       "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
@@ -50,23 +57,90 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // DESIGN: Tokens de marca
+        brand: {
+          primary:      '#2563EB',
+          'primary-hover': '#1D4ED8',
+          'primary-soft': '#EFF6FF',
+          secondary:    '#10B981',
+          'secondary-soft': '#ECFDF5',
+          accent:       '#7C3AED',
+          'accent-soft': '#F5F3FF',
+        },
+
+        // DESIGN: Superficies
+        surface: {
+          base:   '#F8FAFC',
+          card:   '#FFFFFF',
+          subtle: '#F1F5F9',
+          hover:  '#F8FAFC',
+        },
+
+        // DESIGN: Texto
+        text: {
+          primary:   '#0F172A',
+          secondary: '#475569',
+          muted:     '#94A3B8',
+          disabled:  '#CBD5E1',
+        },
+
+        // DESIGN: Estados semánticos
+        status: {
+          success:     '#10B981',
+          'success-soft': '#ECFDF5',
+          warning:     '#F59E0B',
+          'warning-soft': '#FFFBEB',
+          danger:      '#EF4444',
+          'danger-soft': '#FEF2F2',
+          info:        '#3B82F6',
+          'info-soft': '#EFF6FF',
+        },
+
+        // DESIGN: Semáforos clínicos (backward compat)
         semaforo: {
-          verde:           "#3D6B4F",
-          "verde-bg":      "#EEF4F0",
-          "verde-border":  "#C8DDD0",
-          amarillo:           "#92671A",
-          "amarillo-bg":      "#FBF4E8",
-          "amarillo-border":  "#E8D4A8",
-          rojo:           "#8B2635",
-          "rojo-bg":      "#F9ECEE",
-          "rojo-border":  "#DDBEC3",
+          verde:              '#10B981',
+          'verde-bg':         '#ECFDF5',
+          'verde-border':     '#A7F3D0',
+          amarillo:           '#F59E0B',
+          'amarillo-bg':      '#FFFBEB',
+          'amarillo-border':  '#FDE68A',
+          rojo:               '#EF4444',
+          'rojo-bg':          '#FEF2F2',
+          'rojo-border':      '#FECACA',
         },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+
+      // DESIGN: Tipografía
+      fontSize: {
+        'display': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.03em', fontWeight: '700' }],
+        'h1':      ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'h2':      ['1.875rem', { lineHeight: '1.25', letterSpacing: '-0.02em', fontWeight: '600' }],
+        'h3':      ['1.5rem', { lineHeight: '1.3', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'h4':      ['1.25rem', { lineHeight: '1.4', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'metric':  ['2.5rem', { lineHeight: '1', fontWeight: '700' }],
       },
+
+      // DESIGN: Radios
+      borderRadius: {
+        sm:  '8px',
+        md:  '12px',
+        lg:  '16px',
+        xl:  '20px',
+        '2xl': '24px',
+        '3xl': '32px',
+        DEFAULT: 'var(--radius)',
+      },
+
+      // DESIGN: Sombras
+      boxShadow: {
+        'card':   '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)',
+        'card-hover': '0 4px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04)',
+        'lg':     '0 10px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+        'brand':  '0 4px 20px rgba(37,99,235,0.25)',
+      },
+
+      // DESIGN: Keyframes para animaciones
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -77,14 +151,29 @@ const config: Config = {
           to: { height: "0" },
         },
         "pulse-ring": {
-          "0%": { transform: "scale(0.8)", opacity: "1" },
-          "100%": { transform: "scale(2)", opacity: "0" },
+          "0%":   { transform: "scale(0.8)", opacity: "1" },
+          "100%": { transform: "scale(2.2)", opacity: "0" },
+        },
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          from: { opacity: "0", transform: "scale(0.92)" },
+          to:   { opacity: "1", transform: "scale(1)" },
+        },
+        "count-up": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-ring": "pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite",
+        "accordion-up":   "accordion-up 0.2s ease-out",
+        "pulse-ring":     "pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite",
+        "fade-in-up":     "fade-in-up 0.4s ease-out both",
+        "scale-in":       "scale-in 0.25s ease-out both",
+        "count-up":       "count-up 0.5s ease-out both",
       },
     },
   },

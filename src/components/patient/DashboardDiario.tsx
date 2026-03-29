@@ -17,37 +17,25 @@ interface Props {
   historial: { fecha: string; semaforo: Semaforo; iem: number; turno?: string }[]
 }
 
-const MENSAJES_SEMAFORO: Record<Semaforo, { titulo: string; cuerpo: string }> = {
-  verde: {
-    titulo: 'Estado óptimo',
-    cuerpo: 'Tu energía y hábitos están en buen nivel. Seguí así.',
-  },
-  amarillo: {
-    titulo: 'Estado moderado',
-    cuerpo: 'Hay aspectos para mejorar. Prestá atención a tu descanso y alimentación.',
-  },
-  rojo: {
-    titulo: 'Requiere atención',
-    cuerpo: 'Tu estado generó una alerta. Tu equipo de salud puede verlo. No estás sola.',
-  },
+const STATUS_COLORS: Record<Semaforo, { bg: string; border: string; text: string; dot: string }> = {
+  verde:    { bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46', dot: '#10B981' },
+  amarillo: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E', dot: '#F59E0B' },
+  rojo:     { bg: '#FEF2F2', border: '#FECACA', text: '#991B1B', dot: '#EF4444' },
 }
 
-export default function DashboardDiario({
-  nombre,
-  checkinManana,
-  checkinNoche,
-  conductas,
-  racha,
-  historial,
-}: Props) {
+const MENSAJES_SEMAFORO: Record<Semaforo, { titulo: string; cuerpo: string }> = {
+  verde:    { titulo: 'Estado óptimo',   cuerpo: 'Tu energía y hábitos están en buen nivel. Seguí así.' },
+  amarillo: { titulo: 'Estado moderado', cuerpo: 'Hay aspectos para mejorar. Prestá atención a tu descanso.' },
+  rojo:     { titulo: 'Requiere atención', cuerpo: 'Tu estado generó una alerta. Tu equipo de salud puede verlo.' },
+}
+
+export default function DashboardDiario({ nombre, checkinManana, checkinNoche, conductas, racha, historial }: Props) {
   const hora = new Date().getHours()
   const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches'
   const hoy = new Date().toISOString().split('T')[0]
 
-  // El check-in principal para mostrar el estado: prioriza noche
   const checkinPrincipal = checkinNoche ?? checkinManana
   const turnoActual = hora < 15 ? 'manana' : 'noche'
-  const checkinTurnoActual = turnoActual === 'manana' ? checkinManana : checkinNoche
 
   const conductasCompletadas = checkinPrincipal?.conductas_completadas?.length ?? 0
   const totalConductas = conductas.length
@@ -58,11 +46,11 @@ export default function DashboardDiario({
       {/* ── Header ── */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-slate-400 text-sm font-medium">{saludo}</p>
-          <h1 className="text-2xl font-bold text-slate-800 mt-0.5">
+          <p className="text-sm font-medium text-text-secondary">{saludo}</p>
+          <h1 className="font-heading text-h2 font-bold text-text-primary mt-0.5">
             {nombre.split(' ')[0]}
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-text-muted mt-0.5 capitalize">
             {new Date().toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
         </div>
@@ -72,64 +60,72 @@ export default function DashboardDiario({
       {/* ── Turnos del día ── */}
       <TurnosDia checkinManana={checkinManana} checkinNoche={checkinNoche} turnoActual={turnoActual} />
 
-      {/* ── Estado del día (si ya hizo algún check-in) ── */}
-      {checkinPrincipal && (
-        <EstadoHoy checkin={checkinPrincipal} />
-      )}
+      {/* ── Estado del día ── */}
+      {checkinPrincipal && <EstadoHoy checkin={checkinPrincipal} />}
 
       {/* ── Conductas ancla ── */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="px-5 pt-4 pb-3 flex items-center justify-between">
-          <h2 className="font-semibold text-slate-700 text-sm">Conductas ancla</h2>
-          {checkinPrincipal && (
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-              conductasCompletadas === totalConductas
-                ? 'bg-green-100 text-green-700'
-                : conductasCompletadas >= totalConductas / 2
-                ? 'bg-yellow-100 text-yellow-700'
-                : 'bg-red-100 text-red-700'
-            }`}>
+      <div className="card">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-sm text-text-primary">Conductas ancla</h2>
+          {checkinPrincipal && totalConductas > 0 && (
+            <span
+              className="text-xs font-bold px-2 py-0.5 rounded-full"
+              style={
+                conductasCompletadas === totalConductas
+                  ? { background: '#ECFDF5', color: '#065F46' }
+                  : conductasCompletadas >= totalConductas / 2
+                  ? { background: '#FFFBEB', color: '#92400E' }
+                  : { background: '#FEF2F2', color: '#991B1B' }
+              }
+            >
               {conductasCompletadas}/{totalConductas}
             </span>
           )}
         </div>
 
         {checkinPrincipal && totalConductas > 0 && (
-          <div className="px-5 pb-3">
-            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${
-                  conductasCompletadas === totalConductas ? 'bg-green-500' :
-                  conductasCompletadas >= totalConductas / 2 ? 'bg-yellow-400' : 'bg-red-400'
-                }`}
-                style={{ width: `${(conductasCompletadas / totalConductas) * 100}%` }}
-              />
-            </div>
+          <div className="h-1.5 bg-surface-subtle rounded-full overflow-hidden mb-3">
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${(conductasCompletadas / totalConductas) * 100}%`,
+                background: conductasCompletadas === totalConductas ? '#10B981' :
+                            conductasCompletadas >= totalConductas / 2 ? '#F59E0B' : '#EF4444',
+              }}
+            />
           </div>
         )}
 
-        <div className="px-5 pb-4 space-y-2">
+        <div className="space-y-2">
           {conductas.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-2">Sin conductas configuradas</p>
+            <p className="text-sm text-text-muted text-center py-2">Sin conductas configuradas</p>
           ) : (
             conductas.map(conducta => {
               const completada = checkinPrincipal?.conductas_completadas?.includes(conducta.id) ?? false
               return (
                 <div
                   key={conducta.id}
-                  className={`flex items-center gap-3 p-3 rounded-xl ${
-                    completada ? 'bg-green-50' : 'bg-slate-50'
-                  }`}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                  style={{ background: completada ? '#ECFDF5' : 'var(--surface-subtle)' }}
                 >
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    completada ? 'bg-green-500' : 'bg-slate-200'
-                  }`}>
-                    {completada && <span className="text-white text-[10px] font-bold">✓</span>}
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: completada ? '#10B981' : 'var(--border-default)' }}
+                  >
+                    {completada && (
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
                   </div>
                   <span className="text-lg leading-none">{conducta.icono}</span>
-                  <span className={`text-sm flex-1 ${
-                    completada ? 'text-green-700 line-through decoration-green-400' : 'text-slate-600'
-                  }`}>
+                  <span
+                    className="text-sm flex-1"
+                    style={{
+                      color: completada ? '#065F46' : 'var(--text-secondary)',
+                      textDecoration: completada ? 'line-through' : 'none',
+                    }}
+                  >
                     {conducta.nombre}
                   </span>
                 </div>
@@ -137,7 +133,7 @@ export default function DashboardDiario({
             })
           )}
           {!checkinPrincipal && (
-            <p className="text-xs text-slate-400 text-center pt-1">
+            <p className="text-xs text-text-muted text-center pt-1">
               Registralas en tu check-in
             </p>
           )}
@@ -145,10 +141,10 @@ export default function DashboardDiario({
       </div>
 
       {/* ── Últimos 7 días ── */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-700 text-sm">Últimos 7 días</h2>
-          <Link href="/historial" className="text-xs text-blue-600 font-medium hover:underline">
+          <h2 className="font-semibold text-sm text-text-primary">Últimos 7 días</h2>
+          <Link href="/historial" className="text-xs font-semibold text-brand-primary hover:underline">
             Ver historial →
           </Link>
         </div>
@@ -157,16 +153,20 @@ export default function DashboardDiario({
       </div>
 
       {/* ── Mensaje de apoyo ── */}
-      {checkinPrincipal && (
-        <MensajeApoyo semaforo={checkinPrincipal.semaforo} />
-      )}
+      {checkinPrincipal && <MensajeApoyo semaforo={checkinPrincipal.semaforo} />}
 
-      {/* ── Info de seguimiento ── */}
-      <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
-        <span className="text-xl mt-0.5">🏥</span>
+      {/* ── Seguimiento activo ── */}
+      <div
+        className="rounded-xl p-4 flex items-start gap-3"
+        style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: '#2563EB' }}>
+          <path d="M10 2C6.68 2 4 4.68 4 8c0 5 6 10 6 10s6-5 6-10c0-3.32-2.68-6-6-6z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+          <circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/>
+        </svg>
         <div>
-          <p className="text-sm font-semibold text-blue-800">Seguimiento activo</p>
-          <p className="text-xs text-blue-600 mt-0.5 leading-relaxed">
+          <p className="text-sm font-semibold" style={{ color: '#1E40AF' }}>Seguimiento activo</p>
+          <p className="text-xs mt-0.5 leading-relaxed" style={{ color: '#3B82F6' }}>
             Tu equipo de salud puede ver tu estado. Si tu semáforo es rojo, recibirán una alerta automática.
           </p>
         </div>
@@ -198,41 +198,46 @@ function TurnosDia({
         const esActual = turno === turnoActual
         const listo = !!checkin
 
-        return listo ? (
-          <div
-            key={turno}
-            className={`rounded-2xl p-4 border ${
-              SEMAFORO_CONFIG[checkin!.semaforo].bg
-            } ${SEMAFORO_CONFIG[checkin!.semaforo].border}`}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-semibold text-slate-700">{icono} {label}</span>
-              <span className="text-green-600 text-xs font-bold">✓ Listo</span>
+        if (listo) {
+          const c = STATUS_COLORS[checkin!.semaforo]
+          return (
+            <div
+              key={turno}
+              className="rounded-2xl p-4"
+              style={{ background: c.bg, border: `1px solid ${c.border}` }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-text-primary">{icono} {label}</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: '#ECFDF5', color: '#065F46' }}>✓ Listo</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{checkin!.emocion}</span>
+                <span className="text-xs font-medium" style={{ color: c.text }}>
+                  IEM {checkin!.iem}/7
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{checkin!.emocion}</span>
-              <span className={`text-xs font-medium ${SEMAFORO_CONFIG[checkin!.semaforo].text}`}>
-                IEM {checkin!.iem}/7
-              </span>
-            </div>
-          </div>
-        ) : (
+          )
+        }
+
+        return (
           <Link
             key={turno}
             href="/checkin"
-            className={`rounded-2xl p-4 border-2 transition-all ${
+            className="rounded-2xl p-4 transition-all"
+            style={
               esActual
-                ? 'border-blue-400 bg-blue-50 hover:bg-blue-100'
-                : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
-            }`}
+                ? { background: '#EFF6FF', border: '2px solid #93C5FD' }
+                : { background: 'var(--surface-subtle)', border: '1px solid var(--border-default)' }
+            }
           >
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-semibold text-slate-700">{icono} {label}</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-semibold text-text-primary">{icono} {label}</span>
               {esActual && (
-                <span className="text-blue-600 text-xs font-bold animate-pulse">Pendiente</span>
+                <span className="text-[10px] font-bold animate-pulse" style={{ color: '#2563EB' }}>Pendiente</span>
               )}
             </div>
-            <p className={`text-xs ${esActual ? 'text-blue-600' : 'text-slate-400'}`}>
+            <p className="text-xs" style={{ color: esActual ? '#2563EB' : 'var(--text-muted)' }}>
               {esActual ? 'Tocá para registrar →' : 'Sin registro'}
             </p>
           </Link>
@@ -243,32 +248,32 @@ function TurnosDia({
 }
 
 function EstadoHoy({ checkin }: { checkin: Checkin }) {
-  const config = SEMAFORO_CONFIG[checkin.semaforo]
+  const c = STATUS_COLORS[checkin.semaforo]
   const mensaje = MENSAJES_SEMAFORO[checkin.semaforo]
 
   return (
-    <div className={`rounded-2xl p-5 ${config.bg} border ${config.border}`}>
+    <div className="rounded-2xl p-5" style={{ background: c.bg, border: `1px solid ${c.border}` }}>
       <div className="flex items-center gap-4 mb-3">
         <SemaforoIndicador estado={checkin.semaforo} size="lg" animated={checkin.semaforo === 'rojo'} />
         <div className="flex-1">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Estado del día</p>
-          <p className={`text-xl font-bold ${config.text}`}>{mensaje.titulo}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-0.5">Estado del día</p>
+          <p className="font-heading text-lg font-bold" style={{ color: c.text }}>{mensaje.titulo}</p>
           <div className="flex items-center gap-3 mt-1">
-            <span className="text-2xl leading-none">{checkin.emocion}</span>
-            <span className="text-sm text-slate-500">
-              IEM <strong className="text-slate-700">{checkin.iem}/7</strong>
-              <span className="text-slate-400"> · {iemLabel(checkin.iem)}</span>
+            <span className="text-xl leading-none">{checkin.emocion}</span>
+            <span className="text-sm text-text-secondary">
+              IEM <strong className="text-text-primary">{checkin.iem}/7</strong>
+              <span className="text-text-muted"> · {iemLabel(checkin.iem)}</span>
             </span>
           </div>
         </div>
       </div>
 
-      <p className={`text-sm ${config.text} opacity-80`}>{mensaje.cuerpo}</p>
+      <p className="text-sm leading-relaxed" style={{ color: c.text, opacity: 0.8 }}>{mensaje.cuerpo}</p>
 
       {checkin.notas && (
-        <div className="mt-3 pt-3 border-t border-current border-opacity-20">
-          <p className="text-xs text-slate-400 mb-1">Tu nota</p>
-          <p className="text-sm text-slate-600 italic">"{checkin.notas}"</p>
+        <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${c.border}` }}>
+          <p className="text-xs text-text-muted mb-1">Tu nota</p>
+          <p className="text-sm text-text-secondary italic">"{checkin.notas}"</p>
         </div>
       )}
     </div>
@@ -286,7 +291,6 @@ function UltimaSemana({
     const d = new Date()
     d.setDate(d.getDate() - (6 - i))
     const fechaStr = d.toISOString().split('T')[0]
-    // Priorizar noche si hay 2 registros del mismo día
     const registro =
       historial.find(h => h.fecha === fechaStr && h.turno === 'noche') ??
       historial.find(h => h.fecha === fechaStr)
@@ -295,76 +299,70 @@ function UltimaSemana({
 
   return (
     <div className="flex justify-between items-end gap-1">
-      {dias.map(({ fecha, registro, esHoy, dia }) => (
-        <div key={fecha} className="flex flex-col items-center gap-1.5 flex-1">
-          <div className="relative flex items-center justify-center">
-            {esHoy && registro?.semaforo === 'rojo' && (
-              <div className="absolute w-7 h-7 rounded-full bg-red-400 opacity-30 animate-ping" />
-            )}
-            <div
-              className={`w-7 h-7 rounded-full border-2 transition-all ${
-                esHoy ? 'border-blue-400 scale-110' : 'border-transparent'
-              } ${
-                registro?.semaforo === 'verde' ? 'bg-green-500' :
-                registro?.semaforo === 'amarillo' ? 'bg-yellow-400' :
-                registro?.semaforo === 'rojo' ? 'bg-red-500' :
-                'bg-slate-200'
-              }`}
-            />
+      {dias.map(({ fecha, registro, esHoy, dia }) => {
+        const dotColor = registro?.semaforo === 'verde' ? '#10B981'
+          : registro?.semaforo === 'amarillo' ? '#F59E0B'
+          : registro?.semaforo === 'rojo' ? '#EF4444'
+          : 'var(--border-strong)'
+
+        return (
+          <div key={fecha} className="flex flex-col items-center gap-1.5 flex-1">
+            <div className="relative flex items-center justify-center">
+              {esHoy && registro?.semaforo === 'rojo' && (
+                <div className="absolute w-7 h-7 rounded-full opacity-30 animate-ping" style={{ background: '#EF4444' }} />
+              )}
+              <div
+                className="w-7 h-7 rounded-full transition-all"
+                style={{
+                  background: dotColor,
+                  border: esHoy ? '2px solid var(--brand-primary)' : '2px solid transparent',
+                  transform: esHoy ? 'scale(1.1)' : 'scale(1)',
+                  opacity: registro ? 1 : 0.4,
+                }}
+              />
+            </div>
+            <span
+              className="text-[10px] font-semibold"
+              style={{ color: esHoy ? 'var(--brand-primary)' : 'var(--text-muted)' }}
+            >
+              {esHoy ? 'Hoy' : dia.toLocaleDateString('es', { weekday: 'narrow' })}
+            </span>
           </div>
-          <span className={`text-[10px] font-medium ${esHoy ? 'text-blue-600' : 'text-slate-400'}`}>
-            {esHoy ? 'Hoy' : dia.toLocaleDateString('es', { weekday: 'narrow' })}
-          </span>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
 
 function LeyendaSemaforo() {
   return (
-    <div className="flex items-center gap-3 mt-4 justify-center">
-      {(['verde', 'amarillo', 'rojo'] as Semaforo[]).map(s => (
-        <div key={s} className="flex items-center gap-1.5">
-          <div className={`w-2.5 h-2.5 rounded-full ${
-            s === 'verde' ? 'bg-green-500' : s === 'amarillo' ? 'bg-yellow-400' : 'bg-red-500'
-          }`} />
-          <span className="text-[10px] text-slate-400 capitalize">{SEMAFORO_CONFIG[s].label}</span>
+    <div className="flex items-center gap-4 mt-4 justify-center">
+      {[
+        { label: 'Óptimo', color: '#10B981' },
+        { label: 'Moderado', color: '#F59E0B' },
+        { label: 'Atención', color: '#EF4444' },
+        { label: 'Sin registro', color: 'var(--border-strong)' },
+      ].map(({ label, color }) => (
+        <div key={label} className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full" style={{ background: color }} />
+          <span className="text-[9px] font-medium text-text-muted">{label}</span>
         </div>
       ))}
-      <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-        <span className="text-[10px] text-slate-400">Sin registro</span>
-      </div>
     </div>
   )
 }
 
 function MensajeApoyo({ semaforo }: { semaforo: Semaforo }) {
-  const mensajes = {
-    verde: {
-      bg: 'bg-green-50 border-green-100',
-      icono: '💚',
-      texto: 'Mantené la constancia. Cada día que registrás suma a tu historial de salud.',
-    },
-    amarillo: {
-      bg: 'bg-yellow-50 border-yellow-100',
-      icono: '💛',
-      texto: 'Pequeñas mejoras en sueño o hidratación pueden marcar la diferencia mañana.',
-    },
-    rojo: {
-      bg: 'bg-red-50 border-red-100',
-      icono: '❤️',
-      texto: 'Es importante que te cuides hoy. Si necesitás apoyo, podés contactar a tu médica.',
-    },
+  const msgs = {
+    verde:    { bg: '#ECFDF5', border: '#A7F3D0', color: '#065F46', texto: 'Mantené la constancia. Cada día que registrás suma a tu historial de salud.' },
+    amarillo: { bg: '#FFFBEB', border: '#FDE68A', color: '#92400E', texto: 'Pequeñas mejoras en sueño o hidratación pueden marcar la diferencia mañana.' },
+    rojo:     { bg: '#FEF2F2', border: '#FECACA', color: '#991B1B', texto: 'Es importante que te cuides hoy. Si necesitás apoyo, podés contactar a tu médica.' },
   }
-
-  const m = mensajes[semaforo]
-
+  const m = msgs[semaforo]
   return (
-    <div className={`rounded-2xl border p-4 flex items-start gap-3 ${m.bg}`}>
-      <span className="text-xl mt-0.5">{m.icono}</span>
-      <p className="text-sm text-slate-600 leading-relaxed">{m.texto}</p>
+    <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: m.bg, border: `1px solid ${m.border}` }}>
+      <span className="text-lg mt-0.5">{semaforo === 'verde' ? '💚' : semaforo === 'amarillo' ? '💛' : '❤️'}</span>
+      <p className="text-sm leading-relaxed" style={{ color: m.color }}>{m.texto}</p>
     </div>
   )
 }

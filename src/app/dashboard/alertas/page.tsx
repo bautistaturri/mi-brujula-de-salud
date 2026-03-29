@@ -58,10 +58,11 @@ export default async function AlertasPage() {
     .in('id', alertaUserIds.length > 0 ? alertaUserIds : ['00000000-0000-0000-0000-000000000000'])
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-6 lg:p-8 space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">Alertas</h1>
-        <p className="text-slate-500 mt-1">
+        <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-1">Centro de alertas</p>
+        <h1 className="font-heading text-h1 font-bold text-text-primary">Alertas</h1>
+        <p className="text-text-secondary mt-1">
           {(alertas ?? []).length} alertas pendientes de revisión
         </p>
       </div>

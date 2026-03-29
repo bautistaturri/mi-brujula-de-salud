@@ -6,10 +6,50 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const NAV_ITEMS = [
-  { href: '/dashboard', icon: '📊', label: 'Panel general' },
-  { href: '/dashboard/alertas', icon: '🔔', label: 'Alertas' },
-  { href: '/dashboard/grupos', icon: '👥', label: 'Grupos' },
-  { href: '/dashboard/perfil', icon: '📲', label: 'Mi perfil & WhatsApp' },
+  {
+    href: '/dashboard',
+    label: 'Panel general',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/dashboard/alertas',
+    label: 'Alertas',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M9 2a5.5 5.5 0 00-5.5 5.5v3l-1 2h13l-1-2V7.5A5.5 5.5 0 009 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M7 13.5a2 2 0 004 0" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/dashboard/grupos',
+    label: 'Grupos',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="6" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="14" cy="5" r="1.5" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M16 12c0-1.66-1.34-3-3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/dashboard/perfil',
+    label: 'Mi perfil & WhatsApp',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="6" r="3" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M3 16c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ]
 
 interface Props {
@@ -29,36 +69,57 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 flex flex-col min-h-screen">
+    <aside
+      className="w-[260px] flex flex-col min-h-screen bg-surface-card border-r border-border-default"
+      style={{ boxShadow: '1px 0 0 var(--border-default)' }}
+    >
       {/* Logo */}
-      <div className="p-6 border-b border-slate-100">
+      <div className="px-6 py-5 border-b border-border-default">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🧭</span>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--brand-primary)' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7" stroke="white" strokeWidth="1.2" strokeOpacity="0.4"/>
+              <circle cx="9" cy="9" r="1.5" fill="white"/>
+              <path d="M9 3L10 8L9 9L8 8Z" fill="white"/>
+              <path d="M9 15L8 10L9 9L10 10Z" fill="white" fillOpacity="0.5"/>
+              <path d="M3 9L8 8L9 9L8 10Z" fill="white" fillOpacity="0.5"/>
+              <path d="M15 9L10 10L9 9L10 8Z" fill="white" fillOpacity="0.7"/>
+            </svg>
+          </div>
           <div>
-            <div className="font-bold text-slate-800 text-sm">Mi Brújula</div>
-            <div className="text-xs text-slate-400">Panel Facilitador</div>
+            <div className="font-heading font-bold text-sm text-text-primary">Mi Brújula</div>
+            <div className="text-xs text-text-muted">Panel Facilitador</div>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
         {NAV_ITEMS.map(item => {
           const activo = pathname === item.href
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium"
+              style={
                 activo
-                  ? 'bg-blue-50 text-blue-700 font-semibold'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
-              }`}
+                  ? { background: '#EFF6FF', color: 'var(--brand-primary)' }
+                  : { color: 'var(--text-secondary)' }
+              }
             >
-              <span className="text-lg">{item.icon}</span>
-              <span className="text-sm">{item.label}</span>
+              <span style={{ color: activo ? 'var(--brand-primary)' : 'var(--text-muted)' }}>
+                {item.icon}
+              </span>
+              <span className="flex-1">{item.label}</span>
               {item.href === '/dashboard/alertas' && alertasCount > 0 && (
-                <span className="ml-auto bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                <span
+                  className="text-[10px] font-bold rounded-full px-1.5 py-0.5 tabular-nums"
+                  style={{ background: '#EF4444', color: 'white' }}
+                >
                   {alertasCount}
                 </span>
               )}
@@ -68,20 +129,29 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
       </nav>
 
       {/* Usuario */}
-      <div className="p-4 border-t border-slate-100">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
+      <div className="px-3 py-4 border-t border-border-default">
+        <div className="flex items-center gap-3 px-3 mb-2">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
+            style={{ background: 'var(--brand-primary)' }}
+          >
             {nombre.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-slate-700 truncate">{nombre}</div>
-            <div className="text-xs text-slate-400">Facilitador</div>
+            <div className="text-sm font-semibold text-text-primary truncate">{nombre}</div>
+            <div className="text-xs text-text-muted">Facilitador</div>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full text-sm text-slate-500 hover:text-red-500 py-2 rounded-lg hover:bg-red-50 transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-text-muted hover:text-status-error transition-colors"
+          style={{ '--hover-bg': '#FEF2F2' } as React.CSSProperties}
+          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10.5 3h3a1 1 0 011 1v8a1 1 0 01-1 1h-3M7 11l4-3-4-3M11 8H3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
           Cerrar sesión
         </button>
       </div>

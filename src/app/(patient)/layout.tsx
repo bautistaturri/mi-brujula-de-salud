@@ -17,12 +17,8 @@ export default async function PatientLayout({ children }: { children: React.Reac
   if (profile?.role === 'facilitador') redirect('/dashboard')
 
   return (
-    <div className="min-h-screen bg-[#EEEAE4]">
-      <div className="max-w-lg mx-auto px-4 pt-2">
-        <div className="text-xs text-right text-[#78716C]">
-          {user.email}
-        </div>
-      </div>
+    // DESIGN: Layout móvil paciente con fondo base y nav fija
+    <div className="min-h-screen bg-surface-base">
       <main className="max-w-lg mx-auto pb-24">
         {children}
       </main>

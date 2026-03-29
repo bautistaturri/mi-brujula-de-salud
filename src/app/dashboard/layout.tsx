@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('resuelta', false)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-surface-base flex">
       <SidebarFacilitador
         nombre={profile.nombre}
         alertasCount={alertasCount ?? 0}

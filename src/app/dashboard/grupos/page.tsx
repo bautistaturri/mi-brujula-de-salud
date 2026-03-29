@@ -36,11 +36,12 @@ export default async function GruposPage() {
     .in('id', userIds.length > 0 ? userIds : ['00000000-0000-0000-0000-000000000000'])
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-6 lg:p-8 space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Grupos</h1>
-          <p className="text-slate-500 mt-1">{(grupos ?? []).length} grupos activos</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-1">Gestión</p>
+          <h1 className="font-heading text-h1 font-bold text-text-primary">Grupos</h1>
+          <p className="text-text-secondary mt-1">{(grupos ?? []).length} grupos activos</p>
         </div>
       </div>
 
