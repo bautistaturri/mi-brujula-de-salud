@@ -99,6 +99,21 @@ export const EmailPacienteSchema = z.object({
   email: z.string().email('Email inválido').toLowerCase(),
 })
 
+// ── Password reset ───────────────────────────────────────────────────────────
+
+export const UpdatePasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, 'Mínimo 8 caracteres')
+    .max(72, 'Contraseña demasiado larga'),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword'],
+})
+
+export type UpdatePasswordInput = z.infer<typeof UpdatePasswordSchema>
+
 // ── Conducta ancla ───────────────────────────────────────────────────────────
 
 export const ConductaSchema = z.object({

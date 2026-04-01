@@ -1,7 +1,8 @@
 'use client'
 
 // DESIGN: Login page — estilo SaaS médico profesional
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -30,11 +31,22 @@ function CompassLogo() {
 }
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd]   = useState(false)
   const [error, setError]       = useState('')
+  const [info, setInfo]         = useState('')
   const [loading, setLoading]   = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get('msg') === 'password_actualizado') {
+      setInfo('¡Contraseña actualizada! Ya podés ingresar con tu nueva contraseña.')
+    }
+    if (searchParams.get('error') === 'link_invalido') {
+      setError('El link expiró o ya fue usado. Pedí uno nuevo.')
+    }
+  }, [searchParams])
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -117,6 +129,15 @@ export default function LoginPage() {
             <p className="text-text-secondary mt-1">Ingresá a tu cuenta para continuar</p>
           </div>
 
+          {info && (
+            <div
+              className="rounded-xl p-3 text-sm font-medium flex items-center gap-2 mb-4"
+              style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }}
+            >
+              <span>✓</span> {info}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-text-primary mb-1.5">
@@ -135,7 +156,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-sm font-semibold text-text-primary">Contraseña</label>
-                <Link href="/recuperar" className="text-xs text-brand-primary hover:underline font-medium">
+                <Link href="/reset-password" className="text-xs text-brand-primary hover:underline font-medium">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>

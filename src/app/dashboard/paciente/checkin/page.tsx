@@ -1,7 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import CheckinICS from '@/components/patient/CheckinICS'
 
+/**
+ * Lunes de la semana actual (UTC)
+ */
 function getWeekStart(): string {
   const now = new Date()
   const day = now.getDay() // 0=dom, 1=lun...
@@ -14,6 +17,7 @@ function getWeekStart(): string {
 export default async function CheckinPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
   if (!user) redirect('/login')
 
   const weekStart = getWeekStart()
@@ -43,12 +47,10 @@ export default async function CheckinPage() {
     <div className="min-h-screen bg-[#F9FAFB]">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB] px-5 py-4 flex items-center gap-3">
-        <a href="/inicio" className="text-[#6B7280] hover:text-[#1F2937]">←</a>
+        <a href="/dashboard/paciente" className="text-[#6B7280] hover:text-[#1F2937]">←</a>
         <div>
           <h1 className="text-base font-bold text-[#1A1A2E]">Check-in semanal</h1>
-          <p className="text-xs text-[#9CA3AF]">
-            Semana del {new Date(weekStart + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
-          </p>
+          <p className="text-xs text-[#9CA3AF]">Semana del {new Date(weekStart + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}</p>
         </div>
       </div>
 
@@ -57,7 +59,6 @@ export default async function CheckinPage() {
         conductas={conductas}
         weekStart={weekStart}
         yaCompletado={!!checkinExistente}
-        redirectTo="/inicio"
       />
     </div>
   )

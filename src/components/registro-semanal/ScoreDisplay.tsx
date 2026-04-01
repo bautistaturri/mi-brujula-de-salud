@@ -56,6 +56,21 @@ export default function ScoreDisplay({
     adherencia_medicacion === 'si' ? 'Sí ✓' :
     adherencia_medicacion === 'no' ? 'No ✗' : 'No aplica'
 
+  function construirMensajeAlertaUrgente(): string {
+    return `🚨 *ALERTA URGENTE — Mi Brújula de Salud*
+
+👤 Paciente: ${pacienteNombre}
+📅 Semana: ${formatFechaSemana(semana_inicio)} al ${formatFechaSemana(semana_fin)}
+
+⚠️ Este paciente registró *ánimo y/o sueño muy bajos* esta semana y requiere seguimiento prioritario.
+
+- Estado de ánimo: ${animo}/5
+- Calidad de sueño: ${sueno}/5
+- Score general: ${score}/100
+
+Por favor contactalo a la brevedad.`
+  }
+
   function construirMensajeWA(): string {
     const logrosStr = logrosNuevos.length > 0
       ? logrosNuevos.map(k => `${LOGROS_CONFIG[k]?.emoji} ${LOGROS_CONFIG[k]?.nombre}`).join(', ')
@@ -131,7 +146,20 @@ export default function ScoreDisplay({
         </div>
       )}
 
-      {/* Botón WhatsApp */}
+      {/* Botón WhatsApp urgente (solo cuando requiere atención) */}
+      {requiere_atencion && facilitadorWhatsapp && (
+        <a
+          href={`https://wa.me/${facilitadorWhatsapp}?text=${encodeURIComponent(construirMensajeAlertaUrgente())}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full font-semibold py-3.5 rounded-xl transition-colors text-sm text-white"
+          style={{ background: '#DC2626' }}
+        >
+          🚨 Notificar urgencia al facilitador
+        </a>
+      )}
+
+      {/* Botón WhatsApp reporte completo */}
       {facilitadorWhatsapp ? (
         <a
           href={`https://wa.me/${facilitadorWhatsapp}?text=${encodeURIComponent(construirMensajeWA())}`}
@@ -139,7 +167,7 @@ export default function ScoreDisplay({
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full bg-[#2C6B3E] hover:bg-[#1E5030] text-white font-semibold py-3.5 rounded-xl transition-colors text-sm"
         >
-          📲 Enviar reporte al facilitador por WhatsApp
+          📲 Enviar reporte completo por WhatsApp
         </a>
       ) : (
         <div className="bg-[#F7F6F3] border border-[#E2DDD6] rounded-xl p-4 text-center text-sm text-[#78716C]">

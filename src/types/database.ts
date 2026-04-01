@@ -2,6 +2,27 @@ export type Role = 'paciente' | 'facilitador'
 export type Semaforo = 'verde' | 'amarillo' | 'rojo'
 export type Emocion = '😄' | '🙂' | '😐' | '😔' | '😰'
 export type Turno = 'manana' | 'noche'
+
+// ── Sistema ICS (databrujula) ──────────────────────────────────
+// Semáforo ICS — inglés (motor_ics.ts), distinto al español de display
+export type SemaforoICS = 'green' | 'amber' | 'red'
+
+// Tipos de alertas del motor ICS (alert_engine.ts)
+export type AlertType =
+  | 'missing_checkin'
+  | 'red_semaphore'
+  | 'amber_circumstantial'
+  | 'amber_systemic'
+  | 'be_critical'
+  | 'ica_zero'
+  | 'ini_saboteador_streak'
+  | 'green_with_low_ica'
+  | 'green_streak_milestone'
+  | 'combined_risk'
+
+export type AlertColor = 'red' | 'amber' | 'celebration' | 'internal'
+
+// TipoAlerta legacy (tabla alertas antigua — conservada por compatibilidad)
 export type TipoAlerta = 'ausencia' | 'iem_bajo' | 'semaforo_rojo' | 'racha_rota' | 'riesgo_alto'
 export type PrioridadAlerta = 'urgente' | 'observacion'
 
@@ -92,6 +113,56 @@ export type InsertAlerta = Omit<Alerta, 'id' | 'created_at' | 'resuelta_at' | 'r
 
 // calcularSemaforo vive en utils.ts — re-exportada para compatibilidad
 export { calcularSemaforo } from '@/lib/utils'
+
+// ── Check-in semanal ICS (tabla checkins_semanales) ───────────
+export interface CheckinSemanal {
+  id: string
+  user_id: string
+  week_start: string
+  ica_days: number[]        // 5 valores [0-7], uno por conducta
+  ica_barriers: number      // [0-3]
+  be_energy: number         // [1-5]
+  be_regulation: number     // [1|3|5]
+  ini_score: number         // [1|3|5]
+  semaphore: SemaforoICS
+  alerts: string[]          // be_critical, ini_saboteador, ica_zero, combined_risk
+  scores: {
+    ica: number
+    be: number
+    be_norm: number
+    ini: number
+    ini_norm: number
+    ics: number
+  }
+  dominant_domain: 'ica' | 'be' | 'ini'
+  submitted_at: string
+  created_at: string
+}
+
+// ── Alertas ICS (tabla alerts — motor de alertas) ─────────────
+export interface Alert {
+  id: string
+  patient_id: string
+  type: AlertType
+  color: AlertColor
+  assign_to: string         // medica, coach, coach_urgent, coach_note, auto
+  message: string
+  priority: number          // 1=urgente, 1.5-1.8=alto, 2=normal, 3+=bajo
+  scores: Record<string, number> | null
+  is_read: boolean
+  week_start: string | null
+  created_at: string
+}
+
+// ── Racha verde (tabla rachas) ────────────────────────────────
+export interface Racha {
+  id: string
+  paciente_id: string
+  tipo: 'green_streak' | 'ini_saboteador'
+  semanas_consecutivas: number
+  ultimo_hito: number | null
+  updated_at: string
+}
 
 // Registro semanal
 export type AdherenciaMedicacion = 'si' | 'no' | 'no_aplica'

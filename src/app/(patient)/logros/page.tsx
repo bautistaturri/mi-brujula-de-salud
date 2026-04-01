@@ -14,15 +14,15 @@ export default async function LogrosPage() {
     .eq('paciente_id', user.id)
     .order('desbloqueado_at', { ascending: false })
 
-  const { data: totalRegistros } = await supabase
+  const { count: totalRegistros } = await supabase
     .from('registros_semanales')
-    .select('id', { count: 'exact', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('paciente_id', user.id)
 
   return (
     <div className="px-4 pt-6 pb-8">
       <div className="mb-4 text-sm text-[#78716C]">
-        {(totalRegistros as unknown as { count: number })?.count ?? 0} semana(s) registrada(s) en total
+        {totalRegistros ?? 0} semana(s) registrada(s) en total
       </div>
       <LogrosGrid logros={(logrosData ?? []) as LogroPaciente[]} />
     </div>

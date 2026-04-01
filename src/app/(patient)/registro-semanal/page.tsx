@@ -42,7 +42,7 @@ export default async function RegistroSemanalPage() {
 
   // WhatsApp del facilitador
   const { data: waData } = await supabase.rpc('get_facilitador_whatsapp', { p_user_id: user.id })
-  const facilitadorWa: string | null = waData?.[0]?.whatsapp ?? null
+  const facilitadorWa: string | null = waData ?? null
 
   // Registros anteriores para evaluar logros
   const { data: registrosData } = await supabase

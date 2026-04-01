@@ -3,28 +3,42 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import type { Alerta, User } from '@/types/database'
-import { formatFecha, formatRelativo } from '@/lib/utils'
+import type { Alert, AlertType, User } from '@/types/database'
+import { formatRelativo } from '@/lib/utils'
 
 interface Props {
-  alertas: Alerta[]
+  alertas: Alert[]
   pacientes: Pick<User, 'id' | 'nombre' | 'email' | 'avatar_url'>[]
 }
 
-const TIPO_ICONS: Record<string, string> = {
-  ausencia: '📭',
-  iem_bajo: '⚡',
-  semaforo_rojo: '🔴',
-  racha_rota: '💔',
-  riesgo_alto: '⚠️',
+const TIPO_ICONS: Record<AlertType, string> = {
+  missing_checkin:        '📭',
+  red_semaphore:          '🔴',
+  amber_circumstantial:   '⚠️',
+  amber_systemic:         '⚠️',
+  be_critical:            '💔',
+  ica_zero:               '🚫',
+  ini_saboteador_streak:  '🧠',
+  green_with_low_ica:     '👁️',
+  green_streak_milestone: '🎉',
+  combined_risk:          '⚡',
 }
 
-const TIPO_LABELS: Record<string, string> = {
-  ausencia: 'Sin registro',
-  iem_bajo: 'IEM bajo',
-  semaforo_rojo: 'Semáforo rojo',
-  racha_rota: 'Racha rota',
-  riesgo_alto: 'Riesgo alto',
+const TIPO_LABELS: Record<AlertType, string> = {
+  missing_checkin:        'Sin check-in',
+  red_semaphore:          'Semáforo rojo',
+  amber_circumstantial:   'Semáforo amarillo',
+  amber_systemic:         'Amarillo sistémico',
+  be_critical:            'BE crítico',
+  ica_zero:               'Sin conductas',
+  ini_saboteador_streak:  'Saboteador acumulado',
+  green_with_low_ica:     'ICA bajo (verde oculto)',
+  green_streak_milestone: 'Racha verde ✨',
+  combined_risk:          'Riesgo combinado',
+}
+
+function esUrgente(alerta: Alert): boolean {
+  return alerta.priority <= 1.5 && alerta.color !== 'celebration'
 }
 
 export default function AlertasList({ alertas: alertasIniciales, pacientes }: Props) {
@@ -33,25 +47,22 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
   const [resolviendoId, setResolviendoId] = useState<string | null>(null)
 
   const pacienteMap = Object.fromEntries(pacientes.map(p => [p.id, p]))
-  const alertasFiltradas = filtro === 'todas' ? alertas : alertas.filter(a => a.prioridad === filtro)
+  const alertasFiltradas = filtro === 'todas'
+    ? alertas
+    : filtro === 'urgente'
+    ? alertas.filter(a => esUrgente(a))
+    : alertas.filter(a => !esUrgente(a))
 
-  const urgentes = alertas.filter(a => a.prioridad === 'urgente').length
-  const observacion = alertas.filter(a => a.prioridad === 'observacion').length
+  const urgentes = alertas.filter(a => esUrgente(a)).length
+  const observacion = alertas.filter(a => !esUrgente(a)).length
 
   async function resolverAlerta(alertaId: string) {
     setResolviendoId(alertaId)
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
     await supabase
-      .from('alertas')
-      .update({
-        resuelta: true,
-        resuelta_at: new Date().toISOString(),
-        resuelta_por: user?.id,
-      })
+      .from('alerts')
+      .update({ is_read: true })
       .eq('id', alertaId)
-
     setAlertas(prev => prev.filter(a => a.id !== alertaId))
     setResolviendoId(null)
   }
@@ -61,9 +72,9 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
       {/* Filtros */}
       <div className="flex gap-2">
         {[
-          { key: 'todas', label: `Todas (${alertas.length})` },
-          { key: 'urgente', label: `Urgente (${urgentes})`, color: 'text-red-600' },
-          { key: 'observacion', label: `Observación (${observacion})`, color: 'text-yellow-600' },
+          { key: 'todas',      label: `Todas (${alertas.length})` },
+          { key: 'urgente',    label: `Urgente (${urgentes})`,     color: 'text-red-600' },
+          { key: 'observacion',label: `Observación (${observacion})`, color: 'text-yellow-600' },
         ].map(f => (
           <button
             key={f.key}
@@ -89,22 +100,23 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
       ) : (
         <div className="space-y-3">
           {alertasFiltradas.map(alerta => {
-            const paciente = pacienteMap[alerta.user_id]
-            const esUrgente = alerta.prioridad === 'urgente'
+            const paciente = pacienteMap[alerta.patient_id]
+            const urgente = esUrgente(alerta)
+            const tipo = alerta.type as AlertType
 
             return (
               <div
                 key={alerta.id}
                 className={`bg-white rounded-2xl border-2 p-5 transition-all ${
-                  esUrgente ? 'border-red-200 bg-red-50/20' : 'border-yellow-200 bg-yellow-50/20'
+                  urgente ? 'border-red-200 bg-red-50/20' : 'border-yellow-200 bg-yellow-50/20'
                 }`}
               >
                 <div className="flex items-start gap-4">
                   {/* Icono tipo */}
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${
-                    esUrgente ? 'bg-red-100' : 'bg-yellow-100'
+                    urgente ? 'bg-red-100' : 'bg-yellow-100'
                   }`}>
-                    {TIPO_ICONS[alerta.tipo]}
+                    {TIPO_ICONS[tipo] ?? '⚠️'}
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -113,17 +125,17 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
-                            esUrgente
+                            urgente
                               ? 'bg-red-100 text-red-700'
                               : 'bg-yellow-100 text-yellow-700'
                           }`}>
-                            {esUrgente ? '🚨 Urgente' : '👁 Observación'}
+                            {urgente ? '🚨 Urgente' : '👁 Observación'}
                           </span>
                           <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                            {TIPO_LABELS[alerta.tipo]}
+                            {TIPO_LABELS[tipo] ?? alerta.type}
                           </span>
                         </div>
-                        <p className="text-slate-700 mt-2">{alerta.descripcion}</p>
+                        <p className="text-slate-700 mt-2">{alerta.message}</p>
                       </div>
                       <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
                         {formatRelativo(alerta.created_at)}
@@ -142,7 +154,6 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
                         >
                           {paciente.nombre}
                         </Link>
-                        <span className="text-xs text-slate-400">· {formatFecha(alerta.fecha)}</span>
                       </div>
                     )}
 
@@ -153,7 +164,7 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
                         disabled={resolviendoId === alerta.id}
                         className="text-xs bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
                       >
-                        {resolviendoId === alerta.id ? 'Resolviendo...' : '✓ Marcar como resuelta'}
+                        {resolviendoId === alerta.id ? 'Resolviendo...' : '✓ Marcar como leída'}
                       </button>
                       {paciente && (
                         <Link

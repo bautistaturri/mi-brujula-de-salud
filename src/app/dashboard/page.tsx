@@ -1,7 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import GrupoOverview from '@/components/facilitator/GrupoOverview'
 import type { EstadoPaciente } from '@/types/database'
+
+function getSemanaInicioActual(): string {
+  const now = new Date()
+  const dow = now.getDay()
+  const daysToMonday = dow === 0 ? -6 : 1 - dow
+  const monday = new Date(now)
+  monday.setDate(now.getDate() + daysToMonday)
+  monday.setHours(0, 0, 0, 0)
+  return monday.toISOString().split('T')[0]
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -26,6 +37,22 @@ export default async function DashboardPage() {
   const enAmarillo = (pacientes ?? []).filter(p => p.semaforo === 'amarillo').length
   const enRojo = (pacientes ?? []).filter(p => p.semaforo === 'rojo').length
 
+  // Pacientes con registro semanal crítico esta semana (requiere_atencion = true)
+  const pacienteIds = (pacientes ?? []).map(p => p.id)
+  const { data: registrosCriticos } = pacienteIds.length > 0
+    ? await supabase
+        .from('registros_semanales')
+        .select('paciente_id, animo, sueno')
+        .in('paciente_id', pacienteIds)
+        .eq('requiere_atencion', true)
+        .gte('semana_inicio', getSemanaInicioActual())
+    : { data: [] }
+
+  const pacientesConAlerta = (registrosCriticos ?? []).map(r => ({
+    ...r,
+    nombre: (pacientes ?? []).find(p => p.id === r.paciente_id)?.nombre ?? 'Paciente',
+  }))
+
   return (
     <div className="p-6 lg:p-8 space-y-8 max-w-7xl">
 
@@ -36,6 +63,49 @@ export default async function DashboardPage() {
         </p>
         <h1 className="font-heading text-h1 font-bold text-text-primary">Panel de seguimiento</h1>
       </div>
+
+      {/* Banner de alertas críticas semanales */}
+      {pacientesConAlerta.length > 0 && (
+        <div
+          className="rounded-2xl p-5 border-2"
+          style={{ background: '#FEF2F2', borderColor: '#FECACA' }}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
+              style={{ background: '#FEE2E2' }}
+            >
+              🚨
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-sm" style={{ color: '#991B1B' }}>
+                {pacientesConAlerta.length === 1
+                  ? '1 paciente requiere atención urgente esta semana'
+                  : `${pacientesConAlerta.length} pacientes requieren atención urgente esta semana`}
+              </p>
+              <p className="text-xs mt-0.5 mb-3" style={{ color: '#B91C1C' }}>
+                Registraron ánimo o sueño muy bajos en su registro semanal.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {pacientesConAlerta.map(p => (
+                  <Link
+                    key={p.paciente_id}
+                    href={`/dashboard/paciente/${p.paciente_id}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                    style={{ background: '#FEE2E2', color: '#991B1B', border: '1px solid #FECACA' }}
+                  >
+                    <span>{p.nombre}</span>
+                    <span style={{ opacity: 0.7 }}>
+                      · ánimo {p.animo}/5, sueño {p.sueno}/5
+                    </span>
+                    <span>→</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

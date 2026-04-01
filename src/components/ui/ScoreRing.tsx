@@ -16,12 +16,12 @@ export default function ScoreRing({ score, size = 120, strokeWidth = 10, showLab
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (score / 100) * circumference
 
-  // Color del arco según score
+  // Colores alineados con el sistema ICS: verde ≥70 / amber 45-69 / rojo <45
+  // Tokens del HTML de referencia: --green #1A6B3C, --amber #8B4800, --red #8B1A1A
   const strokeColor =
-    score >= 80 ? '#10B981' :
-    score >= 60 ? '#2563EB' :
-    score >= 40 ? '#F59E0B' :
-    '#EF4444'
+    score >= 70 ? '#1A6B3C' :
+    score >= 45 ? '#C87020' :
+    '#A83020'
 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>

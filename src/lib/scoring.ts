@@ -17,11 +17,11 @@ export interface ScoreResult {
 }
 
 function norm15(val: number): number {
-  return Math.round(((val - 1) / 4) * 100)
+  return Math.max(0, Math.min(100, Math.round(((val - 1) / 4) * 100)))
 }
 
 function norm07(val: number): number {
-  return Math.round((val / 7) * 100)
+  return Math.max(0, Math.min(100, Math.round((val / 7) * 100)))
 }
 
 function normAdherencia(val: AdherenciaMedicacion): number {

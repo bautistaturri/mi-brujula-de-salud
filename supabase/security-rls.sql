@@ -339,6 +339,11 @@ CREATE POLICY "logros_insert_own"
   ON logros_paciente FOR INSERT
   WITH CHECK (auth.uid() = paciente_id);
 
+-- Prevenir duplicados de logros (evita race condition en StepperForm)
+ALTER TABLE logros_paciente
+  DROP CONSTRAINT IF EXISTS logros_paciente_unique_key,
+  ADD CONSTRAINT logros_paciente_unique_key UNIQUE (paciente_id, logro_key);
+
 
 -- =============================================================================
 -- 9. FUNCIÓN: buscar_paciente_por_email

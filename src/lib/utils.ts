@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { es } from 'date-fns/locale'
-import type { Semaforo } from '@/types/database'
+import type { Semaforo, SemaforoICS } from '@/types/database'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -46,6 +46,18 @@ export function iemLabel(iem: number): string {
     7: 'Excelente',
   }
   return labels[iem] ?? ''
+}
+
+/**
+ * Convierte el semáforo ICS (inglés, motor) al semáforo de display (español, UI)
+ */
+export function icsToSemaforo(semaphore: SemaforoICS): Semaforo {
+  const map: Record<SemaforoICS, Semaforo> = {
+    green: 'verde',
+    amber: 'amarillo',
+    red:   'rojo',
+  }
+  return map[semaphore]
 }
 
 export function getDiasUltimaSemana(): string[] {

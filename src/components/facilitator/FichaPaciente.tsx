@@ -3,50 +3,57 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { User, Checkin, Alerta } from '@/types/database'
-import { SEMAFORO_CONFIG } from '@/types/database'
-import { formatFecha, formatRelativo, iemLabel, scoreRiesgoLabel } from '@/lib/utils'
+import type { User, CheckinSemanal, Alert } from '@/types/database'
+import { formatRelativo, scoreRiesgoLabel, icsToSemaforo } from '@/lib/utils'
 import SemaforoIndicador from '@/components/patient/SemaforoIndicador'
 import StreakBadge from '@/components/patient/StreakBadge'
 
 interface Props {
   paciente: User
-  checkins: Checkin[]
-  alertas: Alerta[]
-  racha: number
+  checkins: CheckinSemanal[]
+  alertas: Alert[]
+  rachaVerde: number
   scoreRiesgo: number
   facilitadorId: string
 }
 
 const SEMAFORO_TEXT: Record<string, { bg: string; color: string }> = {
-  verde:    { bg: '#ECFDF5', color: '#065F46' },
-  amarillo: { bg: '#FFFBEB', color: '#92400E' },
-  rojo:     { bg: '#FEF2F2', color: '#991B1B' },
+  green:  { bg: '#ECFDF5', color: '#065F46' },
+  amber:  { bg: '#FFFBEB', color: '#92400E' },
+  red:    { bg: '#FEF2F2', color: '#991B1B' },
 }
 
-export default function FichaPaciente({ paciente, checkins, alertas, racha, scoreRiesgo, facilitadorId }: Props) {
+const SEMAFORO_LABEL: Record<string, string> = {
+  green: 'Verde',
+  amber: 'Amarillo',
+  red:   'Rojo',
+}
+
+const DOMAIN_ICONS: Record<string, string> = {
+  ica: '🎯',
+  be:  '🧭',
+  ini: '🧠',
+}
+
+export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde, scoreRiesgo, facilitadorId }: Props) {
   const [alertasState, setAlertasState] = useState(alertas)
   const [tab, setTab] = useState<'timeline' | 'alertas'>('timeline')
 
   const ultimoCheckin = checkins[0]
   const { label: riesgoLabel, color: riesgoColor } = scoreRiesgoLabel(scoreRiesgo)
 
-  const iemPromedio = checkins.length
-    ? (checkins.reduce((sum, c) => sum + c.iem, 0) / checkins.length).toFixed(1)
+  const icsPromedio = checkins.length
+    ? (checkins.reduce((sum, c) => sum + (c.scores?.ics ?? 0), 0) / checkins.length).toFixed(1)
     : '-'
 
-  const diasVerde = checkins.filter(c => c.semaforo === 'verde').length
-  const diasRojo = checkins.filter(c => c.semaforo === 'rojo').length
-  const alertasPendientes = alertasState.filter(a => !a.resuelta).length
+  const semanasVerde = checkins.filter(c => c.semaphore === 'green').length
+  const semanasRojo  = checkins.filter(c => c.semaphore === 'red').length
+  const alertasPendientes = alertasState.filter(a => !a.is_read).length
 
   async function resolverAlerta(alertaId: string) {
     const supabase = createClient()
-    await supabase.from('alertas').update({
-      resuelta: true,
-      resuelta_at: new Date().toISOString(),
-      resuelta_por: facilitadorId,
-    }).eq('id', alertaId)
-    setAlertasState(prev => prev.map(a => a.id === alertaId ? { ...a, resuelta: true } : a))
+    await supabase.from('alerts').update({ is_read: true }).eq('id', alertaId)
+    setAlertasState(prev => prev.map(a => a.id === alertaId ? { ...a, is_read: true } : a))
   }
 
   return (
@@ -72,9 +79,13 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="font-heading text-h3 font-bold text-text-primary">{paciente.nombre}</h1>
-              <StreakBadge racha={racha} />
-              {ultimoCheckin?.semaforo && (
-                <SemaforoIndicador estado={ultimoCheckin.semaforo} size="sm" animated={ultimoCheckin.semaforo === 'rojo'} />
+              <StreakBadge racha={rachaVerde} />
+              {ultimoCheckin?.semaphore && (
+                <SemaforoIndicador
+                  estado={icsToSemaforo(ultimoCheckin.semaphore)}
+                  size="sm"
+                  animated={ultimoCheckin.semaphore === 'red'}
+                />
               )}
             </div>
             <p className="text-sm text-text-muted mt-0.5">{paciente.email}</p>
@@ -128,16 +139,13 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
       {/* Stats rápidas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Check-ins', value: String(checkins.length), accent: '#2563EB', bg: '#EFF6FF' },
-          { label: 'IEM promedio', value: String(iemPromedio), accent: '#F59E0B', bg: '#FFFBEB' },
-          { label: 'Días verde', value: String(diasVerde), accent: '#10B981', bg: '#ECFDF5' },
-          { label: 'Días rojo', value: String(diasRojo), accent: '#EF4444', bg: '#FEF2F2' },
+          { label: 'Check-ins ICS', value: String(checkins.length),  accent: '#2563EB', bg: '#EFF6FF' },
+          { label: 'ICS promedio',  value: String(icsPromedio),       accent: '#F59E0B', bg: '#FFFBEB' },
+          { label: 'Semanas verde', value: String(semanasVerde),      accent: '#10B981', bg: '#ECFDF5' },
+          { label: 'Semanas rojo',  value: String(semanasRojo),       accent: '#EF4444', bg: '#FEF2F2' },
         ].map(({ label, value, accent, bg }) => (
           <div key={label} className="card">
-            <div
-              className="w-2 h-2 rounded-full mb-2"
-              style={{ background: accent }}
-            />
+            <div className="w-2 h-2 rounded-full mb-2" style={{ background: accent }} />
             <div className="font-metric text-2xl font-bold text-text-primary tabular-nums">{value}</div>
             <div className="text-xs text-text-muted mt-0.5">{label}</div>
           </div>
@@ -150,8 +158,8 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
         style={{ background: 'var(--surface-subtle)' }}
       >
         {[
-          { key: 'timeline', label: 'Timeline de eventos' },
-          { key: 'alertas', label: `Alertas${alertasPendientes > 0 ? ` (${alertasPendientes})` : ''}` },
+          { key: 'timeline', label: 'Timeline ICS' },
+          { key: 'alertas',  label: `Alertas${alertasPendientes > 0 ? ` (${alertasPendientes})` : ''}` },
         ].map(t => (
           <button
             key={t.key}
@@ -168,38 +176,44 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
         ))}
       </div>
 
-      {/* Timeline */}
+      {/* Timeline ICS */}
       {tab === 'timeline' && (
         <div className="space-y-3">
           {checkins.length === 0 ? (
-            <div className="card text-center py-8 text-text-muted text-sm">Sin registros aún</div>
+            <div className="card text-center py-8 text-text-muted text-sm">Sin check-ins ICS aún</div>
           ) : (
             checkins.map((checkin, index) => {
-              const sc = SEMAFORO_TEXT[checkin.semaforo] ?? SEMAFORO_TEXT['verde']
+              const sc = SEMAFORO_TEXT[checkin.semaphore] ?? SEMAFORO_TEXT['green']
+              const semLabel = SEMAFORO_LABEL[checkin.semaphore] ?? checkin.semaphore
+              const fechaSemana = new Date(checkin.week_start + 'T00:00:00').toLocaleDateString('es-AR', {
+                day: 'numeric', month: 'long',
+              })
+
               return (
                 <div key={checkin.id} className="card">
                   <div className="flex items-start gap-4">
-                    <SemaforoIndicador estado={checkin.semaforo} size="md" />
+                    <SemaforoIndicador
+                      estado={icsToSemaforo(checkin.semaphore)}
+                      size="md"
+                    />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-sm text-text-primary">{formatFecha(checkin.fecha)}</span>
+                          <span className="font-semibold text-sm text-text-primary">
+                            Semana del {fechaSemana}
+                          </span>
                           {index === 0 && (
                             <span
                               className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                               style={{ background: '#EFF6FF', color: '#1E40AF' }}
                             >
-                              Último
+                              Última
                             </span>
                           )}
-                          <span
-                            className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                            style={{ background: 'var(--surface-subtle)', color: 'var(--text-muted)' }}
-                          >
-                            {checkin.turno === 'manana' ? '☀️ Mañana' : '🌙 Noche'}
-                          </span>
                         </div>
-                        <span className="text-xl">{checkin.emocion}</span>
+                        <span className="text-xs font-bold" style={{ color: sc.color }}>
+                          ICS {checkin.scores?.ics ?? '—'}
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -207,28 +221,36 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
                           className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
                           style={{ background: sc.bg, color: sc.color }}
                         >
-                          {SEMAFORO_CONFIG[checkin.semaforo].label}
+                          {semLabel}
                         </span>
-                        <span className="text-xs text-text-muted">IEM {checkin.iem}/7 · {iemLabel(checkin.iem)}</span>
-                        <span className="text-xs text-text-muted">{checkin.conductas_completadas?.length ?? 0} conductas ✓</span>
+                        <span className="text-xs text-text-muted">
+                          ICA {checkin.scores?.ica ?? '—'}%
+                        </span>
+                        <span className="text-xs text-text-muted">
+                          BE {checkin.scores?.be_norm ?? '—'}%
+                        </span>
+                        <span className="text-xs text-text-muted">
+                          INI {checkin.scores?.ini_norm ?? '—'}%
+                        </span>
+                        {checkin.dominant_domain && (
+                          <span className="text-xs text-text-muted">
+                            {DOMAIN_ICONS[checkin.dominant_domain]} dominante
+                          </span>
+                        )}
                       </div>
 
-                      <div className="flex gap-0.5 mt-2 h-1 w-24">
-                        {[1,2,3,4,5,6,7].map(v => (
-                          <div
-                            key={v}
-                            className="flex-1 rounded-full"
-                            style={{
-                              background: v <= checkin.iem
-                                ? checkin.iem <= 2 ? '#EF4444' : checkin.iem <= 4 ? '#F59E0B' : '#10B981'
-                                : 'var(--border-default)',
-                            }}
-                          />
-                        ))}
-                      </div>
-
-                      {checkin.notas && (
-                        <p className="text-xs text-text-secondary italic mt-2">"{checkin.notas}"</p>
+                      {checkin.alerts && checkin.alerts.length > 0 && (
+                        <div className="flex gap-1 mt-2 flex-wrap">
+                          {checkin.alerts.map(a => (
+                            <span
+                              key={a}
+                              className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                              style={{ background: '#FEF2F2', color: '#991B1B' }}
+                            >
+                              {a}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -239,7 +261,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
         </div>
       )}
 
-      {/* Alertas */}
+      {/* Alertas ICS */}
       {tab === 'alertas' && (
         <div className="space-y-3">
           {alertasState.length === 0 ? (
@@ -250,9 +272,9 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
                 key={alerta.id}
                 className="rounded-xl p-4"
                 style={
-                  alerta.resuelta
+                  alerta.is_read
                     ? { background: 'var(--surface-subtle)', border: '1px solid var(--border-default)', opacity: 0.6 }
-                    : alerta.prioridad === 'urgente'
+                    : alerta.priority <= 1.5
                     ? { background: '#FEF2F2', border: '1px solid #FECACA' }
                     : { background: '#FFFBEB', border: '1px solid #FDE68A' }
                 }
@@ -260,36 +282,36 @@ export default function FichaPaciente({ paciente, checkins, alertas, racha, scor
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      {alerta.resuelta ? (
+                      {alerta.is_read ? (
                         <span
                           className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                           style={{ background: '#ECFDF5', color: '#065F46' }}
                         >
-                          ✓ Resuelta
+                          ✓ Leída
                         </span>
                       ) : (
                         <span
                           className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                           style={
-                            alerta.prioridad === 'urgente'
+                            alerta.priority <= 1.5
                               ? { background: '#FEE2E2', color: '#991B1B' }
                               : { background: '#FEF3C7', color: '#92400E' }
                           }
                         >
-                          {alerta.prioridad === 'urgente' ? '🚨 Urgente' : '👁 Observación'}
+                          {alerta.priority <= 1.5 ? '🚨 Urgente' : '👁 Observación'}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-text-primary">{alerta.descripcion}</p>
+                    <p className="text-sm text-text-primary">{alerta.message}</p>
                     <p className="text-xs text-text-muted mt-1">{formatRelativo(alerta.created_at)}</p>
                   </div>
-                  {!alerta.resuelta && (
+                  {!alerta.is_read && (
                     <button
                       onClick={() => resolverAlerta(alerta.id)}
                       className="btn-secondary text-xs px-3 py-1.5 whitespace-nowrap flex-shrink-0"
                       style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }}
                     >
-                      ✓ Resolver
+                      ✓ Marcar leída
                     </button>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import AlertasList from '@/components/facilitator/AlertasList'
-import type { Alerta, User } from '@/types/database'
+import type { Alert, User } from '@/types/database'
 
 export default async function AlertasPage() {
   const supabase = await createClient()
@@ -32,14 +32,14 @@ export default async function AlertasPage() {
 
   const pacienteIds = (miembros ?? []).map(m => m.user_id)
 
-  // Alertas no resueltas, ordenadas por prioridad y fecha
+  // Alertas no leídas del motor ICS, ordenadas por prioridad
   const { data: alertas, error: alertasError } = await supabase
-    .from('alertas')
+    .from('alerts')
     .select('*')
-    .in('user_id', pacienteIds.length > 0 ? pacienteIds : ['00000000-0000-0000-0000-000000000000'])
-    .eq('resuelta', false)
-    .order('prioridad', { ascending: false })
-    .order('fecha', { ascending: false })
+    .in('patient_id', pacienteIds.length > 0 ? pacienteIds : ['00000000-0000-0000-0000-000000000000'])
+    .eq('is_read', false)
+    .order('priority', { ascending: true })
+    .order('created_at', { ascending: false })
 
   if (alertasError) {
     return (
@@ -51,11 +51,11 @@ export default async function AlertasPage() {
   }
 
   // Perfiles de los pacientes con alertas
-  const alertaUserIds = Array.from(new Set((alertas ?? []).map(a => a.user_id)))
+  const alertaPatientIds = Array.from(new Set((alertas ?? []).map(a => a.patient_id)))
   const { data: pacientes } = await supabase
     .from('users')
     .select('id, nombre, email, avatar_url')
-    .in('id', alertaUserIds.length > 0 ? alertaUserIds : ['00000000-0000-0000-0000-000000000000'])
+    .in('id', alertaPatientIds.length > 0 ? alertaPatientIds : ['00000000-0000-0000-0000-000000000000'])
 
   return (
     <div className="p-6 lg:p-8 space-y-6 max-w-4xl">
@@ -68,7 +68,7 @@ export default async function AlertasPage() {
       </div>
 
       <AlertasList
-        alertas={(alertas ?? []) as Alerta[]}
+        alertas={(alertas ?? []) as Alert[]}
         pacientes={(pacientes ?? []) as Pick<User, 'id' | 'nombre' | 'email' | 'avatar_url'>[]}
       />
     </div>
