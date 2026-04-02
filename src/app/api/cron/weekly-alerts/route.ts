@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { supabaseAdmin } from '@/lib/supabase/admin'
+import { getSupabaseAdmin } from '@/lib/supabase/admin'
 import { processWeeklyAlerts } from '@/lib/alerts/alert_engine'
 import type { PatientData } from '@/lib/alerts/alert_engine'
 
@@ -34,7 +34,8 @@ export async function GET(request: Request) {
 
   try {
     // ── 1. Obtener pacientes activos con sus últimos 8 check-ins ──
-    const { data: pacientes, error: pacientesError } = await supabaseAdmin
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: pacientes, error: pacientesError } = await (getSupabaseAdmin() as any)
       .from('users')
       .select(`
         id,
@@ -53,7 +54,8 @@ export async function GET(request: Request) {
     if (pacientesError) throw new Error(pacientesError.message)
 
     // ── 2. Mapear al formato PatientData del alert_engine ──────
-    const patientData: PatientData[] = (pacientes ?? []).map(p => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const patientData: PatientData[] = ((pacientes ?? []) as any[]).map((p: any) => ({
       id:   p.id,
       name: p.nombre,
       checkins: ((p.checkins_semanales as unknown[]) ?? [])
@@ -93,7 +95,8 @@ export async function GET(request: Request) {
         week_start: new Date().toISOString().split('T')[0],
       }))
 
-    const { error: insertError } = await supabaseAdmin
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: insertError } = await (getSupabaseAdmin() as any)
       .from('alerts')
       .insert(rows)
 
