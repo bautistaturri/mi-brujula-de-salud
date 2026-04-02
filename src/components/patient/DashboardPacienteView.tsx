@@ -1,15 +1,7 @@
 'use client'
 
-import Link from 'next/link'
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ReferenceLine,
-} from 'recharts'
+import BienvenidaPersonalizada from './BienvenidaPersonalizada'
+import MiEvolucion from './MiEvolucion'
 
 interface CheckinSemanal {
   week_start: string
@@ -39,6 +31,7 @@ interface Props {
   conductas: ConductaAncla[]
   rachaVerde: number
   weekStart: string
+  checkinHref?: string
 }
 
 const SEMAPHORE_CONFIG = {
@@ -96,17 +89,12 @@ export default function DashboardPacienteView({
   conductas,
   rachaVerde,
   weekStart,
+  checkinHref = '/dashboard/paciente/checkin',
 }: Props) {
   const tieneCheckin = !!checkinActual
   const config = checkinActual
     ? SEMAPHORE_CONFIG[checkinActual.semaphore]
     : null
-
-  // Datos para el gráfico (orden cronológico)
-  const chartData = [...historial].reverse().map(c => ({
-    semana: new Date(c.week_start + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' }),
-    ics:    c.scores?.ics ?? 0,
-  }))
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] pb-28">
@@ -147,20 +135,12 @@ export default function DashboardPacienteView({
           )}
         </div>
       ) : (
-        /* Banner motivacional — sin checkin */
-        <div className="mx-5 mt-5 bg-gradient-to-br from-[#1B3A5C] to-[#2A4F7A] rounded-3xl p-6 text-white">
-          <p className="text-sm opacity-70 mb-2">Esta semana</p>
-          <h2 className="font-serif text-2xl mb-2">¿Cómo estuvo tu semana?</h2>
-          <p className="text-sm opacity-80 mb-5">
-            Completá tu check-in semanal para ver tu semáforo ICS.
-          </p>
-          <Link
-            href="/dashboard/paciente/checkin"
-            className="inline-flex items-center gap-2 bg-white text-[#1B3A5C] font-bold px-5 py-3 rounded-2xl text-sm hover:bg-[#F9FAFB] transition"
-          >
-            Completar check-in →
-          </Link>
-        </div>
+        <BienvenidaPersonalizada
+          nombre={nombre}
+          semanaAnterior={historial[0] ?? null}
+          esPrimerCheckin={historial.length === 0}
+          checkinHref={checkinHref}
+        />
       )}
 
       {/* ── Breakdown 3 dominios ── */}
@@ -197,65 +177,7 @@ export default function DashboardPacienteView({
         </div>
       )}
 
-      {!tieneCheckin && (
-        <div className="px-5 mt-4">
-          <Link
-            href="/dashboard/paciente/checkin"
-            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[#2A7B6F] to-[#1B3A5C] text-white font-semibold shadow-md hover:opacity-90 transition"
-          >
-            🧭 Completar check-in semanal
-          </Link>
-        </div>
-      )}
-
-      {/* ── Gráfico evolución histórica ── */}
-      {historial.length > 1 && (
-        <div className="px-5 mt-6">
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-[#1F2937] mb-4">
-              Evolución ICS — últimas {historial.length} semanas
-            </h3>
-            <ResponsiveContainer width="100%" height={160}>
-              <LineChart data={chartData}>
-                <XAxis
-                  dataKey="semana"
-                  tick={{ fontSize: 10, fill: '#9CA3AF' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 10, fill: '#9CA3AF' }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={28}
-                />
-                <Tooltip
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                  formatter={(v: number) => [`${v} pts`, 'ICS']}
-                />
-                <ReferenceLine y={70} stroke="#1A6B3C" strokeDasharray="4 4" strokeOpacity={0.5} />
-                <ReferenceLine y={45} stroke="#C87020" strokeDasharray="4 4" strokeOpacity={0.5} />
-                <Line
-                  type="monotone"
-                  dataKey="ics"
-                  stroke="#2A7B6F"
-                  strokeWidth={2.5}
-                  dot={(props) => {
-                    const { cx, cy, payload } = props as { cx: number; cy: number; payload: { ics: number } }
-                    const color = payload.ics >= 70 ? '#1A6B3C' : payload.ics >= 45 ? '#C87020' : '#A83020'
-                    return <circle key={`dot-${cx}`} cx={cx} cy={cy} r={4} fill={color} strokeWidth={0} />
-                  }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-            <div className="flex items-center gap-4 mt-3 text-[10px] text-[#9CA3AF]">
-              <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-[#1A6B3C] border-dashed inline-block" /> Verde ≥70</span>
-              <span className="flex items-center gap-1"><span className="w-4 border-t-2 border-[#C87020] border-dashed inline-block" /> Amarillo ≥45</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <MiEvolucion historial={historial} rachaVerde={rachaVerde} />
 
       {/* ── Conductas ancla ── */}
       {conductas.length > 0 && tieneCheckin && checkinActual && (

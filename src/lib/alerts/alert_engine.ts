@@ -272,10 +272,5 @@ export function processWeeklyAlerts(patients: PatientData[]): AlertData[] {
     }
   }
 
-  // Log resumen
-  const reds   = allAlerts.filter(a => a.color === 'red').length
-  const ambers = allAlerts.filter(a => a.color === 'amber').length
-  console.log(`[AlertEngine] Procesados ${patients.length} pacientes. Alertas: ${reds} rojas, ${ambers} amarillas`)
-
   return allAlerts
 }
