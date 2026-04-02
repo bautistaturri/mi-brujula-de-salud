@@ -177,7 +177,9 @@ export default function DashboardPacienteView({
         </div>
       )}
 
-      <MiEvolucion historial={historial} rachaVerde={rachaVerde} />
+      {(tieneCheckin || historial.length >= 3) && (
+        <MiEvolucion historial={historial} rachaVerde={rachaVerde} />
+      )}
 
       {/* ── Conductas ancla ── */}
       {conductas.length > 0 && tieneCheckin && checkinActual && (
