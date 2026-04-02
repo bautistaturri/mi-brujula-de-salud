@@ -1,206 +1,148 @@
 import Link from 'next/link'
 
-function AppMockup() {
+function DashboardMockup() {
   return (
-    <div className="relative flex justify-center items-center">
-      {/* Glow effect */}
-      <div className="absolute inset-0 bg-blue-400/20 rounded-3xl blur-3xl" />
+    <svg
+      viewBox="0 0 440 342"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-full max-w-[440px]"
+      role="img"
+      aria-label="Vista previa del dashboard"
+    >
+      <defs>
+        <filter id="mock-shadow" x="-8%" y="-8%" width="116%" height="116%">
+          <feDropShadow dx="0" dy="10" stdDeviation="18" floodColor="#1E3A5F" floodOpacity="0.14"/>
+        </filter>
+        <clipPath id="mock-clip">
+          <rect width="440" height="342" rx="16"/>
+        </clipPath>
+        <linearGradient id="ics-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#1A6B3C"/>
+          <stop offset="100%" stopColor="#2A9B5A"/>
+        </linearGradient>
+      </defs>
 
-      {/* Phone frame */}
-      <div className="relative w-64 sm:w-72 bg-gray-900 rounded-[2.5rem] p-2 shadow-2xl border border-gray-700">
-        {/* Screen */}
-        <div className="bg-gray-50 rounded-[2rem] overflow-hidden">
-          {/* Status bar */}
-          <div className="bg-blue-600 px-4 py-2 flex items-center justify-between">
-            <span className="text-white text-xs font-semibold">Mi Brújula</span>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-white/30" />
-              <div className="w-3 h-3 rounded-full bg-white/30" />
-              <div className="w-3 h-3 rounded-full bg-white" />
-            </div>
-          </div>
+      {/* Card frame */}
+      <rect width="440" height="342" rx="16" fill="white" filter="url(#mock-shadow)"/>
+      <g clipPath="url(#mock-clip)">
 
-          {/* App content */}
-          <div className="p-4 space-y-3">
-            {/* Greeting */}
-            <div>
-              <p className="text-xs text-gray-500">Buenos días, Marcos 👋</p>
-              <p className="text-sm font-bold text-gray-900">¿Cómo estás hoy?</p>
-            </div>
+        {/* ── Header ── */}
+        <rect width="440" height="54" fill="#1E3A5F"/>
+        <text x="20" y="21" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="9.5" fill="rgba(255,255,255,0.55)" letterSpacing="0.5">Dashboard · Semana actual</text>
+        <text x="20" y="39" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="13.5" fontWeight="600" fill="white">Lucas Méndez</text>
+        {/* Nav dots */}
+        <circle cx="400" cy="20" r="3.5" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="413" cy="20" r="3.5" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="426" cy="20" r="3.5" fill="rgba(255,255,255,0.55)"/>
 
-            {/* Semáforo */}
-            <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-              <p className="text-xs text-gray-500 mb-2">Estado hoy</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-200">
-                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-emerald-700">Semáforo verde</p>
-                  <p className="text-xs text-gray-500">Todo en orden</p>
-                </div>
-              </div>
-            </div>
+        {/* ── ICS Hero card ── */}
+        <rect x="16" y="66" width="408" height="72" rx="12" fill="url(#ics-grad)"/>
+        {/* decoration circle */}
+        <circle cx="440" cy="66" r="52" fill="rgba(255,255,255,0.07)"/>
+        <text x="32" y="84" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="8.5" fontWeight="700" fill="rgba(255,255,255,0.65)" letterSpacing="2">ÍNDICE COMPASS SEMANAL</text>
+        <text x="32" y="108" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="21" fontWeight="700" fill="white">Zona Verde</text>
+        <text x="32" y="126" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10" fill="rgba(255,255,255,0.7)">¡Tus conductas están construyendo el cambio!</text>
+        {/* ICS score */}
+        <text x="390" y="112" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="38" fontWeight="700" fill="white" textAnchor="middle">78</text>
+        <text x="390" y="128" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="9" fill="rgba(255,255,255,0.6)" textAnchor="middle" letterSpacing="1.5">ICS</text>
 
-            {/* IEM score */}
-            <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-xs text-gray-500">IEM hoy</p>
-                <span className="text-xs font-bold text-blue-600">6/7</span>
-              </div>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <div
-                    key={i}
-                    className={`flex-1 h-2 rounded-full ${i <= 6 ? 'bg-blue-500' : 'bg-gray-200'}`}
-                  />
-                ))}
-              </div>
-            </div>
+        {/* ── Domain cards ── */}
+        {/* ICA */}
+        <rect x="16"  y="150" width="129" height="66" rx="10" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1"/>
+        <text x="28"  y="168" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="8.5" fontWeight="700" fill="#9CA3AF" letterSpacing="1.5">ICA</text>
+        <text x="28"  y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="20" fontWeight="700" fill="#2563EB">82</text>
+        <text x="58"  y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10"  fill="#9CA3AF">%</text>
+        <rect x="28"  y="202" width="98"  height="3.5" rx="2" fill="#E5E7EB"/>
+        <rect x="28"  y="202" width="80"  height="3.5" rx="2" fill="#2563EB"/>
+        {/* BE */}
+        <rect x="156" y="150" width="129" height="66" rx="10" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1"/>
+        <text x="168" y="168" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="8.5" fontWeight="700" fill="#9CA3AF" letterSpacing="1.5">BE</text>
+        <text x="168" y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="20" fontWeight="700" fill="#2A7B6F">71</text>
+        <text x="198" y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10"  fill="#9CA3AF">%</text>
+        <rect x="168" y="202" width="98"  height="3.5" rx="2" fill="#E5E7EB"/>
+        <rect x="168" y="202" width="70"  height="3.5" rx="2" fill="#2A7B6F"/>
+        {/* INI */}
+        <rect x="296" y="150" width="128" height="66" rx="10" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1"/>
+        <text x="308" y="168" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="8.5" fontWeight="700" fill="#9CA3AF" letterSpacing="1.5">INI</text>
+        <text x="308" y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="20" fontWeight="700" fill="#7C3AED">68</text>
+        <text x="338" y="191" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10"  fill="#9CA3AF">%</text>
+        <rect x="308" y="202" width="98"  height="3.5" rx="2" fill="#E5E7EB"/>
+        <rect x="308" y="202" width="66"  height="3.5" rx="2" fill="#7C3AED"/>
 
-            {/* Conductas */}
-            <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100">
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-xs text-gray-500">Conductas ancla</p>
-                <span className="text-xs font-bold text-emerald-600">4/5</span>
-              </div>
-              <div className="space-y-1.5">
-                {['Ejercicio', 'Meditación', 'Hidratación', 'Descanso'].map((c, i) => (
-                  <div key={c} className="flex items-center gap-2">
-                    <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${i < 4 ? 'bg-emerald-500' : 'bg-gray-200'}`}>
-                      {i < 4 && (
-                        <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-600">{c}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* ── Alert clínica ── */}
+        <rect x="16" y="228" width="408" height="48" rx="10" fill="#FEF2F2" stroke="#FECACA" strokeWidth="1"/>
+        <rect x="28" y="240" width="4"   height="24" rx="2" fill="#EF4444"/>
+        <text x="44" y="249" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10" fontWeight="700" fill="#991B1B">Alerta clínica</text>
+        <text x="44" y="265" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="9.5"  fill="#6B7280">Analía R. — sin check-in por 2 semanas</text>
+        <rect x="376" y="242" width="36" height="18" rx="4" fill="#FEE2E2"/>
+        <text x="394" y="254" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="8.5" fontWeight="700" fill="#DC2626" textAnchor="middle">urgente</text>
 
-            {/* Streak */}
-            <div className="bg-blue-50 rounded-2xl p-3 border border-blue-100">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🔥</span>
-                <div>
-                  <p className="text-xs font-bold text-blue-800">12 días de racha</p>
-                  <p className="text-xs text-blue-600">¡Seguí así!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* ── Check-in completado ── */}
+        <rect x="16" y="288" width="408" height="38" rx="10" fill="#F0FDF4" stroke="#BBF7D0" strokeWidth="1"/>
+        <circle cx="38" cy="307" r="9" fill="#22C55E"/>
+        <text x="38" y="311.5" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10" fontWeight="700" fill="white" textAnchor="middle">✓</text>
+        <text x="56" y="303" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="10" fontWeight="600" fill="#166534">Check-in completado · Lucas M.</text>
+        <text x="56" y="318" fontFamily="ui-sans-serif,system-ui,sans-serif" fontSize="9"   fill="#4ADE80">ICS 78 · Zona Verde · hace 2 días</text>
 
-        {/* Home indicator */}
-        <div className="flex justify-center py-1.5">
-          <div className="w-24 h-1 bg-gray-600 rounded-full" />
-        </div>
-      </div>
-
-      {/* Floating notification card */}
-      <div className="absolute -right-4 top-12 bg-white rounded-xl shadow-lg border border-gray-100 p-3 w-44">
-        <div className="flex items-start gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-            <span className="text-sm">📊</span>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-800">Análisis listo</p>
-            <p className="text-xs text-gray-500 mt-0.5">3 pacientes con alerta</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating badge */}
-      <div className="absolute -left-4 bottom-16 bg-emerald-500 rounded-xl shadow-lg p-3 w-36">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">✅</span>
-          <div>
-            <p className="text-xs font-bold text-white">95% adherencia</p>
-            <p className="text-xs text-emerald-100">esta semana</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </g>
+    </svg>
   )
 }
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-16 overflow-hidden bg-white">
-      {/* Background gradient */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-blue-50 via-blue-50/50 to-transparent" />
-        <div className="absolute top-20 right-20 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-64 h-64 bg-emerald-100/40 rounded-full blur-3xl" />
-      </div>
+    <section className="pt-16 bg-white" id="producto">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 lg:py-24">
+        <div className="grid lg:grid-cols-[58fr_42fr] gap-14 lg:gap-20 items-center">
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text content */}
-          <div className="space-y-8">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-sm font-medium px-4 py-1.5 rounded-full">
-              <span>🏥</span>
-              <span>Plataforma de salud digital</span>
+          {/* ── Columna izquierda ── */}
+          <div className="space-y-7">
+
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 border border-[#BFDBFE] bg-[#EFF6FF] text-[#1E40AF] text-xs font-semibold px-3.5 py-1.5 rounded-full tracking-wide uppercase">
+              Acceso anticipado · Primeros equipos
             </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-              Tu salud conductual,{' '}
-              <span className="text-blue-600">siempre en el rumbo correcto</span>
+            {/* H1 */}
+            <h1 className="text-[2.4rem] sm:text-5xl font-extrabold text-[#0F1C2E] leading-[1.12] tracking-tight max-w-[560px]">
+              Seguimiento conductual semanal para equipos de salud
             </h1>
 
-            {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-xl">
-              Monitoreo diario inteligente para pacientes y equipos de salud. Detecta señales de
-              alerta, fortalece hábitos y mejora resultados clínicos.
+            {/* Descripción */}
+            <p className="text-[17px] text-[#4B5563] leading-relaxed max-w-[500px]">
+              Herramienta de monitoreo para facilitadores y médicos que trabajan con pacientes en programas de salud conductual.
+              Sin dashboards vacíos, sin datos que no se usan.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors shadow-lg shadow-blue-200 text-base"
+            <div className="flex flex-wrap items-center gap-4">
+              <a
+                href="#acceso"
+                className="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#162d4a] text-white font-semibold px-6 py-3.5 rounded-xl transition-colors text-[15px]"
               >
-                Comenzar gratis
-                <span>→</span>
-              </Link>
+                Solicitar acceso anticipado
+              </a>
               <a
                 href="#como-funciona"
-                className="inline-flex items-center gap-2 border-2 border-gray-200 hover:border-blue-300 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-colors text-base"
+                className="inline-flex items-center gap-2 border border-[#D1D5DB] hover:border-[#9CA3AF] text-[#374151] font-semibold px-6 py-3.5 rounded-xl transition-colors text-[15px]"
               >
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
-                Ver demo
+                Ver cómo funciona →
               </a>
             </div>
 
-            {/* Propuesta de valor */}
-            <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span className="text-green-500">✓</span>
-                <span>Check-in diario en menos de 2 minutos</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span className="text-green-500">✓</span>
-                <span>Alertas automáticas en tiempo real</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span className="text-green-500">✓</span>
-                <span>Sin instalación — funciona desde el celular</span>
-              </div>
+            {/* Credenciales */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 border-t border-[#F3F4F6]">
+              <span className="text-xs text-[#6B7280]">🔒 Datos cifrados</span>
+              <span className="text-xs text-[#6B7280]">🇦🇷 Desarrollado en Argentina</span>
+              <span className="text-xs text-[#6B7280]">📋 Pensado con profesionales de salud</span>
             </div>
           </div>
 
-          {/* Right: App mockup */}
+          {/* ── Columna derecha — mockup ── */}
           <div className="flex justify-center lg:justify-end">
-            <AppMockup />
+            <DashboardMockup />
           </div>
+
         </div>
       </div>
     </section>

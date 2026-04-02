@@ -1,13 +1,10 @@
-import Navbar from './Navbar'
-import Hero from './Hero'
-import SocialProof from './SocialProof'
+import Navbar         from './Navbar'
+import Hero           from './Hero'
 import ProblemSolution from './ProblemSolution'
-import Features from './Features'
-import HowItWorks from './HowItWorks'
-import Testimonials from './Testimonials'
-import Pricing from './Pricing'
-import CTAFinal from './CTAFinal'
-import Footer from './Footer'
+import HowItWorks     from './HowItWorks'
+import ParaQuien      from './ParaQuien'
+import CTAFinal       from './CTAFinal'
+import Footer         from './Footer'
 
 export default function LandingPage() {
   return (
@@ -15,12 +12,9 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero />
-        <SocialProof />
         <ProblemSolution />
-        <Features />
         <HowItWorks />
-        <Testimonials />
-        <Pricing />
+        <ParaQuien />
         <CTAFinal />
       </main>
       <Footer />

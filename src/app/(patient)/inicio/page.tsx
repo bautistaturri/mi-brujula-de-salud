@@ -65,6 +65,7 @@ export default async function InicioPacientePage() {
       conductas={conductasRes.data ?? []}
       rachaVerde={rachaRes.data?.semanas_consecutivas ?? 0}
       weekStart={weekStart}
+      checkinHref="/checkin"
     />
   )
 }
