@@ -106,15 +106,91 @@
   }
 
   .dark {
-    --background:         222 47% 7%;
-    --foreground:         210 40% 98%;
-    --surface-base:       #0F172A;
-    --surface-card:       #1E293B;
-    --surface-subtle:     #1E293B;
-    --border-default:     #334155;
-    --text-primary:       #F1F5F9;
-    --text-secondary:     #94A3B8;
-    --text-muted:         #64748B;
+    /* shadcn/ui tokens */
+    --background:             222 47% 7%;
+    --foreground:             210 40% 98%;
+    --card:                   222 47% 11%;
+    --card-foreground:        210 40% 98%;
+    --popover:                222 47% 11%;
+    --popover-foreground:     210 40% 98%;
+    --primary:                221 83% 60%;
+    --primary-foreground:     0 0% 100%;
+    --secondary:              217 33% 17%;
+    --secondary-foreground:   210 40% 98%;
+    --muted:                  217 33% 17%;
+    --muted-foreground:       215 20% 55%;
+    --accent:                 217 33% 17%;
+    --accent-foreground:      210 40% 98%;
+    --destructive:            0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border:                 217 33% 22%;
+    --input:                  217 33% 22%;
+    --ring:                   221 83% 55%;
+
+    /* Superficies */
+    --surface-base:           #0F172A;
+    --surface-card:           #1E293B;
+    --surface-subtle:         #263248;
+    --surface-hover:          #263248;
+
+    /* Bordes */
+    --border-default:         #334155;
+    --border-strong:          #475569;
+    --border-focus:           #3B82F6;
+
+    /* Texto */
+    --text-primary:           #F1F5F9;
+    --text-secondary:         #94A3B8;
+    --text-muted:             #64748B;
+    --text-disabled:          #475569;
+
+    /* Marca — mismo azul, softs oscuros */
+    --brand-primary:          #3B82F6;
+    --brand-primary-hover:    #2563EB;
+    --brand-primary-soft:     #1E3A5F;
+    --brand-secondary:        #10B981;
+    --brand-secondary-soft:   #064E3B;
+    --brand-accent:           #A78BFA;
+    --brand-accent-soft:      #2D1B69;
+
+    /* Estados semánticos — softs oscuros, textos claros */
+    --status-success:         #10B981;
+    --status-success-soft:    #064E3B;
+    --status-success-text:    #6EE7B7;
+    --status-warning:         #F59E0B;
+    --status-warning-soft:    #451A03;
+    --status-warning-text:    #FCD34D;
+    --status-danger:          #EF4444;
+    --status-danger-soft:     #450A0A;
+    --status-danger-text:     #FCA5A5;
+    --status-info:            #60A5FA;
+    --status-info-soft:       #1E3A5F;
+    --status-info-text:       #93C5FD;
+
+    /* Semáforos — fondos oscuros, textos claros */
+    --semaforo-verde:         #10B981;
+    --semaforo-verde-bg:      #064E3B;
+    --semaforo-verde-border:  #065F46;
+    --semaforo-verde-text:    #6EE7B7;
+    --semaforo-amarillo:      #F59E0B;
+    --semaforo-amarillo-bg:   #451A03;
+    --semaforo-amarillo-border:#78350F;
+    --semaforo-amarillo-text: #FCD34D;
+    --semaforo-rojo:          #EF4444;
+    --semaforo-rojo-bg:       #450A0A;
+    --semaforo-rojo-border:   #7F1D1D;
+    --semaforo-rojo-text:     #FCA5A5;
+
+    /* Gradientes oscuros */
+    --gradient-hero:          linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    --gradient-card:          linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+    --gradient-brand:         linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+
+    /* Sombras más pronunciadas en dark */
+    --shadow-sm:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md:   0 4px 16px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-lg:   0 10px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
   }
 }
 

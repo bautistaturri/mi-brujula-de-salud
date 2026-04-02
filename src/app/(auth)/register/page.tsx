@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { RegisterSchema } from '@/lib/validations'
 import type { Role } from '@/types/database'
 
 function Spinner() {
@@ -32,11 +33,16 @@ const ROLE_CONFIG = {
   },
 } as const
 
-function validateField(field: string, value: string) {
-  if (field === 'nombre' && value.trim().length < 2) return 'Ingresá tu nombre completo'
-  if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Email inválido'
-  if (field === 'password' && value.length < 8) return 'Mínimo 8 caracteres'
-  return ''
+function validateField(field: 'nombre' | 'email' | 'password', value: string, role: Role): string {
+  const result = RegisterSchema.safeParse({
+    nombre:   field === 'nombre'   ? value : 'Placeholder',
+    email:    field === 'email'    ? value : 'placeholder@x.com',
+    password: field === 'password' ? value : 'placeholder',
+    role,
+  })
+  if (result.success) return ''
+  const issue = result.error.issues.find(i => i.path[0] === field)
+  return issue?.message ?? ''
 }
 
 export default function RegisterPage() {
@@ -50,19 +56,20 @@ export default function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [loading,  setLoading]  = useState(false)
 
-  function handleBlur(field: string, value: string) {
-    setFieldErrors(prev => ({ ...prev, [field]: validateField(field, value) }))
+  function handleBlur(field: 'nombre' | 'email' | 'password', value: string) {
+    setFieldErrors(prev => ({ ...prev, [field]: validateField(field, value, role) }))
   }
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault()
-    const errs = {
-      nombre:   validateField('nombre',   nombre),
-      email:    validateField('email',    email),
-      password: validateField('password', password),
+    // Validación completa con Zod (mismas reglas que el servidor)
+    const result = RegisterSchema.safeParse({ nombre, email, password, role })
+    if (!result.success) {
+      const errs: Record<string, string> = {}
+      result.error.issues.forEach(i => { if (i.path[0]) errs[String(i.path[0])] = i.message })
+      setFieldErrors(errs)
+      return
     }
-    setFieldErrors(errs)
-    if (Object.values(errs).some(Boolean)) return
 
     setLoading(true)
     setError('')
@@ -140,7 +147,7 @@ export default function RegisterPage() {
                 type="text"
                 value={nombre}
                 onChange={e => setNombre(e.target.value)}
-                onBlur={e => handleBlur('nombre', e.target.value)}
+                onBlur={e => handleBlur('nombre', e.target.value.trim())}
                 placeholder="Juan García"
                 className="input-field"
                 style={fieldErrors.nombre ? { borderColor: '#EF4444' } : {}}

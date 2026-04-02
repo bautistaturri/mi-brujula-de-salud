@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const NAV_ITEMS = [
   {
@@ -142,6 +143,8 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
             <div className="text-xs text-text-muted">Facilitador</div>
           </div>
         </div>
+        <ThemeToggle variant="full" />
+
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-text-muted hover:text-status-error transition-colors"

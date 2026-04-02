@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { processWeeklyAlerts } from '@/lib/alerts/alert_engine'
-import type { PatientData, CheckinData } from '@/lib/alerts/alert_engine'
+import type { PatientData } from '@/lib/alerts/alert_engine'
+
+// Schema para validar cada fila de checkin_semanales antes de procesar
+const CheckinRowSchema = z.object({
+  semaphore:    z.enum(['green', 'amber', 'red']),
+  ini_score:    z.number().int().min(1).max(5).default(3),
+  alerts:       z.array(z.string()).default([]),
+  scores:       z.record(z.string(), z.unknown()).default({}),
+  submitted_at: z.string(),
+})
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -48,15 +58,16 @@ export async function GET(request: Request) {
       name: p.nombre,
       checkins: ((p.checkins_semanales as unknown[]) ?? [])
         .slice(0, 8)
-        .map((c: unknown) => {
-          const row = c as Record<string, unknown>
-          return {
-            semaphore:    row.semaphore    as CheckinData['semaphore'],
-            ini_score:    (row.ini_score   as number) ?? 3,
-            alerts:       (row.alerts      as string[]) ?? [],
-            scores:       (row.scores      as CheckinData['scores']) ?? {},
-            submitted_at: row.submitted_at as string,
-          }
+        .flatMap((c: unknown) => {
+          const parsed = CheckinRowSchema.safeParse(c)
+          if (!parsed.success) return []   // descarta filas con datos inválidos
+          return [{
+            semaphore:    parsed.data.semaphore,
+            ini_score:    parsed.data.ini_score,
+            alerts:       parsed.data.alerts,
+            scores:       parsed.data.scores as PatientData['checkins'][number]['scores'],
+            submitted_at: parsed.data.submitted_at,
+          }]
         }),
     }))
 

@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { LoginSchema } from '@/lib/validations'
 
 function Spinner() {
   return (
@@ -50,11 +51,21 @@ function LoginForm() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
     setError('')
 
+    // Validar con Zod antes de llamar a Supabase
+    const result = LoginSchema.safeParse({ email, password })
+    if (!result.success) {
+      setError(result.error.issues[0]?.message ?? 'Datos inválidos.')
+      return
+    }
+
+    setLoading(true)
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: result.data.email,
+      password: result.data.password,
+    })
 
     if (error) {
       setError('Email o contraseña incorrectos.')

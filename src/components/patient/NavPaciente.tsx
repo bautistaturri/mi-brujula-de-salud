@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const NAV_ITEMS = [
   {
@@ -94,6 +95,8 @@ export default function NavPaciente({ nombre }: Props) {
             </Link>
           )
         })}
+        <ThemeToggle variant="icon" className="flex-1" />
+
         <button
           onClick={handleLogout}
           className="flex-1 flex flex-col items-center pt-2 pb-3 gap-0.5 transition-colors"
