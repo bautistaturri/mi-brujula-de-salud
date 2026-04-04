@@ -341,5 +341,5 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.save_checkin_ics FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.save_checkin_ics TO authenticated;
+REVOKE ALL ON FUNCTION public.save_checkin_ics(uuid, date, smallint[], smallint, smallint, smallint, smallint, text, text[], jsonb, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.save_checkin_ics(uuid, date, smallint[], smallint, smallint, smallint, smallint, text, text[], jsonb, text) TO authenticated;
