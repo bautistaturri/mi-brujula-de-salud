@@ -1,15 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getWeekStart } from '@/lib/utils'
 import CheckinICS from '@/components/patient/CheckinICS'
-
-function getWeekStart(): string {
-  const now = new Date()
-  const day = now.getDay() // 0=dom, 1=lun...
-  const diff = day === 0 ? -6 : 1 - day
-  const monday = new Date(now)
-  monday.setDate(now.getDate() + diff)
-  return monday.toISOString().split('T')[0]
-}
 
 export default async function CheckinPage() {
   const supabase = await createClient()

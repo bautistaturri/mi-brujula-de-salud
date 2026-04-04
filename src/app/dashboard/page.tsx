@@ -1,18 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { getWeekStart } from '@/lib/utils'
 import GrupoOverview from '@/components/facilitator/GrupoOverview'
 import type { EstadoPaciente } from '@/types/database'
-
-function getSemanaInicioActual(): string {
-  const now = new Date()
-  const dow = now.getDay()
-  const daysToMonday = dow === 0 ? -6 : 1 - dow
-  const monday = new Date(now)
-  monday.setDate(now.getDate() + daysToMonday)
-  monday.setHours(0, 0, 0, 0)
-  return monday.toISOString().split('T')[0]
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -45,7 +36,7 @@ export default async function DashboardPage() {
         .select('paciente_id, animo, sueno')
         .in('paciente_id', pacienteIds)
         .eq('requiere_atencion', true)
-        .gte('semana_inicio', getSemanaInicioActual())
+        .gte('semana_inicio', getWeekStart())
     : { data: [] }
 
   const pacientesConAlerta = (registrosCriticos ?? []).map(r => ({

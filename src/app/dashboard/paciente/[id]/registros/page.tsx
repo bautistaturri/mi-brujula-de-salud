@@ -3,6 +3,8 @@ import { redirect, notFound } from 'next/navigation'
 import RegistrosPacienteView from '@/components/registro-semanal/RegistrosPacienteView'
 import type { RegistroSemanal, LogroPaciente } from '@/types/database'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 interface Props {
   params: { id: string }
 }
@@ -13,6 +15,7 @@ export default async function RegistrosPacientePage({ params }: Props) {
   if (!user) redirect('/login')
 
   const pacienteId = params.id
+  if (!UUID_RE.test(pacienteId)) notFound()
 
   // Verificar que el facilitador tiene acceso a este paciente
   const { data: grupos } = await supabase

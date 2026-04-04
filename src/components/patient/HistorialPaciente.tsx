@@ -137,7 +137,7 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
                   </div>
                 </div>
                 {checkin.notas && (
-                  <p className="text-xs text-text-secondary italic mt-3 pl-10">"{checkin.notas}"</p>
+                  <p className="text-xs text-text-secondary italic mt-3 pl-10">&ldquo;{checkin.notas}&rdquo;</p>
                 )}
               </div>
             )

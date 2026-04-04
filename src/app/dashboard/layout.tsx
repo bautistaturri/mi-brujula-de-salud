@@ -26,12 +26,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const pacienteIds = Array.from(new Set((miembrosData ?? []).map((m: { user_id: string }) => m.user_id)))
 
+  // Contar alertas ICS no leídas (tabla `alerts` del motor ICS)
   const { count: alertasCount } = pacienteIds.length > 0
     ? await supabase
-        .from('alertas')
+        .from('alerts')
         .select('*', { count: 'exact', head: true })
-        .in('user_id', pacienteIds)
-        .eq('resuelta', false)
+        .in('patient_id', pacienteIds)
+        .eq('is_read', false)
     : { count: 0 }
 
   return (

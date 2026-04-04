@@ -1,15 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getWeekStart } from '@/lib/utils'
 import DashboardPacienteView from '@/components/patient/DashboardPacienteView'
-
-function getWeekStart(): string {
-  const now = new Date()
-  const day = now.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  const monday = new Date(now)
-  monday.setDate(now.getDate() + diff)
-  return monday.toISOString().split('T')[0]
-}
 
 export default async function InicioPacientePage() {
   const supabase = await createClient()

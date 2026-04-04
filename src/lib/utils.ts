@@ -69,3 +69,17 @@ export function getDiasUltimaSemana(): string[] {
   }
   return dias
 }
+
+/**
+ * Devuelve el lunes de la semana actual en formato YYYY-MM-DD (hora local).
+ * Usado para agrupar check-ins y registros semanales.
+ */
+export function getWeekStart(): string {
+  const now = new Date()
+  const day = now.getDay() // 0=dom, 1=lun...
+  const diff = day === 0 ? -6 : 1 - day
+  const monday = new Date(now)
+  monday.setDate(now.getDate() + diff)
+  monday.setHours(0, 0, 0, 0)
+  return monday.toISOString().split('T')[0]
+}
