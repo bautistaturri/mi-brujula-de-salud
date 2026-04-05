@@ -18,6 +18,8 @@ interface Props {
   weekStart: string             // YYYY-MM-DD del lunes actual
   yaCompletado: boolean
   redirectTo?: string           // ruta a la que redirigir al terminar (default: /dashboard/paciente)
+  icaDaysIniciales?: number[]  // pre-poblar desde registros diarios
+  beEnergyInicial?: number     // energía promedio de la semana (sugerencia)
 }
 
 type Paso = 1 | 2 | 3 | 'resultado'
@@ -52,15 +54,25 @@ const DOMAIN_LABELS = {
   ini: 'Cognitivo',
 }
 
-export default function CheckinICS({ userId, conductas, weekStart, yaCompletado, redirectTo = '/dashboard/paciente' }: Props) {
+export default function CheckinICS({
+  userId,
+  conductas,
+  weekStart,
+  yaCompletado,
+  redirectTo = '/dashboard/paciente',
+  icaDaysIniciales,
+  beEnergyInicial,
+}: Props) {
   const router = useRouter()
 
-  // Estado ICA
-  const [icaDays, setIcaDays] = useState<number[]>([0, 0, 0, 0, 0])
+  // Estado ICA — usa pre-población si viene desde registros diarios
+  const [icaDays, setIcaDays] = useState<number[]>(
+    icaDaysIniciales ?? [0, 0, 0, 0, 0]
+  )
   const [icaBarriers, setIcaBarriers] = useState(0)
 
-  // Estado BE
-  const [beEnergy, setBeEnergy] = useState(3)
+  // Estado BE — usa energía promedio como sugerencia si existe
+  const [beEnergy, setBeEnergy] = useState(beEnergyInicial ?? 3)
   const [beRegulation, setBeRegulation] = useState<1 | 3 | 5>(3)
 
   // Estado INI

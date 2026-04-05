@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import LogrosGrid from '@/components/logros/LogrosGrid'
+import LogrosPageClient from '@/components/logros/LogrosPageClient'
 import type { LogroPaciente } from '@/types/database'
 
 export default async function LogrosPage() {
@@ -24,7 +24,7 @@ export default async function LogrosPage() {
       <div className="mb-4 text-sm text-[#78716C]">
         {totalRegistros ?? 0} semana(s) registrada(s) en total
       </div>
-      <LogrosGrid logros={(logrosData ?? []) as LogroPaciente[]} />
+      <LogrosPageClient logros={(logrosData ?? []) as LogroPaciente[]} />
     </div>
   )
 }

@@ -8,9 +8,21 @@ export default async function InicioPacientePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const weekStart = getWeekStart()
+  const weekStart  = getWeekStart()
+  const fechaHoy   = new Date().toISOString().split('T')[0]
 
-  const [profileRes, checkinActualRes, historialRes, conductasRes, rachaRes] = await Promise.all([
+  // Lunes de la semana actual (para filtrar registros diarios de la semana)
+  const lunesSemana = weekStart  // getWeekStart() ya retorna el lunes ISO
+
+  const [
+    profileRes,
+    checkinActualRes,
+    historialRes,
+    conductasRes,
+    rachaRes,
+    registroHoyRes,
+    registrosSemanaRes,
+  ] = await Promise.all([
     supabase
       .from('users')
       .select('nombre')
@@ -45,6 +57,23 @@ export default async function InicioPacientePage() {
       .eq('paciente_id', user.id)
       .eq('tipo', 'green_streak')
       .single(),
+
+    // ¿Ya registró hoy?
+    supabase
+      .from('registros_diarios')
+      .select('id')
+      .eq('paciente_id', user.id)
+      .eq('fecha', fechaHoy)
+      .single(),
+
+    // Registros diarios de esta semana (lunes a domingo)
+    supabase
+      .from('registros_diarios')
+      .select('id, paciente_id, fecha, energia_dia, animo_dia, conductas_hoy, nota_libre, created_at')
+      .eq('paciente_id', user.id)
+      .gte('fecha', lunesSemana)
+      .order('fecha', { ascending: true })
+      .limit(7),
   ])
 
   if (profileRes.error) redirect('/login')
@@ -58,6 +87,9 @@ export default async function InicioPacientePage() {
       rachaVerde={rachaRes.data?.semanas_consecutivas ?? 0}
       weekStart={weekStart}
       checkinHref="/checkin"
+      fechaHoy={fechaHoy}
+      yaRegistroHoy={!!registroHoyRes.data}
+      registrosSemana={registrosSemanaRes.data ?? []}
     />
   )
 }

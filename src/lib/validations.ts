@@ -114,6 +114,21 @@ export const UpdatePasswordSchema = z.object({
 
 export type UpdatePasswordInput = z.infer<typeof UpdatePasswordSchema>
 
+// ── Registro diario ──────────────────────────────────────────────────────────
+
+export const RegistroDiarioSchema = z.object({
+  energia_dia:   z.number().int().min(1).max(5),
+  animo_dia:     z.number().int().min(1).max(5),
+  // Exactamente 5 booleans (una por conducta ancla)
+  conductas_hoy: z.array(z.boolean()).length(5),
+  nota_libre:    textoOpcional(280),
+  fecha: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido'),
+})
+
+export type RegistroDiarioInput = z.infer<typeof RegistroDiarioSchema>
+
 // ── Conducta ancla ───────────────────────────────────────────────────────────
 
 export const ConductaSchema = z.object({

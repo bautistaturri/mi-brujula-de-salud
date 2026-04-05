@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 // Rutas exclusivas por rol (defense-in-depth — la autorización real la aplican
 // los layouts con DB query y las políticas RLS de Supabase)
-const PATIENT_ONLY_PATHS     = ['/inicio', '/checkin', '/historial', '/logros', '/registro-semanal']
+const PATIENT_ONLY_PATHS     = ['/inicio', '/checkin', '/historial', '/logros', '/registro-semanal', '/registro-diario']
 const FACILITADOR_ONLY_PATHS = ['/dashboard']
 
 export async function middleware(request: NextRequest) {

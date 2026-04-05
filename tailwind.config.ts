@@ -166,6 +166,21 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(8px)" },
           to:   { opacity: "1", transform: "translateY(0)" },
         },
+        // LogroDesbloqueadoModal: card aparece con scale + fade
+        "logro-in": {
+          from: { opacity: "0", transform: "scale(0.88) translateY(16px)" },
+          to:   { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        // Ícono del logro cuando no hay video: pulso suave
+        "logro-icon": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%":      { transform: "scale(1.1)" },
+        },
+        // Confetti cae desde arriba
+        "confetti": {
+          "0%":   { opacity: "1", transform: "translateY(-10px) rotate(0deg)" },
+          "100%": { opacity: "0", transform: "translateY(120px) rotate(720deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -174,6 +189,9 @@ const config: Config = {
         "fade-in-up":     "fade-in-up 0.4s ease-out both",
         "scale-in":       "scale-in 0.25s ease-out both",
         "count-up":       "count-up 0.5s ease-out both",
+        "logro-in":       "logro-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both",
+        "logro-icon":     "logro-icon 2s ease-in-out infinite",
+        "confetti":       "confetti 1.5s ease-in forwards",
       },
     },
   },

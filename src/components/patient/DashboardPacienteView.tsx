@@ -2,6 +2,8 @@
 
 import BienvenidaPersonalizada from './BienvenidaPersonalizada'
 import MiEvolucion from './MiEvolucion'
+import SemanaWidget from './SemanaWidget'
+import type { RegistroDiario } from '@/types/database'
 
 interface CheckinSemanal {
   week_start: string
@@ -32,6 +34,9 @@ interface Props {
   rachaVerde: number
   weekStart: string
   checkinHref?: string
+  fechaHoy?: string
+  yaRegistroHoy?: boolean
+  registrosSemana?: RegistroDiario[]
 }
 
 const SEMAPHORE_CONFIG = {
@@ -90,6 +95,9 @@ export default function DashboardPacienteView({
   rachaVerde,
   weekStart,
   checkinHref = '/dashboard/paciente/checkin',
+  fechaHoy,
+  yaRegistroHoy = false,
+  registrosSemana = [],
 }: Props) {
   const tieneCheckin = !!checkinActual
   const config = checkinActual
@@ -175,6 +183,15 @@ export default function DashboardPacienteView({
             <span className="text-2xl">✅</span>
           </div>
         </div>
+      )}
+
+      {/* ── Widget registro diario ── */}
+      {fechaHoy && (
+        <SemanaWidget
+          registrosSemana={registrosSemana}
+          fechaHoy={fechaHoy}
+          yaRegistroHoy={yaRegistroHoy}
+        />
       )}
 
       {(tieneCheckin || historial.length >= 3) && (

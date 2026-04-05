@@ -195,7 +195,22 @@ export interface LogroPaciente {
   paciente_id: string
   logro_key: string
   desbloqueado_at: string
+  video_visto: boolean
 }
+
+// ── Registro diario (tabla registros_diarios) ─────────────────
+export interface RegistroDiario {
+  id: string
+  paciente_id: string
+  fecha: string          // YYYY-MM-DD
+  energia_dia: number    // 1-5
+  animo_dia: number      // 1-5
+  conductas_hoy: boolean[]  // array de 5 booleans
+  nota_libre: string | null
+  created_at: string
+}
+
+export type InsertRegistroDiario = Omit<RegistroDiario, 'id' | 'created_at'>
 
 // Tipos para el formulario de check-in
 export interface CheckinFormData {

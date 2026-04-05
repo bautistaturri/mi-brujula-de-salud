@@ -339,6 +339,16 @@ CREATE POLICY "logros_insert_own"
   ON logros_paciente FOR INSERT
   WITH CHECK (auth.uid() = paciente_id);
 
+-- Paciente puede marcar video_visto = true en sus propios logros
+-- Solo se permite UPDATE y solo del campo video_visto (no de logro_key ni desbloqueado_at)
+-- La restricción de campo se implementa en la API route / componente, no aquí,
+-- porque PostgreSQL RLS no filtra por columna. La seguridad real es que solo se
+-- puede actualizar filas propias.
+CREATE POLICY "logros_update_video_visto"
+  ON logros_paciente FOR UPDATE
+  USING (auth.uid() = paciente_id)
+  WITH CHECK (auth.uid() = paciente_id);
+
 -- Prevenir duplicados de logros (evita race condition en StepperForm)
 ALTER TABLE logros_paciente
   DROP CONSTRAINT IF EXISTS logros_paciente_unique_key,
@@ -411,7 +421,7 @@ GRANT SELECT, INSERT, UPDATE ON grupos              TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON grupo_miembros TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON alertas             TO authenticated;
 GRANT SELECT, INSERT ON registros_semanales         TO authenticated;
-GRANT SELECT, INSERT ON logros_paciente             TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON logros_paciente     TO authenticated;
 
 -- Las sequences para auto-increment (si usan SERIAL)
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
