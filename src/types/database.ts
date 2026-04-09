@@ -26,6 +26,8 @@ export type AlertColor = 'red' | 'amber' | 'celebration' | 'internal'
 export type TipoAlerta = 'ausencia' | 'iem_bajo' | 'semaforo_rojo' | 'racha_rota' | 'riesgo_alto'
 export type PrioridadAlerta = 'urgente' | 'observacion'
 
+export type EmocionPrincipal = 'enojado' | 'triste' | 'miedo' | 'sorpresa' | 'asco' | 'alegre'
+
 export interface User {
   id: string
   email: string
@@ -34,8 +36,36 @@ export interface User {
   avatar_url: string | null
   whatsapp: string | null
   onboarding_completado: boolean
+  // ── Perfil clínico basal (migración 012) ──
+  peso_inicial: number | null
+  altura: number | null
+  toma_medicacion: boolean | null
+  detalle_medicacion: string | null
+  antec_tabaquismo: boolean
+  antec_alcohol: boolean
+  antec_otras_sustancias: boolean
+  antec_cirugia: boolean
+  antec_cancer: boolean
+  antec_tiroides: boolean
+  antec_otros: string | null
+  onboarding_clinico_completado: boolean
   created_at: string
   updated_at: string
+}
+
+// Perfil clínico parcial para formularios (solo los campos editables)
+export interface PerfilClinicoInput {
+  peso_inicial?: number | null
+  altura?: number | null
+  toma_medicacion?: boolean | null
+  detalle_medicacion?: string | null
+  antec_tabaquismo?: boolean
+  antec_alcohol?: boolean
+  antec_otras_sustancias?: boolean
+  antec_cirugia?: boolean
+  antec_cancer?: boolean
+  antec_tiroides?: boolean
+  antec_otros?: string | null
 }
 
 export interface ConductaAncla {
@@ -123,7 +153,11 @@ export interface CheckinSemanal {
   ica_barriers: number      // [0-3]
   be_energy: number         // [1-5]
   be_regulation: number     // [1|3|5]
-  ini_score: number         // [1|3|5]
+  ini_score: number         // [1|3|5] — mantenido para compatibilidad con motor ICS
+  // ── Nuevos campos (migración 013) ──
+  emocion_principal: EmocionPrincipal | null
+  saboteador_score: number | null  // [1-7]
+  observador_score: number | null  // [1-7]
   semaphore: SemaforoICS
   alerts: string[]          // be_critical, ini_saboteador, ica_zero, combined_risk
   scores: {
@@ -226,6 +260,57 @@ export const EMOCIONES: { emoji: Emocion; label: string }[] = [
   { emoji: '😐', label: 'Regular' },
   { emoji: '😔', label: 'Mal' },
   { emoji: '😰', label: 'Muy mal' },
+]
+
+// ── Gimnasio (tablas contenidos_gimnasio + progreso_gimnasio) ────
+export type TipoContenido = 'audio' | 'video' | 'lectura'
+export type CategoriaContenido = 'conductas_ancla' | 'saboteador_sabio' | 'gimnasia_mental' | 'habitos' | 'general'
+
+export interface ContenidoGimnasio {
+  id: string
+  titulo: string
+  descripcion: string | null
+  tipo: TipoContenido
+  url: string | null
+  duracion_min: number
+  categoria: CategoriaContenido
+  orden: number
+  activo: boolean
+  created_at: string
+}
+
+export interface ProgresoGimnasio {
+  id: string
+  usuario_id: string
+  contenido_id: string
+  completado_at: string
+  minutos_vistos: number
+}
+
+// ── Feedback ──────────────────────────────────────────────────
+export type TipoFeedback = 'app' | 'mejora_individual' | 'general'
+
+export interface FeedbackRespuesta {
+  id: string
+  usuario_id: string
+  tipo: TipoFeedback
+  rating: number | null
+  que_funciona: string | null
+  que_mejorar: string | null
+  comentario: string | null
+  progreso_percibido: number | null
+  semana_inicio: string | null
+  created_at: string
+}
+
+// ── Emociones principales (Brújula Emocional) ──────────────────
+export const EMOCIONES_PRINCIPALES: { key: EmocionPrincipal; label: string; emoji: string }[] = [
+  { key: 'alegre',    label: 'Alegre',    emoji: '😊' },
+  { key: 'sorpresa',  label: 'Sorpresa',  emoji: '😮' },
+  { key: 'miedo',     label: 'Miedo',     emoji: '😨' },
+  { key: 'triste',    label: 'Triste',    emoji: '😢' },
+  { key: 'enojado',   label: 'Enojado/a', emoji: '😠' },
+  { key: 'asco',      label: 'Asco',      emoji: '🤢' },
 ]
 
 export const SEMAFORO_CONFIG = {

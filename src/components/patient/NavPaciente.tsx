@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import ThemeToggle from '@/components/ThemeToggle'
 
 const NAV_ITEMS = [
   {
@@ -27,30 +26,34 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: '/registro-semanal',
-    label: 'Semana',
+    href: '/avances',
+    label: 'Avances',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M3 14l4-4 3 3 4-5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.27l-4.33 2.23.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" opacity="0.5"/>
       </svg>
     ),
   },
   {
-    href: '/logros',
-    label: 'Logros',
+    href: '/gimnasio',
+    label: 'Gimnasio',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.27l-4.33 2.23.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M2 10h2M16 10h2M5 10H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="4" y="7" width="2" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="14" y="7" width="2" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+        <rect x="7" y="8.5" width="6" height="3" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
       </svg>
     ),
   },
   {
-    href: '/historial',
-    label: 'Historial',
+    href: '/perfil',
+    label: 'Perfil',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 5h14M3 10h10M3 15h7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="10" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
   },
@@ -95,7 +98,6 @@ export default function NavPaciente({ nombre }: Props) {
             </Link>
           )
         })}
-        <ThemeToggle variant="icon" className="flex-1" />
 
         <button
           onClick={handleLogout}

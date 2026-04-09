@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { calcICS } from '@/lib/scoring/motor_ics'
+import type { EmocionPrincipal } from '@/types/database'
 
 interface ConductaAncla {
   id: string
@@ -51,7 +52,23 @@ const SEMAPHORE_CONFIG = {
 const DOMAIN_LABELS = {
   ica: 'Conductual',
   be: 'Emocional',
-  ini: 'Cognitivo',
+  ini: 'Mental',
+}
+
+const EMOCIONES_MF: { key: EmocionPrincipal; label: string; emoji: string }[] = [
+  { key: 'alegre',   label: 'Alegre',    emoji: '😊' },
+  { key: 'sorpresa', label: 'Sorpresa',  emoji: '😮' },
+  { key: 'miedo',    label: 'Miedo',     emoji: '😨' },
+  { key: 'triste',   label: 'Triste',    emoji: '😢' },
+  { key: 'enojado',  label: 'Enojado/a', emoji: '😠' },
+  { key: 'asco',     label: 'Asco',      emoji: '🤢' },
+]
+
+/** Deriva el ini_score legacy (1|3|5) a partir de saboteador vs observador */
+function derivarIniScore(saboteador: number, observador: number): 1 | 3 | 5 {
+  if (observador > saboteador) return 5
+  if (observador < saboteador) return 1
+  return 3
 }
 
 export default function CheckinICS({
@@ -65,18 +82,20 @@ export default function CheckinICS({
 }: Props) {
   const router = useRouter()
 
-  // Estado ICA — usa pre-población si viene desde registros diarios
+  // Estado ICA
   const [icaDays, setIcaDays] = useState<number[]>(
     icaDaysIniciales ?? [0, 0, 0, 0, 0]
   )
   const [icaBarriers, setIcaBarriers] = useState(0)
 
-  // Estado BE — usa energía promedio como sugerencia si existe
+  // Estado BE
   const [beEnergy, setBeEnergy] = useState(beEnergyInicial ?? 3)
   const [beRegulation, setBeRegulation] = useState<1 | 3 | 5>(3)
+  const [emocionPrincipal, setEmocionPrincipal] = useState<EmocionPrincipal | null>(null)
 
-  // Estado INI
-  const [iniScore, setIniScore] = useState<1 | 3 | 5 | null>(null)
+  // Estado Mental Fitness (reemplaza el picker 1/3/5)
+  const [saboteadorScore, setSaboteadorScore] = useState(4)
+  const [observadorScore, setObservadorScore] = useState(4)
 
   // Control
   const [paso, setPaso] = useState<Paso>(1)
@@ -84,7 +103,7 @@ export default function CheckinICS({
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [resultado, setResultado] = useState<ReturnType<typeof calcICS> | null>(null)
 
-  // Preview en tiempo real del score del paso actual
+  // Preview en tiempo real
   const icaPreview = useMemo(() => {
     const total = icaDays.reduce((a, b) => a + b, 0)
     return Math.round((total / 35) * 100)
@@ -112,9 +131,10 @@ export default function CheckinICS({
   }
 
   async function guardar() {
-    if (!iniScore) return
     setGuardando(true)
     setErrorMsg(null)
+
+    const iniScore = derivarIniScore(saboteadorScore, observadorScore)
 
     const res = calcICS({
       ica_days: icaDays,
@@ -128,17 +148,20 @@ export default function CheckinICS({
 
     const supabase = createClient()
     const { error } = await supabase.rpc('save_checkin_ics', {
-      p_user_id:       userId,
-      p_week_start:    weekStart,
-      p_ica_days:      icaDays,
-      p_ica_barriers:  icaBarriers,
-      p_be_energy:     beEnergy,
-      p_be_regulation: beRegulation,
-      p_ini_score:     iniScore,
-      p_semaphore:     res.semaphore,
-      p_alerts:        res.alerts,
-      p_scores:        res.scores,
-      p_dominant:      res.dominant_domain,
+      p_user_id:           userId,
+      p_week_start:        weekStart,
+      p_ica_days:          icaDays,
+      p_ica_barriers:      icaBarriers,
+      p_be_energy:         beEnergy,
+      p_be_regulation:     beRegulation,
+      p_ini_score:         iniScore,
+      p_semaphore:         res.semaphore,
+      p_alerts:            res.alerts,
+      p_scores:            res.scores,
+      p_dominant:          res.dominant_domain,
+      p_emocion_principal: emocionPrincipal,
+      p_saboteador_score:  saboteadorScore,
+      p_observador_score:  observadorScore,
     })
 
     if (error) {
@@ -161,7 +184,7 @@ export default function CheckinICS({
           <div className="flex justify-between text-[11px] font-semibold text-[#9CA3AF] mb-2">
             <span className={paso === 1 ? 'text-[#2A7B6F]' : ''}>Conductual</span>
             <span className={paso === 2 ? 'text-[#B8860B]' : ''}>Emocional</span>
-            <span className={paso === 3 ? 'text-[#1B3A5C]' : ''}>Cognitivo</span>
+            <span className={paso === 3 ? 'text-[#1B3A5C]' : ''}>Mental Fitness</span>
           </div>
           <div className="h-1 bg-[#E5E7EB] rounded-full overflow-hidden">
             <div
@@ -223,7 +246,7 @@ export default function CheckinICS({
 
           {/* Preview ICA */}
           <div className="bg-[#D4EDEA] rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-[#2A7B6F]">Adherencia conductual</span>
+            <span className="text-sm font-medium text-[#2A7B6F]">Conductas logradas</span>
             <span className="text-xl font-bold text-[#2A7B6F]">{icaPreview}%</span>
           </div>
 
@@ -294,7 +317,7 @@ export default function CheckinICS({
             </div>
           </div>
 
-          {/* Regulación emocional — selector visual */}
+          {/* Regulación emocional */}
           <div>
             <p className="text-sm font-semibold text-[#1F2937] mb-3">Regulación emocional</p>
             <div className="grid grid-cols-3 gap-3">
@@ -320,6 +343,32 @@ export default function CheckinICS({
             </div>
           </div>
 
+          {/* Emoción principal */}
+          <div>
+            <p className="text-sm font-semibold text-[#1F2937] mb-1">
+              ¿Qué emoción estuvo presente la mayor parte de la semana?
+            </p>
+            <p className="text-xs text-[#6B7280] mb-3">Opcional</p>
+            <div className="grid grid-cols-3 gap-2">
+              {EMOCIONES_MF.map(em => (
+                <button
+                  key={em.key}
+                  onClick={() => setEmocionPrincipal(
+                    emocionPrincipal === em.key ? null : em.key
+                  )}
+                  className={`flex flex-col items-center gap-1 py-3 px-2 rounded-2xl border-2 transition-all ${
+                    emocionPrincipal === em.key
+                      ? 'border-[#B8860B] bg-[#FDF3D0]'
+                      : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
+                  }`}
+                >
+                  <span className="text-2xl">{em.emoji}</span>
+                  <span className="text-[11px] font-medium text-[#1F2937]">{em.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Preview BE */}
           <div className="bg-[#FDF3D0] rounded-xl px-4 py-3 flex items-center justify-between">
             <span className="text-sm font-medium text-[#B8860B]">Bienestar emocional</span>
@@ -337,64 +386,91 @@ export default function CheckinICS({
               onClick={() => setPaso(3)}
               className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-[#2A7B6F] to-[#1B3A5C] text-white font-semibold shadow-md hover:opacity-90 transition"
             >
-              Siguiente — Narrativa Interna →
+              Siguiente — Mental Fitness →
             </button>
           </div>
         </div>
       )}
 
-      {/* ── PASO 3: INI ── */}
+      {/* ── PASO 3: Mental Fitness ── */}
       {paso === 3 && (
         <div className="px-5 space-y-6">
           <div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E8ECF5] text-[#1B3A5C] mb-3">
-              🧠 Narrativa Interna
+              🧠 Entrenamiento Cerebral (Mental Fitness)
             </span>
             <h2 className="font-serif text-[26px] text-[#1A1A2E] leading-tight mb-1">
               ¿Cómo te hablaste esta semana?
             </h2>
             <p className="text-sm text-[#4B5563]">
-              Elegí la voz interna que más te acompañó.
+              Indicá en qué medida estuvieron presentes el Saboteador y el Observador.
             </p>
           </div>
 
-          <div className="space-y-3">
-            {([
-              {
-                value: 1,
-                icon: '😤',
-                title: 'Saboteador',
-                desc: 'Me boicoteé, me critiqué duramente o abandoné antes de tiempo.',
-              },
-              {
-                value: 3,
-                icon: '👁️',
-                title: 'Observador',
-                desc: 'Fui consciente de lo que pasaba pero no pude actuar diferente.',
-              },
-              {
-                value: 5,
-                icon: '💚',
-                title: 'Aliado',
-                desc: 'Me acompañé con compasión, incluso cuando fue difícil.',
-              },
-            ] as const).map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setIniScore(opt.value)}
-                className={`w-full flex items-start gap-4 p-4 rounded-2xl border-2 transition-all text-left ${
-                  iniScore === opt.value
-                    ? 'border-[#1B3A5C] bg-[#E8ECF5]'
-                    : 'border-[#E5E7EB] bg-white hover:border-[#9CA3AF]'
-                }`}
-              >
-                <span className="text-3xl mt-0.5">{opt.icon}</span>
+          {/* Saboteador slider */}
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">😤</span>
                 <div>
-                  <p className="text-sm font-bold text-[#1F2937] mb-0.5">{opt.title}</p>
-                  <p className="text-xs text-[#6B7280] leading-relaxed">{opt.desc}</p>
+                  <p className="text-sm font-bold text-[#1F2937]">Saboteador</p>
+                  <p className="text-[11px] text-[#6B7280]">Me critiqué, me boicoteé o abandoné</p>
                 </div>
-              </button>
-            ))}
+              </div>
+              <span className="text-xl font-bold text-[#8B1A1A] tabular-nums">{saboteadorScore}</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={7}
+              step={1}
+              value={saboteadorScore}
+              onChange={e => setSaboteadorScore(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full cursor-pointer accent-[#A83020] mt-3"
+            />
+            <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+              <span>Casi nada</span>
+              <span>Muy presente</span>
+            </div>
+          </div>
+
+          {/* Observador slider */}
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">👁️</span>
+                <div>
+                  <p className="text-sm font-bold text-[#1F2937]">Observador</p>
+                  <p className="text-[11px] text-[#6B7280]">Fui consciente y me acompañé con compasión</p>
+                </div>
+              </div>
+              <span className="text-xl font-bold text-[#1B3A5C] tabular-nums">{observadorScore}</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={7}
+              step={1}
+              value={observadorScore}
+              onChange={e => setObservadorScore(Number(e.target.value))}
+              className="w-full h-1.5 rounded-full cursor-pointer accent-[#2A4F7A] mt-3"
+            />
+            <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+              <span>Casi nada</span>
+              <span>Muy presente</span>
+            </div>
+          </div>
+
+          {/* Indicador resultado Mental Fitness */}
+          <div className="bg-[#E8ECF5] rounded-xl px-4 py-3 flex items-center justify-between">
+            <span className="text-sm font-medium text-[#1B3A5C]">Voz predominante</span>
+            <span className="text-sm font-bold text-[#1B3A5C]">
+              {observadorScore > saboteadorScore
+                ? '💚 Aliado/Observador'
+                : observadorScore === saboteadorScore
+                ? '👁️ Equilibrado'
+                : '😤 Saboteador'}
+            </span>
           </div>
 
           {errorMsg && (
@@ -412,7 +488,7 @@ export default function CheckinICS({
             </button>
             <button
               onClick={guardar}
-              disabled={!iniScore || guardando}
+              disabled={guardando}
               className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-[#2A7B6F] to-[#1B3A5C] text-white font-semibold shadow-md hover:opacity-90 disabled:opacity-50 transition"
             >
               {guardando ? 'Guardando...' : '✓ Ver mi semáforo'}
@@ -450,16 +526,26 @@ export default function CheckinICS({
           <div className="grid grid-cols-3 gap-3">
             <DomainCard label="ICA" value={resultado.scores.ica} color="teal" icon="🎯" />
             <DomainCard label="BE"  value={resultado.scores.be_norm} color="amber" icon="🧭" />
-            <DomainCard label="INI" value={resultado.scores.ini_norm} color="navy" icon="🧠" />
+            <DomainCard label="MF"  value={resultado.scores.ini_norm} color="navy" icon="🧠" />
           </div>
 
           {/* Resumen de scores */}
           <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm space-y-3">
-            <ResultRow label="Conductas ancla (ICA)" value={`${resultado.scores.ica}%`} />
+            <ResultRow label="Conductas logradas (ICA)" value={`${resultado.scores.ica}%`} />
             <ResultRow label="Brújula emocional (BE)" value={`${resultado.scores.be}/5`} />
-            <ResultRow label="Narrativa interna (INI)" value={
-              iniScore === 1 ? 'Saboteador' : iniScore === 3 ? 'Observador' : 'Aliado'
-            } />
+            {emocionPrincipal && (
+              <ResultRow
+                label="Emoción principal"
+                value={EMOCIONES_MF.find(e => e.key === emocionPrincipal)?.label ?? emocionPrincipal}
+              />
+            )}
+            <ResultRow
+              label="Mental Fitness (MF)"
+              value={
+                observadorScore > saboteadorScore ? 'Aliado/Observador' :
+                observadorScore === saboteadorScore ? 'Equilibrado' : 'Saboteador'
+              }
+            />
             <ResultRow
               label="Dominio principal"
               value={DOMAIN_LABELS[resultado.dominant_domain as keyof typeof DOMAIN_LABELS]}
