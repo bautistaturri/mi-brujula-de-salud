@@ -16,8 +16,8 @@ export default async function PatientLayout({ children }: { children: React.Reac
 
   if (profile?.role === 'facilitador') redirect('/dashboard')
 
-  // Si el cuestionario clínico no fue completado, redirigir al paso clínico
-  if (profile && profile.onboarding_clinico_completado === false) {
+  // Si el cuestionario clínico no fue completado (false, null o undefined), redirigir
+  if (profile && !profile.onboarding_clinico_completado) {
     redirect('/onboarding-clinico')
   }
 
