@@ -10,11 +10,16 @@ export default async function PatientLayout({ children }: { children: React.Reac
 
   const { data: profile } = await supabase
     .from('users')
-    .select('nombre, role, avatar_url')
+    .select('nombre, role, avatar_url, onboarding_clinico_completado')
     .eq('id', user.id)
     .single()
 
   if (profile?.role === 'facilitador') redirect('/dashboard')
+
+  // Si el cuestionario clínico no fue completado, redirigir al paso clínico
+  if (profile && profile.onboarding_clinico_completado === false) {
+    redirect('/onboarding-clinico')
+  }
 
   return (
     // DESIGN: Layout móvil paciente con fondo base y nav fija

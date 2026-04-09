@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Rutas públicas (auth)
-  const publicRoutes = ['/login', '/register', '/onboarding']
+  const publicRoutes = ['/login', '/register', '/onboarding', '/onboarding-clinico']
   const isPublicRoute = pathname === '/' || publicRoutes.some(r => pathname.startsWith(r))
 
   // ── Sin sesión → login ──────────────────────────────────────────────────────
@@ -66,7 +66,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // Con sesión en rutas de auth → verificar onboarding y redirigir
-    if (isPublicRoute && pathname !== '/') {
+    // /onboarding-clinico se maneja por el patient layout — dejar pasar siempre
+    if (isPublicRoute && pathname !== '/' && !pathname.startsWith('/onboarding-clinico')) {
       const { data: profile } = await supabase
         .from('users')
         .select('role, onboarding_completado')
