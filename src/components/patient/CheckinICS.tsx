@@ -116,13 +116,17 @@ export default function CheckinICS({
 
   if (yaCompletado) {
     return (
-      <div className="mx-5 mt-6 p-6 bg-[#D6EFE1] border border-[#A8D5B5] rounded-2xl text-center">
+      <div
+        className="mx-5 mt-6 p-6 rounded-2xl text-center border"
+        style={{ background: 'var(--semaforo-verde-bg)', borderColor: 'var(--semaforo-verde-border)' }}
+      >
         <p className="text-2xl mb-2">✅</p>
-        <p className="text-[#1A6B3C] font-semibold">Ya completaste tu check-in esta semana</p>
-        <p className="text-sm text-[#4A9E6B] mt-1">Volvé el próximo lunes</p>
+        <p className="font-semibold" style={{ color: 'var(--semaforo-verde-text)' }}>Ya completaste tu check-in esta semana</p>
+        <p className="text-sm mt-1" style={{ color: 'var(--semaforo-verde-text)' }}>Volvé el próximo lunes</p>
         <button
           onClick={() => router.push(redirectTo)}
-          className="mt-4 text-sm text-[#2A7B6F] underline"
+          className="mt-4 text-sm underline"
+          style={{ color: 'var(--semaforo-verde-text)' }}
         >
           Ver mi dashboard →
         </button>
@@ -181,12 +185,12 @@ export default function CheckinICS({
       {/* Barra de progreso */}
       {paso !== 'resultado' && (
         <div className="px-5 pt-5 mb-6">
-          <div className="flex justify-between text-[11px] font-semibold text-[#9CA3AF] mb-2">
+          <div className="flex justify-between text-[11px] font-semibold text-text-muted mb-2">
             <span className={paso === 1 ? 'text-[#2A7B6F]' : ''}>Conductual</span>
             <span className={paso === 2 ? 'text-[#B8860B]' : ''}>Emocional</span>
-            <span className={paso === 3 ? 'text-[#1B3A5C]' : ''}>Mental Fitness</span>
+            <span className={paso === 3 ? 'text-[#1B3A5C] dark:text-[#93C5FD]' : ''}>Mental Fitness</span>
           </div>
-          <div className="h-1 bg-[#E5E7EB] rounded-full overflow-hidden">
+          <div className="h-1 bg-surface-subtle rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#2A7B6F] to-[#1B3A5C] transition-all duration-500"
               style={{ width: `${progreso}%` }}
@@ -199,13 +203,13 @@ export default function CheckinICS({
       {paso === 1 && (
         <div className="px-5 space-y-6">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#D4EDEA] text-[#2A7B6F] mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#D4EDEA] dark:bg-[#064E3B] text-[#2A7B6F] dark:text-[#6EE7B7] mb-3">
               🎯 Conductas Ancla
             </span>
-            <h2 className="font-serif text-[26px] text-[#1A1A2E] leading-tight mb-1">
+            <h2 className="font-serif text-[26px] text-text-primary leading-tight mb-1">
               ¿Cuántos días la cumpliste?
             </h2>
-            <p className="text-sm text-[#4B5563]">
+            <p className="text-sm text-text-secondary">
               Mové cada slider para indicar los días (0–7) que realizaste cada conducta esta semana.
             </p>
           </div>
@@ -213,11 +217,11 @@ export default function CheckinICS({
           {/* Sliders por conducta */}
           <div className="space-y-5">
             {conductas.map((conducta, i) => (
-              <div key={conducta.id} className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
+              <div key={conducta.id} className="bg-surface-card rounded-2xl border p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{conducta.icono}</span>
-                    <span className="text-sm font-medium text-[#1F2937]">{conducta.nombre}</span>
+                    <span className="text-sm font-medium text-text-primary">{conducta.nombre}</span>
                   </div>
                   <span className="text-xl font-bold text-[#2A7B6F] tabular-nums w-6 text-right">
                     {icaDays[i]}
@@ -236,7 +240,7 @@ export default function CheckinICS({
                   }}
                   className="w-full h-1.5 rounded-full cursor-pointer accent-[#2A7B6F]"
                 />
-                <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+                <div className="flex justify-between text-[10px] text-text-muted mt-1">
                   <span>0 días</span>
                   <span>7 días</span>
                 </div>
@@ -245,14 +249,17 @@ export default function CheckinICS({
           </div>
 
           {/* Preview ICA */}
-          <div className="bg-[#D4EDEA] rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-[#2A7B6F]">Conductas logradas</span>
-            <span className="text-xl font-bold text-[#2A7B6F]">{icaPreview}%</span>
+          <div
+            className="rounded-xl px-4 py-3 flex items-center justify-between"
+            style={{ background: 'var(--semaforo-verde-bg)' }}
+          >
+            <span className="text-sm font-medium" style={{ color: 'var(--semaforo-verde-text)' }}>Conductas logradas</span>
+            <span className="text-xl font-bold" style={{ color: 'var(--semaforo-verde-text)' }}>{icaPreview}%</span>
           </div>
 
           {/* Selector de barreras */}
           <div>
-            <p className="text-sm font-semibold text-[#1F2937] mb-2">
+            <p className="text-sm font-semibold text-text-primary mb-2">
               ¿Superaste barreras para cumplirlas?
             </p>
             <div className="flex gap-2">
@@ -262,8 +269,8 @@ export default function CheckinICS({
                   onClick={() => setIcaBarriers(n)}
                   className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
                     icaBarriers === n
-                      ? 'bg-[#D4EDEA] text-[#2A7B6F] border-[#2A7B6F]'
-                      : 'bg-[#F9FAFB] text-[#6B7280] border-[#E5E7EB] hover:border-[#9CA3AF]'
+                      ? 'bg-[#D4EDEA] dark:bg-[#064E3B] text-[#2A7B6F] dark:text-[#6EE7B7] border-[#2A7B6F] dark:border-[#10B981]'
+                      : 'bg-surface-subtle text-text-secondary border hover:border-[#9CA3AF]'
                   }`}
                 >
                   {n === 0 ? 'Ninguna' : n === 1 ? '1' : n === 2 ? '2' : '3+'}
@@ -285,21 +292,21 @@ export default function CheckinICS({
       {paso === 2 && (
         <div className="px-5 space-y-6">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FDF3D0] text-[#B8860B] mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FDF3D0] dark:bg-[#451A03] text-[#B8860B] dark:text-[#FCD34D] mb-3">
               🧭 Brújula Emocional
             </span>
-            <h2 className="font-serif text-[26px] text-[#1A1A2E] leading-tight mb-1">
+            <h2 className="font-serif text-[26px] text-text-primary leading-tight mb-1">
               ¿Cómo estuvo tu energía?
             </h2>
-            <p className="text-sm text-[#4B5563]">
+            <p className="text-sm text-text-secondary">
               Evaluá tu estado emocional de esta semana.
             </p>
           </div>
 
           {/* Energía vital */}
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+          <div className="bg-surface-card rounded-2xl border p-5 shadow-sm">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-sm font-semibold text-[#1F2937]">Energía vital</p>
+              <p className="text-sm font-semibold text-text-primary">Energía vital</p>
               <span className="text-2xl font-bold text-[#B8860B]">{beEnergy}/5</span>
             </div>
             <input
@@ -311,7 +318,7 @@ export default function CheckinICS({
               onChange={e => setBeEnergy(Number(e.target.value))}
               className="w-full h-1.5 rounded-full cursor-pointer accent-[#B8860B] mt-3"
             />
-            <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+            <div className="flex justify-between text-[10px] text-text-muted mt-1">
               <span>Sin energía</span>
               <span>Plena energía</span>
             </div>
@@ -319,7 +326,7 @@ export default function CheckinICS({
 
           {/* Regulación emocional */}
           <div>
-            <p className="text-sm font-semibold text-[#1F2937] mb-3">Regulación emocional</p>
+            <p className="text-sm font-semibold text-text-primary mb-3">Regulación emocional</p>
             <div className="grid grid-cols-3 gap-3">
               {([
                 { value: 1, icon: '⛈️', label: 'Tempestad', desc: 'Difícil manejar las emociones' },
@@ -331,13 +338,13 @@ export default function CheckinICS({
                   onClick={() => setBeRegulation(opt.value)}
                   className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl border-2 transition-all text-center ${
                     beRegulation === opt.value
-                      ? 'border-[#B8860B] bg-[#FDF3D0]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
+                      ? 'border-[#B8860B] bg-[#FDF3D0] dark:bg-[#451A03]'
+                      : 'border bg-surface-card hover:border-[#D1D5DB]'
                   }`}
                 >
                   <span className="text-3xl">{opt.icon}</span>
-                  <span className="text-xs font-bold text-[#1F2937]">{opt.label}</span>
-                  <span className="text-[10px] text-[#6B7280] leading-tight">{opt.desc}</span>
+                  <span className="text-xs font-bold text-text-primary">{opt.label}</span>
+                  <span className="text-[10px] text-text-secondary leading-tight">{opt.desc}</span>
                 </button>
               ))}
             </div>
@@ -345,10 +352,10 @@ export default function CheckinICS({
 
           {/* Emoción principal */}
           <div>
-            <p className="text-sm font-semibold text-[#1F2937] mb-1">
+            <p className="text-sm font-semibold text-text-primary mb-1">
               ¿Qué emoción estuvo presente la mayor parte de la semana?
             </p>
-            <p className="text-xs text-[#6B7280] mb-3">Opcional</p>
+            <p className="text-xs text-text-secondary mb-3">Opcional</p>
             <div className="grid grid-cols-3 gap-2">
               {EMOCIONES_MF.map(em => (
                 <button
@@ -358,27 +365,30 @@ export default function CheckinICS({
                   )}
                   className={`flex flex-col items-center gap-1 py-3 px-2 rounded-2xl border-2 transition-all ${
                     emocionPrincipal === em.key
-                      ? 'border-[#B8860B] bg-[#FDF3D0]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#D1D5DB]'
+                      ? 'border-[#B8860B] bg-[#FDF3D0] dark:bg-[#451A03]'
+                      : 'border bg-surface-card hover:border-[#D1D5DB]'
                   }`}
                 >
                   <span className="text-2xl">{em.emoji}</span>
-                  <span className="text-[11px] font-medium text-[#1F2937]">{em.label}</span>
+                  <span className="text-[11px] font-medium text-text-primary">{em.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Preview BE */}
-          <div className="bg-[#FDF3D0] rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-[#B8860B]">Bienestar emocional</span>
-            <span className="text-xl font-bold text-[#B8860B]">{bePreview}%</span>
+          <div
+            className="rounded-xl px-4 py-3 flex items-center justify-between"
+            style={{ background: 'var(--semaforo-amarillo-bg)' }}
+          >
+            <span className="text-sm font-medium" style={{ color: 'var(--semaforo-amarillo-text)' }}>Bienestar emocional</span>
+            <span className="text-xl font-bold" style={{ color: 'var(--semaforo-amarillo-text)' }}>{bePreview}%</span>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={() => setPaso(1)}
-              className="px-5 py-4 rounded-2xl border border-[#E5E7EB] text-[#6B7280] font-medium hover:bg-[#F9FAFB] transition"
+              className="px-5 py-4 rounded-2xl border text-text-secondary font-medium hover:bg-surface-subtle transition"
             >
               ←
             </button>
@@ -396,28 +406,31 @@ export default function CheckinICS({
       {paso === 3 && (
         <div className="px-5 space-y-6">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E8ECF5] text-[#1B3A5C] mb-3">
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3"
+              style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)' }}
+            >
               🧠 Entrenamiento Cerebral (Mental Fitness)
             </span>
-            <h2 className="font-serif text-[26px] text-[#1A1A2E] leading-tight mb-1">
+            <h2 className="font-serif text-[26px] text-text-primary leading-tight mb-1">
               ¿Cómo te hablaste esta semana?
             </h2>
-            <p className="text-sm text-[#4B5563]">
+            <p className="text-sm text-text-secondary">
               Indicá en qué medida estuvieron presentes el Saboteador y el Observador.
             </p>
           </div>
 
           {/* Saboteador slider */}
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+          <div className="bg-surface-card rounded-2xl border p-5 shadow-sm">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">😤</span>
                 <div>
-                  <p className="text-sm font-bold text-[#1F2937]">Saboteador</p>
-                  <p className="text-[11px] text-[#6B7280]">Me critiqué, me boicoteé o abandoné</p>
+                  <p className="text-sm font-bold text-text-primary">Saboteador</p>
+                  <p className="text-[11px] text-text-secondary">Me critiqué, me boicoteé o abandoné</p>
                 </div>
               </div>
-              <span className="text-xl font-bold text-[#8B1A1A] tabular-nums">{saboteadorScore}</span>
+              <span className="text-xl font-bold text-[#8B1A1A] dark:text-[#FCA5A5] tabular-nums">{saboteadorScore}</span>
             </div>
             <input
               type="range"
@@ -428,23 +441,23 @@ export default function CheckinICS({
               onChange={e => setSaboteadorScore(Number(e.target.value))}
               className="w-full h-1.5 rounded-full cursor-pointer accent-[#A83020] mt-3"
             />
-            <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+            <div className="flex justify-between text-[10px] text-text-muted mt-1">
               <span>Casi nada</span>
               <span>Muy presente</span>
             </div>
           </div>
 
           {/* Observador slider */}
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+          <div className="bg-surface-card rounded-2xl border p-5 shadow-sm">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <span className="text-xl">👁️</span>
                 <div>
-                  <p className="text-sm font-bold text-[#1F2937]">Observador</p>
-                  <p className="text-[11px] text-[#6B7280]">Fui consciente y me acompañé con compasión</p>
+                  <p className="text-sm font-bold text-text-primary">Observador</p>
+                  <p className="text-[11px] text-text-secondary">Fui consciente y me acompañé con compasión</p>
                 </div>
               </div>
-              <span className="text-xl font-bold text-[#1B3A5C] tabular-nums">{observadorScore}</span>
+              <span className="text-xl font-bold text-[#1B3A5C] dark:text-[#93C5FD] tabular-nums">{observadorScore}</span>
             </div>
             <input
               type="range"
@@ -455,16 +468,19 @@ export default function CheckinICS({
               onChange={e => setObservadorScore(Number(e.target.value))}
               className="w-full h-1.5 rounded-full cursor-pointer accent-[#2A4F7A] mt-3"
             />
-            <div className="flex justify-between text-[10px] text-[#9CA3AF] mt-1">
+            <div className="flex justify-between text-[10px] text-text-muted mt-1">
               <span>Casi nada</span>
               <span>Muy presente</span>
             </div>
           </div>
 
           {/* Indicador resultado Mental Fitness */}
-          <div className="bg-[#E8ECF5] rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-[#1B3A5C]">Voz predominante</span>
-            <span className="text-sm font-bold text-[#1B3A5C]">
+          <div
+            className="rounded-xl px-4 py-3 flex items-center justify-between"
+            style={{ background: 'var(--brand-primary-soft)' }}
+          >
+            <span className="text-sm font-medium" style={{ color: 'var(--brand-primary)' }}>Voz predominante</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--brand-primary)' }}>
               {observadorScore > saboteadorScore
                 ? '💚 Aliado/Observador'
                 : observadorScore === saboteadorScore
@@ -474,7 +490,10 @@ export default function CheckinICS({
           </div>
 
           {errorMsg && (
-            <div className="bg-[#FADDDD] border border-[#F5AEAE] rounded-xl p-3 text-sm text-[#8B1A1A]">
+            <div
+              className="rounded-xl p-3 text-sm border"
+              style={{ background: 'var(--semaforo-rojo-bg)', borderColor: 'var(--semaforo-rojo-border)', color: 'var(--semaforo-rojo-text)' }}
+            >
               {errorMsg}
             </div>
           )}
@@ -482,7 +501,7 @@ export default function CheckinICS({
           <div className="flex gap-3">
             <button
               onClick={() => setPaso(2)}
-              className="px-5 py-4 rounded-2xl border border-[#E5E7EB] text-[#6B7280] font-medium hover:bg-[#F9FAFB] transition"
+              className="px-5 py-4 rounded-2xl border text-text-secondary font-medium hover:bg-surface-subtle transition"
             >
               ←
             </button>
@@ -530,7 +549,7 @@ export default function CheckinICS({
           </div>
 
           {/* Resumen de scores */}
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm space-y-3">
+          <div className="bg-surface-card rounded-2xl border p-5 shadow-sm space-y-3">
             <ResultRow label="Conductas logradas (ICA)" value={`${resultado.scores.ica}%`} />
             <ResultRow label="Brújula emocional (BE)" value={`${resultado.scores.be}/5`} />
             {emocionPrincipal && (
@@ -554,12 +573,15 @@ export default function CheckinICS({
 
           {/* Alertas activas */}
           {resultado.alerts.length > 0 && (
-            <div className="bg-[#FADDDD] border border-[#F5AEAE] rounded-2xl p-4 space-y-1.5">
-              <p className="text-xs font-bold text-[#8B1A1A] uppercase tracking-wide mb-2">
+            <div
+              className="rounded-2xl p-4 space-y-1.5 border"
+              style={{ background: 'var(--semaforo-rojo-bg)', borderColor: 'var(--semaforo-rojo-border)' }}
+            >
+              <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: 'var(--semaforo-rojo-text)' }}>
                 Alertas activas
               </p>
               {resultado.alerts.map(a => (
-                <p key={a} className="text-sm text-[#8B1A1A] flex items-center gap-2">
+                <p key={a} className="text-sm flex items-center gap-2" style={{ color: 'var(--semaforo-rojo-text)' }}>
                   <span>⚠️</span>
                   <span>
                     {a === 'be_critical'    && 'Energía emocional crítica'}
@@ -595,17 +617,17 @@ function DomainCard({ label, value, color, icon }: {
   icon: string
 }) {
   const colors = {
-    teal:  { text: 'text-[#2A7B6F]', bar: 'bg-[#2A7B6F]' },
-    amber: { text: 'text-[#B8860B]', bar: 'bg-[#C87020]' },
-    navy:  { text: 'text-[#1B3A5C]', bar: 'bg-[#2A4F7A]' },
+    teal:  { text: 'text-[#2A7B6F]',                      bar: 'bg-[#2A7B6F]'  },
+    amber: { text: 'text-[#B8860B]',                      bar: 'bg-[#C87020]'  },
+    navy:  { text: 'text-[#1B3A5C] dark:text-[#93C5FD]',  bar: 'bg-[#2A4F7A]'  },
   }
   const c = colors[color]
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E7EB] p-3 text-center shadow-sm">
+    <div className="bg-surface-card rounded-2xl border p-3 text-center shadow-sm">
       <div className="text-xl mb-1">{icon}</div>
-      <div className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wide mb-1">{label}</div>
+      <div className="text-[10px] font-bold text-text-muted uppercase tracking-wide mb-1">{label}</div>
       <div className={`text-lg font-bold font-serif ${c.text}`}>{Math.round(value)}%</div>
-      <div className="h-1 bg-[#E5E7EB] rounded-full mt-2 overflow-hidden">
+      <div className="h-1 bg-surface-subtle rounded-full mt-2 overflow-hidden">
         <div
           className={`h-full rounded-full ${c.bar} transition-all duration-700`}
           style={{ width: `${Math.min(100, value)}%` }}
@@ -617,9 +639,9 @@ function DomainCard({ label, value, color, icon }: {
 
 function ResultRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-[#F3F4F6] last:border-0">
-      <span className="text-sm text-[#6B7280]">{label}</span>
-      <span className="text-sm font-bold text-[#1F2937]">{value}</span>
+    <div className="flex items-center justify-between py-1.5 border-b last:border-0">
+      <span className="text-sm text-text-secondary">{label}</span>
+      <span className="text-sm font-bold text-text-primary">{value}</span>
     </div>
   )
 }

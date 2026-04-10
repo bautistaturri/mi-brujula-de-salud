@@ -18,9 +18,9 @@ interface Props {
 }
 
 const SEMAFORO_TEXT: Record<string, { bg: string; color: string }> = {
-  green:  { bg: '#ECFDF5', color: '#065F46' },
-  amber:  { bg: '#FFFBEB', color: '#92400E' },
-  red:    { bg: '#FEF2F2', color: '#991B1B' },
+  green: { bg: 'var(--semaforo-verde-bg)',    color: 'var(--semaforo-verde-text)'    },
+  amber: { bg: 'var(--semaforo-amarillo-bg)', color: 'var(--semaforo-amarillo-text)' },
+  red:   { bg: 'var(--semaforo-rojo-bg)',     color: 'var(--semaforo-rojo-text)'     },
 }
 
 const SEMAFORO_LABEL: Record<string, string> = {
@@ -111,7 +111,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
           {alertasPendientes > 0 && (
             <span
               className="px-3 py-1.5 rounded-xl text-sm font-bold flex-shrink-0"
-              style={{ background: '#FEF2F2', color: '#991B1B' }}
+              style={{ background: 'var(--semaforo-rojo-bg)', color: 'var(--semaforo-rojo-text)' }}
             >
               {alertasPendientes} alerta{alertasPendientes > 1 ? 's' : ''}
             </span>
@@ -123,15 +123,15 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
       <Link
         href={`/dashboard/paciente/${paciente.id}/registros`}
         className="flex items-center justify-between rounded-xl px-5 py-4 transition-colors"
-        style={{ background: '#EFF6FF', border: '1px solid #BFDBFE' }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#DBEAFE')}
-        onMouseLeave={e => (e.currentTarget.style.background = '#EFF6FF')}
+        style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--border-default)' }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
       >
         <div>
-          <p className="font-semibold text-sm" style={{ color: '#1E40AF' }}>Registros semanales</p>
-          <p className="text-xs mt-0.5" style={{ color: '#3B82F6' }}>Ver evolución, gráfico de score y logros desbloqueados</p>
+          <p className="font-semibold text-sm" style={{ color: 'var(--brand-primary)' }}>Registros semanales</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--brand-primary)' }}>Ver evolución, gráfico de score y logros desbloqueados</p>
         </div>
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ color: '#93C5FD' }}>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ color: 'var(--brand-primary)' }}>
           <path d="M7 4l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </Link>
@@ -139,13 +139,13 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
       {/* Stats rápidas */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Check-ins ICS', value: String(checkins.length),  accent: '#2563EB', bg: '#EFF6FF' },
-          { label: 'ICS promedio',  value: String(icsPromedio),       accent: '#F59E0B', bg: '#FFFBEB' },
-          { label: 'Semanas verde', value: String(semanasVerde),      accent: '#10B981', bg: '#ECFDF5' },
-          { label: 'Semanas rojo',  value: String(semanasRojo),       accent: '#EF4444', bg: '#FEF2F2' },
-        ].map(({ label, value, accent, bg }) => (
+          { label: 'Check-ins ICS', value: String(checkins.length),  dot: 'bg-blue-500'    },
+          { label: 'ICS promedio',  value: String(icsPromedio),       dot: 'bg-amber-500'   },
+          { label: 'Semanas verde', value: String(semanasVerde),      dot: 'bg-emerald-500' },
+          { label: 'Semanas rojo',  value: String(semanasRojo),       dot: 'bg-red-500'     },
+        ].map(({ label, value, dot }) => (
           <div key={label} className="card">
-            <div className="w-2 h-2 rounded-full mb-2" style={{ background: accent }} />
+            <div className={`w-2 h-2 rounded-full mb-2 ${dot}`} />
             <div className="font-metric text-2xl font-bold text-text-primary tabular-nums">{value}</div>
             <div className="text-xs text-text-muted mt-0.5">{label}</div>
           </div>
@@ -205,7 +205,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                           {index === 0 && (
                             <span
                               className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                              style={{ background: '#EFF6FF', color: '#1E40AF' }}
+                              style={{ background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)' }}
                             >
                               Última
                             </span>
@@ -245,7 +245,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                             <span
                               key={a}
                               className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                              style={{ background: '#FEF2F2', color: '#991B1B' }}
+                              style={{ background: 'var(--semaforo-rojo-bg)', color: 'var(--semaforo-rojo-text)' }}
                             >
                               {a}
                             </span>
@@ -275,8 +275,8 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                   alerta.is_read
                     ? { background: 'var(--surface-subtle)', border: '1px solid var(--border-default)', opacity: 0.6 }
                     : alerta.priority <= 1.5
-                    ? { background: '#FEF2F2', border: '1px solid #FECACA' }
-                    : { background: '#FFFBEB', border: '1px solid #FDE68A' }
+                    ? { background: 'var(--semaforo-rojo-bg)', border: '1px solid var(--semaforo-rojo-border)' }
+                    : { background: 'var(--semaforo-amarillo-bg)', border: '1px solid var(--semaforo-amarillo-border)' }
                 }
               >
                 <div className="flex items-start justify-between gap-3">
@@ -285,7 +285,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                       {alerta.is_read ? (
                         <span
                           className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                          style={{ background: '#ECFDF5', color: '#065F46' }}
+                          style={{ background: 'var(--semaforo-verde-bg)', color: 'var(--semaforo-verde-text)' }}
                         >
                           ✓ Leída
                         </span>
@@ -294,8 +294,8 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                           className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                           style={
                             alerta.priority <= 1.5
-                              ? { background: '#FEE2E2', color: '#991B1B' }
-                              : { background: '#FEF3C7', color: '#92400E' }
+                              ? { background: 'var(--semaforo-rojo-bg)', color: 'var(--semaforo-rojo-text)' }
+                              : { background: 'var(--semaforo-amarillo-bg)', color: 'var(--semaforo-amarillo-text)' }
                           }
                         >
                           {alerta.priority <= 1.5 ? '🚨 Urgente' : '👁 Observación'}
@@ -309,7 +309,7 @@ export default function FichaPaciente({ paciente, checkins, alertas, rachaVerde,
                     <button
                       onClick={() => resolverAlerta(alerta.id)}
                       className="btn-secondary text-xs px-3 py-1.5 whitespace-nowrap flex-shrink-0"
-                      style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }}
+                      style={{ background: 'var(--semaforo-verde-bg)', color: 'var(--semaforo-verde-text)', border: '1px solid var(--semaforo-verde-border)' }}
                     >
                       ✓ Marcar leída
                     </button>

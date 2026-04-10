@@ -4,24 +4,21 @@ import Link from 'next/link'
 import type { RegistroDiario } from '@/types/database'
 
 interface Props {
-  registrosSemana: RegistroDiario[]  // registros de la semana actual (lun-dom)
-  fechaHoy: string                    // YYYY-MM-DD
+  registrosSemana: RegistroDiario[]
+  fechaHoy: string
   yaRegistroHoy: boolean
 }
 
 const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 
-// Devuelve el lunes de la semana a la que pertenece fecha (ISO 8601)
 function getLunesDeSemana(fecha: string): Date {
   const d = new Date(fecha + 'T00:00:00')
-  const dia = d.getDay()                      // 0=dom, 1=lun...
-  const diff = dia === 0 ? -6 : 1 - dia      // offset hacia el lunes
+  const dia = d.getDay()
+  const diff = dia === 0 ? -6 : 1 - dia
   d.setDate(d.getDate() + diff)
   return d
 }
 
-// Genera los 7 días YYYY-MM-DD de la semana del lunes
-// Sin toISOString() para evitar conversión UTC que puede cambiar la fecha
 function diasDeSemana(lunes: Date): string[] {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(lunes)
@@ -33,7 +30,6 @@ function diasDeSemana(lunes: Date): string[] {
   })
 }
 
-// Detecta días consecutivos desde hoy hacia atrás
 function diasConsecutivos(fechas: Set<string>, fechaHoy: string): number {
   let count = 0
   let current = new Date(fechaHoy + 'T00:00:00')
@@ -53,10 +49,7 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
   const lunes = getLunesDeSemana(fechaHoy)
   const dias = diasDeSemana(lunes)
 
-  // Mapa fecha → registro para lookup O(1)
   const porFecha = new Map(registrosSemana.map(r => [r.fecha, r]))
-
-  // Todas las fechas con registro (para calcular racha total)
   const fechasConRegistro = new Set(registrosSemana.map(r => r.fecha))
   const racha = diasConsecutivos(fechasConRegistro, fechaHoy)
 
@@ -65,28 +58,23 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
     const d   = new Date(fecha + 'T00:00:00')
     const esFuturo = d > hoy
 
-    if (esFuturo) return 'bg-[#F3F4F6] border-[#E5E7EB] text-[#D1D5DB]'
+    if (esFuturo) return 'bg-surface-subtle border text-text-muted'
 
     const r = porFecha.get(fecha)
-    if (!r) return 'bg-[#F3F4F6] border-[#E5E7EB] text-[#9CA3AF]'       // no registró
+    if (!r) return 'bg-surface-subtle border text-text-muted'
 
     const energia = r.energia_dia
-    if (energia >= 4) return 'bg-[#D6EFE1] border-[#A8D5B5] text-[#1A6B3C]'  // verde
-    if (energia >= 2) return 'bg-[#FDE8CC] border-[#F4C07A] text-[#8B4800]'  // amarillo
-    return 'bg-[#FADDDD] border-[#F5AEAE] text-[#8B1A1A]'                     // rojo
+    if (energia >= 4) return 'bg-[#D6EFE1] dark:bg-[#064E3B] border-[#A8D5B5] dark:border-[#065F46] text-[#1A6B3C] dark:text-[#6EE7B7]'
+    if (energia >= 2) return 'bg-[#FDE8CC] dark:bg-[#451A03] border-[#F4C07A] dark:border-[#78350F] text-[#8B4800] dark:text-[#FCD34D]'
+    return 'bg-[#FADDDD] dark:bg-[#450A0A] border-[#F5AEAE] dark:border-[#7F1D1D] text-[#8B1A1A] dark:text-[#FCA5A5]'
   }
 
   function getPuntoDia(fecha: string): string {
     const d = new Date(fecha + 'T00:00:00')
     const hoy = new Date(fechaHoy + 'T00:00:00')
     if (d > hoy) return ''
-
     const r = porFecha.get(fecha)
     if (!r) return '·'
-
-    const energia = r.energia_dia
-    if (energia >= 4) return '●'
-    if (energia >= 2) return '●'
     return '●'
   }
 
@@ -94,10 +82,10 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
 
   return (
     <div className="mx-5 mt-4">
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
+      <div className="bg-surface-card rounded-2xl border p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-[#1F2937]">Mi semana hasta hoy</h3>
-          <span className="text-xs text-[#9CA3AF]">{registrosEnSemana}/7 días</span>
+          <h3 className="text-sm font-bold text-text-primary">Mi semana hasta hoy</h3>
+          <span className="text-xs text-text-muted">{registrosEnSemana}/7 días</span>
         </div>
 
         {/* Mini calendario */}
@@ -108,7 +96,7 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
             const esHoy = fecha === fechaHoy
             return (
               <div key={fecha} className="flex flex-col items-center gap-1">
-                <span className="text-[9px] font-bold text-[#9CA3AF] uppercase">{label}</span>
+                <span className="text-[9px] font-bold text-text-muted uppercase">{label}</span>
                 <div
                   className={`w-8 h-8 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all ${color} ${
                     esHoy ? 'ring-2 ring-[#2A7B6F] ring-offset-1' : ''
@@ -122,18 +110,21 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
         </div>
 
         {/* Leyenda */}
-        <div className="flex gap-3 text-[9px] text-[#9CA3AF] mb-3 flex-wrap">
+        <div className="flex gap-3 text-[9px] text-text-muted mb-3 flex-wrap">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#A8D5B5] inline-block" />Energía alta</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F4C07A] inline-block" />Energía media</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F5AEAE] inline-block" />Energía baja</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#E5E7EB] inline-block" />Sin registro</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-surface-subtle border inline-block" />Sin registro</span>
         </div>
 
         {/* Racha motivacional */}
         {racha >= 3 && (
-          <div className="bg-[#FDF3D0] rounded-xl px-3 py-2 flex items-center gap-2 mb-3">
+          <div
+            className="rounded-xl px-3 py-2 flex items-center gap-2 mb-3"
+            style={{ background: 'var(--status-warning-soft)' }}
+          >
             <span className="text-base">🔥</span>
-            <p className="text-xs font-semibold text-[#8B4800]">
+            <p className="text-xs font-semibold" style={{ color: 'var(--status-warning-text)' }}>
               ¡Llevas {racha} días consecutivos registrando! Seguí así.
             </p>
           </div>
@@ -148,7 +139,7 @@ export default function SemanaWidget({ registrosSemana, fechaHoy, yaRegistroHoy 
             + Registrar hoy
           </Link>
         ) : (
-          <p className="text-center text-xs text-[#4A9E6B] font-medium py-1">
+          <p className="text-center text-xs font-medium py-1" style={{ color: 'var(--semaforo-verde-text)' }}>
             ✓ Hoy registrado
           </p>
         )}

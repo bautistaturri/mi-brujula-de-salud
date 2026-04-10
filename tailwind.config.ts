@@ -21,7 +21,8 @@ const config: Config = {
         metric:  ['var(--font-metric)', 'ui-monospace', 'monospace'],
       },
 
-      // DESIGN: Paleta del sistema de diseño
+      // DESIGN: Paleta del sistema de diseño — referencias a CSS variables
+      // para respetar automáticamente el tema oscuro/claro
       colors: {
         // shadcn/ui tokens (necesarios para componentes)
         border:     "hsl(var(--border))",
@@ -58,57 +59,70 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        // DESIGN: Tokens de marca
+        // DESIGN: Tokens de marca — theme-aware via CSS variables
         brand: {
-          primary:      '#2563EB',
-          'primary-hover': '#1D4ED8',
-          'primary-soft': '#EFF6FF',
-          secondary:    '#10B981',
-          'secondary-soft': '#ECFDF5',
-          accent:       '#7C3AED',
-          'accent-soft': '#F5F3FF',
+          primary:         'var(--brand-primary)',
+          'primary-hover': 'var(--brand-primary-hover)',
+          'primary-soft':  'var(--brand-primary-soft)',
+          secondary:       'var(--brand-secondary)',
+          'secondary-soft':'var(--brand-secondary-soft)',
+          accent:          'var(--brand-accent)',
+          'accent-soft':   'var(--brand-accent-soft)',
         },
 
-        // DESIGN: Superficies
+        // DESIGN: Superficies — theme-aware
         surface: {
-          base:   '#F8FAFC',
-          card:   '#FFFFFF',
-          subtle: '#F1F5F9',
-          hover:  '#F8FAFC',
+          base:   'var(--surface-base)',
+          card:   'var(--surface-card)',
+          subtle: 'var(--surface-subtle)',
+          hover:  'var(--surface-hover)',
         },
 
-        // DESIGN: Texto
+        // DESIGN: Texto — theme-aware
         text: {
-          primary:   '#0F172A',
-          secondary: '#475569',
-          muted:     '#94A3B8',
-          disabled:  '#CBD5E1',
+          primary:   'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted:     'var(--text-muted)',
+          disabled:  'var(--text-disabled)',
         },
 
-        // DESIGN: Estados semánticos
+        // DESIGN: Estados semánticos — theme-aware (softs cambian en dark)
         status: {
-          success:     '#10B981',
-          'success-soft': '#ECFDF5',
-          warning:     '#F59E0B',
-          'warning-soft': '#FFFBEB',
-          danger:      '#EF4444',
-          'danger-soft': '#FEF2F2',
-          info:        '#3B82F6',
-          'info-soft': '#EFF6FF',
+          success:        '#10B981',
+          'success-soft': 'var(--status-success-soft)',
+          'success-text': 'var(--status-success-text)',
+          warning:        '#F59E0B',
+          'warning-soft': 'var(--status-warning-soft)',
+          'warning-text': 'var(--status-warning-text)',
+          danger:         '#EF4444',
+          'danger-soft':  'var(--status-danger-soft)',
+          'danger-text':  'var(--status-danger-text)',
+          info:           '#3B82F6',
+          'info-soft':    'var(--status-info-soft)',
+          'info-text':    'var(--status-info-text)',
+          error:          '#EF4444',
         },
 
-        // DESIGN: Semáforos clínicos (backward compat)
+        // DESIGN: Semáforos clínicos — theme-aware
         semaforo: {
           verde:              '#10B981',
-          'verde-bg':         '#ECFDF5',
-          'verde-border':     '#A7F3D0',
+          'verde-bg':         'var(--semaforo-verde-bg)',
+          'verde-border':     'var(--semaforo-verde-border)',
+          'verde-text':       'var(--semaforo-verde-text)',
           amarillo:           '#F59E0B',
-          'amarillo-bg':      '#FFFBEB',
-          'amarillo-border':  '#FDE68A',
+          'amarillo-bg':      'var(--semaforo-amarillo-bg)',
+          'amarillo-border':  'var(--semaforo-amarillo-border)',
+          'amarillo-text':    'var(--semaforo-amarillo-text)',
           rojo:               '#EF4444',
-          'rojo-bg':          '#FEF2F2',
-          'rojo-border':      '#FECACA',
+          'rojo-bg':          'var(--semaforo-rojo-bg)',
+          'rojo-border':      'var(--semaforo-rojo-border)',
+          'rojo-text':        'var(--semaforo-rojo-text)',
         },
+
+        // DESIGN: Bordes semánticos
+        'border-default': 'var(--border-default)',
+        'border-strong':  'var(--border-strong)',
+        'border-focus':   'var(--border-focus)',
       },
 
       // DESIGN: Tipografía

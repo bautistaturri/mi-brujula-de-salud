@@ -40,8 +40,7 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
               <path d="M2 7h14M6 1v4M12 1v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           }
-          accent="#2563EB"
-          accentBg="#EFF6FF"
+          colorScheme="blue"
         />
         <StatCard
           label="Días verde"
@@ -52,8 +51,7 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
               <path d="M6 9l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           }
-          accent="#10B981"
-          accentBg="#ECFDF5"
+          colorScheme="green"
         />
         <StatCard
           label="IEM prom."
@@ -63,8 +61,7 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
               <path d="M2 14l4-4 3 3 4-6 3 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           }
-          accent="#F59E0B"
-          accentBg="#FFFBEB"
+          colorScheme="amber"
         />
       </div>
 
@@ -87,9 +84,9 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
         ) : (
           checkins.map(checkin => {
             const semaforoColors = {
-              verde:    { bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
-              amarillo: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-              rojo:     { bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
+              verde:    { bg: 'var(--semaforo-verde-bg)',    text: 'var(--semaforo-verde-text)'    },
+              amarillo: { bg: 'var(--semaforo-amarillo-bg)', text: 'var(--semaforo-amarillo-text)' },
+              rojo:     { bg: 'var(--semaforo-rojo-bg)',     text: 'var(--semaforo-rojo-text)'     },
             }
             const sc = semaforoColors[checkin.semaforo]
 
@@ -148,25 +145,26 @@ export default function HistorialPaciente({ checkins, racha }: Props) {
   )
 }
 
+const STAT_COLORS = {
+  blue:  'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400',
+  green: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400',
+  amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400',
+}
+
 function StatCard({
   label,
   value,
   icon,
-  accent,
-  accentBg,
+  colorScheme,
 }: {
   label: string
   value: string
   icon: React.ReactNode
-  accent: string
-  accentBg: string
+  colorScheme: 'blue' | 'green' | 'amber'
 }) {
   return (
     <div className="card text-center">
-      <div
-        className="w-9 h-9 rounded-xl mx-auto mb-2 flex items-center justify-center"
-        style={{ background: accentBg, color: accent }}
-      >
+      <div className={`w-9 h-9 rounded-xl mx-auto mb-2 flex items-center justify-center ${STAT_COLORS[colorScheme]}`}>
         {icon}
       </div>
       <div className="font-metric text-xl font-bold text-text-primary tabular-nums">{value}</div>

@@ -81,8 +81,8 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
             onClick={() => setFiltro(f.key as typeof filtro)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               filtro === f.key
-                ? 'bg-slate-800 text-white'
-                : `bg-white border border-slate-200 ${f.color ?? 'text-slate-600'} hover:bg-slate-50`
+                ? 'bg-[#1B3A5C] dark:bg-[#3B82F6] text-white'
+                : `bg-surface-card border ${f.color ?? 'text-text-secondary'} hover:bg-surface-subtle`
             }`}
           >
             {f.label}
@@ -92,10 +92,10 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
 
       {/* Lista */}
       {alertasFiltradas.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div className="bg-surface-card rounded-2xl border p-12 text-center">
           <div className="text-4xl mb-3">✅</div>
-          <p className="text-slate-500 font-medium">No hay alertas pendientes</p>
-          <p className="text-sm text-slate-400 mt-1">Todos tus pacientes están al día</p>
+          <p className="text-text-secondary font-medium">No hay alertas pendientes</p>
+          <p className="text-sm text-text-muted mt-1">Todos tus pacientes están al día</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -107,14 +107,16 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
             return (
               <div
                 key={alerta.id}
-                className={`bg-white rounded-2xl border-2 p-5 transition-all ${
-                  urgente ? 'border-red-200 bg-red-50/20' : 'border-yellow-200 bg-yellow-50/20'
+                className={`rounded-2xl border-2 p-5 transition-all ${
+                  urgente
+                    ? 'bg-red-50/30 dark:bg-red-950/20 border-red-200 dark:border-red-900'
+                    : 'bg-yellow-50/30 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900'
                 }`}
               >
                 <div className="flex items-start gap-4">
                   {/* Icono tipo */}
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl flex-shrink-0 ${
-                    urgente ? 'bg-red-100' : 'bg-yellow-100'
+                    urgente ? 'bg-red-100 dark:bg-red-900/40' : 'bg-yellow-100 dark:bg-yellow-900/40'
                   }`}>
                     {TIPO_ICONS[tipo] ?? '⚠️'}
                   </div>
@@ -126,18 +128,18 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${
                             urgente
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-yellow-100 text-yellow-700'
+                              ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                              : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300'
                           }`}>
                             {urgente ? '🚨 Urgente' : '👁 Observación'}
                           </span>
-                          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                          <span className="text-xs text-text-muted bg-surface-subtle px-2 py-0.5 rounded-full">
                             {TIPO_LABELS[tipo] ?? alerta.type}
                           </span>
                         </div>
-                        <p className="text-slate-700 mt-2">{alerta.message}</p>
+                        <p className="text-text-primary mt-2">{alerta.message}</p>
                       </div>
-                      <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
+                      <span className="text-xs text-text-muted whitespace-nowrap flex-shrink-0">
                         {formatRelativo(alerta.created_at)}
                       </span>
                     </div>
@@ -169,7 +171,7 @@ export default function AlertasList({ alertas: alertasIniciales, pacientes }: Pr
                       {paciente && (
                         <Link
                           href={`/dashboard/paciente/${paciente.id}`}
-                          className="text-xs border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium px-3 py-1.5 rounded-lg transition-colors"
+                          className="text-xs border text-text-secondary hover:bg-surface-subtle font-medium px-3 py-1.5 rounded-lg transition-colors"
                         >
                           Ver ficha →
                         </Link>

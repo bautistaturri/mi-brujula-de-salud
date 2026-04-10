@@ -35,21 +35,22 @@ const DOMAIN_LABELS: Record<string, string> = {
   ini: 'Mental',
 }
 
-const SEMAPHORE_COLOR: Record<string, string> = {
-  green: '#2A7B6F',
-  amber: '#C87020',
-  red:   '#A83020',
+// Colores semáforo para el mini-calendario — theme-aware via CSS variables
+const SEMAPHORE_VAR: Record<string, string> = {
+  green: 'var(--semaforo-verde)',
+  amber: 'var(--semaforo-amarillo)',
+  red:   'var(--semaforo-rojo)',
 }
 
 export default function MiEvolucion({ historial, rachaVerde }: Props) {
   if (historial.length < 3) {
     return (
-      <div className="mx-5 mt-5 bg-white rounded-2xl border border-[#E5E7EB] p-6 text-center shadow-sm">
+      <div className="mx-5 mt-5 bg-surface-card rounded-2xl border p-6 text-center shadow-sm">
         <p className="text-3xl mb-2">📈</p>
-        <p className="text-sm font-semibold text-[#1F2937]">
+        <p className="text-sm font-semibold text-text-primary">
           Completá 3 check-ins para ver tu evolución
         </p>
-        <p className="text-xs text-[#9CA3AF] mt-1">
+        <p className="text-xs text-text-muted mt-1">
           Llevás {historial.length} de 3
         </p>
       </div>
@@ -86,28 +87,34 @@ export default function MiEvolucion({ historial, rachaVerde }: Props) {
 
   return (
     <div className="px-5 mt-6 space-y-4">
-      <h3 className="text-sm font-bold text-[#1F2937]">Mi evolución</h3>
+      <h3 className="text-sm font-bold text-text-primary">Mi evolución</h3>
 
       {/* Gráfico multi-línea */}
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
+      <div className="bg-surface-card rounded-2xl border p-4 shadow-sm">
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" strokeOpacity={0.5} />
             <XAxis
               dataKey="semana"
-              tick={{ fontSize: 9, fill: '#9CA3AF' }}
+              tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               domain={[0, 100]}
-              tick={{ fontSize: 9, fill: '#9CA3AF' }}
+              tick={{ fontSize: 9, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
               width={24}
             />
             <Tooltip
-              contentStyle={{ fontSize: 11, borderRadius: 8 }}
+              contentStyle={{
+                fontSize: 11,
+                borderRadius: 8,
+                background: 'var(--surface-card)',
+                border: '1px solid var(--border-default)',
+                color: 'var(--text-primary)',
+              }}
               formatter={(v: number, name: string) => [`${Math.round(v)}`, name.toUpperCase()]}
             />
             <ReferenceLine y={70} stroke="#1A6B3C" strokeDasharray="3 3" strokeOpacity={0.4} />
@@ -141,36 +148,36 @@ export default function MiEvolucion({ historial, rachaVerde }: Props) {
       {/* Métricas rápidas */}
       <div className="grid grid-cols-4 gap-2">
         {[
-          { label: 'Mejor ICS',   value: String(mejorICS),                          icon: '🏆' },
-          { label: 'Racha verde', value: `${rachaVerde} sem`,                         icon: '🔥' },
-          { label: 'Prom. 4 sem', value: String(promedioICS),                        icon: '📊' },
-          { label: 'Dominio',     value: DOMAIN_LABELS[dominantDomain] ?? '-',       icon: '💪' },
+          { label: 'Mejor ICS',   value: String(mejorICS),                    icon: '🏆' },
+          { label: 'Racha verde', value: `${rachaVerde} sem`,                   icon: '🔥' },
+          { label: 'Prom. 4 sem', value: String(promedioICS),                  icon: '📊' },
+          { label: 'Dominio',     value: DOMAIN_LABELS[dominantDomain] ?? '-', icon: '💪' },
         ].map(m => (
           <div
             key={m.label}
-            className="bg-white rounded-xl border border-[#E5E7EB] p-2.5 text-center shadow-sm"
+            className="bg-surface-card rounded-xl border p-2.5 text-center shadow-sm"
           >
             <div className="text-lg mb-0.5">{m.icon}</div>
-            <div className="text-xs font-bold text-[#1F2937] leading-tight">{m.value}</div>
-            <div className="text-[9px] text-[#9CA3AF] leading-tight mt-0.5">{m.label}</div>
+            <div className="text-xs font-bold text-text-primary leading-tight">{m.value}</div>
+            <div className="text-[9px] text-text-muted leading-tight mt-0.5">{m.label}</div>
           </div>
         ))}
       </div>
 
-      {/* Mini calendario de consistencia (últimas 12 semanas) */}
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 shadow-sm">
-        <p className="text-xs font-semibold text-[#1F2937] mb-3">Consistencia — últimas 12 semanas</p>
-        <MiniCalendario historial={historial} colorMap={SEMAPHORE_COLOR} />
+      {/* Mini calendario de consistencia */}
+      <div className="bg-surface-card rounded-2xl border p-4 shadow-sm">
+        <p className="text-xs font-semibold text-text-primary mb-3">Consistencia — últimas 12 semanas</p>
+        <MiniCalendario historial={historial} />
         <div className="flex items-center gap-3 mt-3">
           {[
-            { color: SEMAPHORE_COLOR.green, label: 'Verde'    },
-            { color: SEMAPHORE_COLOR.amber, label: 'Amarillo' },
-            { color: SEMAPHORE_COLOR.red,   label: 'Rojo'     },
-            { color: '#E5E7EB',             label: 'Sin dato' },
+            { colorVar: 'var(--semaforo-verde)',    label: 'Verde'    },
+            { colorVar: 'var(--semaforo-amarillo)', label: 'Amarillo' },
+            { colorVar: 'var(--semaforo-rojo)',     label: 'Rojo'     },
+            { colorVar: 'var(--surface-subtle)',    label: 'Sin dato' },
           ].map(l => (
             <div key={l.label} className="flex items-center gap-1">
-              <div className="w-2.5 h-2.5 rounded-sm" style={{ background: l.color }} />
-              <span className="text-[9px] text-[#9CA3AF]">{l.label}</span>
+              <div className="w-2.5 h-2.5 rounded-sm" style={{ background: l.colorVar }} />
+              <span className="text-[9px] text-text-muted">{l.label}</span>
             </div>
           ))}
         </div>
@@ -181,16 +188,8 @@ export default function MiEvolucion({ historial, rachaVerde }: Props) {
 
 // ── Sub-componente: mini calendario tipo GitHub contributions ──
 
-function MiniCalendario({
-  historial,
-  colorMap,
-}: {
-  historial: CheckinSemanal[]
-  colorMap: Record<string, string>
-}) {
+function MiniCalendario({ historial }: { historial: CheckinSemanal[] }) {
   const semanas: { label: string; semaphore: string | null }[] = []
-  // Lunes de la semana actual — usar weekStart prop si está disponible para evitar
-  // discrepancias UTC. En cliente se aproxima con fecha local.
   const now = new Date()
   // getDay() en cliente usa zona horaria del navegador (correcto para el usuario)
   const diffToMonday = now.getDay() === 0 ? 6 : now.getDay() - 1
@@ -218,7 +217,11 @@ function MiniCalendario({
           key={i}
           title={s.label}
           className="w-6 h-6 rounded-md transition-transform hover:scale-110"
-          style={{ background: s.semaphore ? colorMap[s.semaphore] : '#E5E7EB' }}
+          style={{
+            background: s.semaphore
+              ? SEMAPHORE_VAR[s.semaphore]
+              : 'var(--surface-subtle)',
+          }}
         />
       ))}
     </div>

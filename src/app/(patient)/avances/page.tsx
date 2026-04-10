@@ -35,21 +35,21 @@ export default async function AvancesPage() {
     <div className="pb-8">
       {/* Header */}
       <div className="px-5 pt-6 pb-4">
-        <h1 className="font-serif text-[28px] text-[#1A1A2E] leading-tight">Avances</h1>
-        <p className="text-sm text-[#6B7280] mt-1">
+        <h1 className="font-serif text-[28px] text-text-primary leading-tight">Avances</h1>
+        <p className="text-sm text-text-secondary mt-1">
           {totalRegistros ?? 0} semana(s) completada(s)
         </p>
       </div>
 
       {/* Logros */}
       <div className="px-5 mb-6">
-        <h2 className="text-[13px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-3">Logros</h2>
+        <h2 className="text-[13px] font-bold uppercase tracking-wider text-text-muted mb-3">Logros</h2>
         <LogrosPageClient logros={(logrosData ?? []) as LogroPaciente[]} />
       </div>
 
       {/* Historial ICS */}
       <div className="px-5">
-        <h2 className="text-[13px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-3">Historial de semáforos</h2>
+        <h2 className="text-[13px] font-bold uppercase tracking-wider text-text-muted mb-3">Historial de semáforos</h2>
         <HistorialICS checkins={(checkinsData ?? []) as CheckinSemanal[]} />
       </div>
     </div>

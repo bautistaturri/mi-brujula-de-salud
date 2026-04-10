@@ -108,10 +108,10 @@ Por favor contactalo a la brevedad.`
       >
         <div className="text-6xl mb-2">{emoji_nivel}</div>
         <div className="text-5xl font-bold mb-1" style={{ color: estilos.color }}>
-          {score}<span className="text-2xl font-normal text-[#78716C]">/100</span>
+          {score}<span className="text-2xl font-normal text-text-muted">/100</span>
         </div>
         <p className="font-semibold text-lg" style={{ color: estilos.color }}>{nivel_bienestar}</p>
-        <p className="text-xs text-[#78716C] mt-1">
+        <p className="text-xs text-text-muted mt-1">
           {formatFechaSemana(semana_inicio)} — {formatFechaSemana(semana_fin)}
         </p>
       </div>
@@ -131,16 +131,16 @@ Por favor contactalo a la brevedad.`
 
       {/* Logros nuevos */}
       {logrosNuevos.length > 0 && (
-        <div className="bg-[#FBF4E8] border border-[#E8D4A8] rounded-xl p-4">
-          <p className="font-semibold text-sm text-[#92671A] mb-2">🏅 ¡Nuevos logros desbloqueados!</p>
+        <div className="bg-[#FBF4E8] dark:bg-[#451A03] border border-[#E8D4A8] dark:border-[#78350F] rounded-xl p-4">
+          <p className="font-semibold text-sm text-[#92671A] dark:text-[#FCD34D] mb-2">🏅 ¡Nuevos logros desbloqueados!</p>
           <div className="flex flex-wrap gap-2">
             {logrosNuevos.map(k => (
-              <span key={k} className="bg-white border border-[#E8D4A8] text-sm px-3 py-1 rounded-full font-medium text-[#92671A]">
+              <span key={k} className="bg-surface-card border border-[#E8D4A8] dark:border-[#78350F] text-sm px-3 py-1 rounded-full font-medium text-[#92671A] dark:text-[#FCD34D]">
                 {LOGROS_CONFIG[k]?.emoji} {LOGROS_CONFIG[k]?.nombre}
               </span>
             ))}
           </div>
-          <button onClick={onVerLogros} className="text-xs text-[#92671A] font-medium mt-2 hover:underline">
+          <button onClick={onVerLogros} className="text-xs text-[#92671A] dark:text-[#FCD34D] font-medium mt-2 hover:underline">
             Ver todos mis logros →
           </button>
         </div>
@@ -165,19 +165,19 @@ Por favor contactalo a la brevedad.`
           href={`https://wa.me/${facilitadorWhatsapp}?text=${encodeURIComponent(construirMensajeWA())}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full bg-[#2C6B3E] hover:bg-[#1E5030] text-white font-semibold py-3.5 rounded-xl transition-colors text-sm"
+          className="flex items-center justify-center gap-2 w-full bg-[#2C6B3E] dark:bg-[#065F46] hover:bg-[#1E5030] dark:hover:bg-[#064E3B] text-white font-semibold py-3.5 rounded-xl transition-colors text-sm"
         >
           📲 Enviar reporte completo por WhatsApp
         </a>
       ) : (
-        <div className="bg-[#F7F6F3] border border-[#E2DDD6] rounded-xl p-4 text-center text-sm text-[#78716C]">
+        <div className="bg-surface-subtle border rounded-xl p-4 text-center text-sm text-text-secondary">
           Tu reporte fue guardado. Tu facilitador podrá verlo en tu ficha.
         </div>
       )}
 
       <a
         href="/inicio"
-        className="block w-full text-center bg-[#F7F6F3] hover:bg-[#EEEAE4] border border-[#E2DDD6] text-[#78716C] font-medium py-3 rounded-xl transition-colors text-sm"
+        className="block w-full text-center bg-surface-subtle hover:bg-surface-hover border text-text-secondary font-medium py-3 rounded-xl transition-colors text-sm"
       >
         Volver al inicio
       </a>

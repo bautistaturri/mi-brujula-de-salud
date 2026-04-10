@@ -60,8 +60,8 @@ function Escala({
   ]
   return (
     <div className="mb-5">
-      <p className="text-sm font-semibold text-[#1C1917] mb-0.5">{label}</p>
-      {sublabel && <p className="text-xs text-[#78716C] mb-3">{sublabel}</p>}
+      <p className="text-sm font-semibold text-text-primary mb-0.5">{label}</p>
+      {sublabel && <p className="text-xs text-text-secondary mb-3">{sublabel}</p>}
       <div className="flex gap-2">
         {OPCIONES.map(op => (
           <button
@@ -70,12 +70,12 @@ function Escala({
             onClick={() => onChange(op.val)}
             className={`flex-1 flex flex-col items-center py-3 rounded-2xl border-2 transition-all ${
               value === op.val
-                ? 'border-[#2C4A6E] bg-[#EEF4F0] scale-105'
-                : 'border-[#E2DDD6] bg-white hover:border-[#C8DDD0]'
+                ? 'border-[#2C4A6E] dark:border-[#3B82F6] bg-[#EEF4F0] dark:bg-[#1E3A5F] scale-105'
+                : 'border bg-surface-card hover:border-[#C8DDD0]'
             }`}
           >
             <span className="text-xl">{op.emoji}</span>
-            <span className="text-[9px] text-[#78716C] mt-0.5">{op.texto}</span>
+            <span className="text-[9px] text-text-secondary mt-0.5">{op.texto}</span>
           </button>
         ))}
       </div>
@@ -89,14 +89,14 @@ function ProgressBar({ paso }: { paso: number }) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold text-[#2C4A6E] uppercase tracking-wide">
+        <span className="text-xs font-semibold text-[#2C4A6E] dark:text-[#93C5FD] uppercase tracking-wide">
           {TITULOS[paso]}
         </span>
-        <span className="text-xs text-[#78716C]">{paso} / {TOTAL}</span>
+        <span className="text-xs text-text-secondary">{paso} / {TOTAL}</span>
       </div>
-      <div className="h-1.5 bg-[#E2DDD6] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-surface-subtle rounded-full overflow-hidden">
         <div
-          className="h-full bg-[#2C4A6E] rounded-full transition-all duration-500"
+          className="h-full bg-[#2C4A6E] dark:bg-[#3B82F6] rounded-full transition-all duration-500"
           style={{ width: `${(paso / TOTAL) * 100}%` }}
         />
       </div>
@@ -222,10 +222,10 @@ export default function StepperForm({
         {mostrarLogros && (
           <LogroNotification logros={resultado.logrosNuevos} onClose={() => setMostrarLogros(false)} />
         )}
-        <div className="bg-white rounded-2xl border border-[#E2DDD6] shadow-sm p-6">
+        <div className="bg-surface-card rounded-2xl border shadow-sm p-6">
           <div className="mb-5">
-            <h2 className="text-xl font-bold text-[#1C1917]">¡Registro guardado! 🎉</h2>
-            <p className="text-sm text-[#78716C] mt-1">Resumen de tu semana</p>
+            <h2 className="text-xl font-bold text-text-primary">¡Registro guardado! 🎉</h2>
+            <p className="text-sm text-text-secondary mt-1">Resumen de tu semana</p>
           </div>
           <ScoreDisplay
             score={resultado.score}
@@ -253,14 +253,14 @@ export default function StepperForm({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E2DDD6] shadow-sm p-6">
+    <div className="bg-surface-card rounded-2xl border shadow-sm p-6">
       <ProgressBar paso={paso as number} />
 
       {/* PASO 1 */}
       {paso === 1 && (
         <div>
-          <h2 className="text-xl font-bold text-[#1C1917] mb-1">¿Cómo estuvo tu cuerpo?</h2>
-          <p className="text-sm text-[#78716C] mb-6">Sé honesto/a, no hay respuestas incorrectas 💙</p>
+          <h2 className="text-xl font-bold text-text-primary mb-1">¿Cómo estuvo tu cuerpo?</h2>
+          <p className="text-sm text-text-secondary mb-6">Sé honesto/a, no hay respuestas incorrectas 💙</p>
 
           <Escala label="Calidad del sueño" sublabel="¿Cómo dormiste?" value={form.sueno} onChange={v => set('sueno', v)} />
           <Escala label="Nivel de energía" sublabel="¿Cómo estuvo tu energía?" value={form.energia} onChange={v => set('energia', v)} />
@@ -268,8 +268,8 @@ export default function StepperForm({
 
           {/* Actividad física */}
           <div className="mb-5">
-            <p className="text-sm font-semibold text-[#1C1917] mb-0.5">Actividad física</p>
-            <p className="text-xs text-[#78716C] mb-3">Días que hiciste ejercicio esta semana</p>
+            <p className="text-sm font-semibold text-text-primary mb-0.5">Actividad física</p>
+            <p className="text-xs text-text-secondary mb-3">Días que hiciste ejercicio esta semana</p>
             <div className="flex gap-1.5">
               {[0,1,2,3,4,5,6,7].map(d => (
                 <button
@@ -278,15 +278,15 @@ export default function StepperForm({
                   onClick={() => set('actividad_fisica', d)}
                   className={`flex-1 h-10 rounded-xl font-semibold text-sm border-2 transition-all ${
                     form.actividad_fisica === d
-                      ? 'border-[#2C4A6E] bg-[#EEF4F0] text-[#2C4A6E] scale-110'
-                      : 'border-[#E2DDD6] bg-white text-[#78716C] hover:border-[#C8DDD0]'
+                      ? 'border-[#2C4A6E] dark:border-[#3B82F6] bg-[#EEF4F0] dark:bg-[#1E3A5F] text-[#2C4A6E] dark:text-[#93C5FD] scale-110'
+                      : 'border bg-surface-card text-text-secondary hover:border-[#C8DDD0]'
                   }`}
                 >
                   {d}
                 </button>
               ))}
             </div>
-            <p className="text-xs text-[#78716C] mt-1.5">
+            <p className="text-xs text-text-secondary mt-1.5">
               {form.actividad_fisica === 0 ? 'Ningún día' :
                form.actividad_fisica === 7 ? '¡Todos los días! 💪' :
                `${form.actividad_fisica} día${form.actividad_fisica !== 1 ? 's' : ''}`}
@@ -295,7 +295,7 @@ export default function StepperForm({
 
           {/* Medicación */}
           <div className="mb-7">
-            <p className="text-sm font-semibold text-[#1C1917] mb-3">Adherencia a medicación</p>
+            <p className="text-sm font-semibold text-text-primary mb-3">Adherencia a medicación</p>
             <div className="grid grid-cols-3 gap-2">
               {([
                 { val: 'si' as const,        label: '✅ Sí',  desc: 'Tomé todo' },
@@ -308,12 +308,12 @@ export default function StepperForm({
                   onClick={() => set('adherencia_medicacion', op.val)}
                   className={`p-3 rounded-xl border-2 text-center transition-all ${
                     form.adherencia_medicacion === op.val
-                      ? 'border-[#2C4A6E] bg-[#EEF4F0]'
-                      : 'border-[#E2DDD6] bg-white hover:border-[#C8DDD0]'
+                      ? 'border-[#2C4A6E] dark:border-[#3B82F6] bg-[#EEF4F0] dark:bg-[#1E3A5F]'
+                      : 'border bg-surface-card hover:border-[#C8DDD0]'
                   }`}
                 >
-                  <div className="font-semibold text-sm text-[#1C1917]">{op.label}</div>
-                  <div className="text-xs text-[#78716C] mt-0.5">{op.desc}</div>
+                  <div className="font-semibold text-sm text-text-primary">{op.label}</div>
+                  <div className="text-xs text-text-secondary mt-0.5">{op.desc}</div>
                 </button>
               ))}
             </div>
@@ -321,7 +321,7 @@ export default function StepperForm({
 
           <button
             onClick={() => setPaso(2)}
-            className="w-full bg-[#2C4A6E] hover:bg-[#1E3550] text-white font-semibold py-3.5 rounded-xl transition-colors text-sm"
+            className="w-full bg-[#2C4A6E] dark:bg-[#3B82F6] hover:bg-[#1E3550] dark:hover:bg-[#2563EB] text-white font-semibold py-3.5 rounded-xl transition-colors text-sm"
           >
             Continuar →
           </button>
@@ -331,29 +331,29 @@ export default function StepperForm({
       {/* PASO 2 */}
       {paso === 2 && (
         <div>
-          <h2 className="text-xl font-bold text-[#1C1917] mb-1">¿Y emocionalmente?</h2>
-          <p className="text-sm text-[#78716C] mb-6">Tu bienestar emocional importa tanto como el físico 💛</p>
+          <h2 className="text-xl font-bold text-text-primary mb-1">¿Y emocionalmente?</h2>
+          <p className="text-sm text-text-secondary mb-6">Tu bienestar emocional importa tanto como el físico 💛</p>
 
           <Escala label="Estado de ánimo general" sublabel="¿Cómo estuvo tu ánimo esta semana?" value={form.animo} onChange={v => set('animo', v)} />
 
           <div className="mb-7">
-            <p className="text-sm font-semibold text-[#1C1917] mb-1">Síntomas destacados</p>
-            <p className="text-xs text-[#78716C] mb-2">¿Hubo algo relevante esta semana? (opcional)</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">Síntomas destacados</p>
+            <p className="text-xs text-text-secondary mb-2">¿Hubo algo relevante esta semana? (opcional)</p>
             <textarea
               value={form.sintomas}
               onChange={e => set('sintomas', e.target.value)}
               placeholder="Ej: dolor de cabeza, ansiedad, cansancio..."
               rows={3}
               maxLength={500}
-              className="w-full px-4 py-3 rounded-xl border border-[#E2DDD6] bg-white focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] text-[#1C1917] placeholder:text-[#C4BDB5] text-sm resize-none"
+              className="w-full px-4 py-3 rounded-xl border bg-surface-card focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] dark:focus:ring-[#3B82F6] text-text-primary placeholder:text-text-muted text-sm resize-none"
             />
           </div>
 
           <div className="flex gap-3">
-            <button onClick={() => setPaso(1)} className="flex-1 bg-[#F7F6F3] hover:bg-[#EEEAE4] text-[#78716C] font-medium py-3 rounded-xl transition-colors text-sm border border-[#E2DDD6]">
+            <button onClick={() => setPaso(1)} className="flex-1 bg-surface-subtle hover:bg-surface-hover text-text-secondary font-medium py-3 rounded-xl transition-colors text-sm border">
               ← Atrás
             </button>
-            <button onClick={() => setPaso(3)} className="flex-1 bg-[#2C4A6E] hover:bg-[#1E3550] text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+            <button onClick={() => setPaso(3)} className="flex-1 bg-[#2C4A6E] dark:bg-[#3B82F6] hover:bg-[#1E3550] dark:hover:bg-[#2563EB] text-white font-semibold py-3 rounded-xl transition-colors text-sm">
               Continuar →
             </button>
           </div>
@@ -363,32 +363,32 @@ export default function StepperForm({
       {/* PASO 3 */}
       {paso === 3 && (
         <div>
-          <h2 className="text-xl font-bold text-[#1C1917] mb-1">Un momento para reflexionar</h2>
-          <p className="text-sm text-[#78716C] mb-6">Reconocer logros y obstáculos es parte del proceso 🌱</p>
+          <h2 className="text-xl font-bold text-text-primary mb-1">Un momento para reflexionar</h2>
+          <p className="text-sm text-text-secondary mb-6">Reconocer logros y obstáculos es parte del proceso 🌱</p>
 
           <div className="mb-5">
-            <p className="text-sm font-semibold text-[#1C1917] mb-1">✨ ¿Tu mayor logro de la semana?</p>
-            <p className="text-xs text-[#78716C] mb-2">Puede ser algo pequeño, ¡todo cuenta! (opcional)</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">✨ ¿Tu mayor logro de la semana?</p>
+            <p className="text-xs text-text-secondary mb-2">Puede ser algo pequeño, ¡todo cuenta! (opcional)</p>
             <textarea
               value={form.logro_personal}
               onChange={e => set('logro_personal', e.target.value)}
               placeholder="Ej: Me levanté temprano todos los días..."
               rows={3}
               maxLength={500}
-              className="w-full px-4 py-3 rounded-xl border border-[#E2DDD6] bg-white focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] text-[#1C1917] placeholder:text-[#C4BDB5] text-sm resize-none"
+              className="w-full px-4 py-3 rounded-xl border bg-surface-card focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] dark:focus:ring-[#3B82F6] text-text-primary placeholder:text-text-muted text-sm resize-none"
             />
           </div>
 
           <div className="mb-6">
-            <p className="text-sm font-semibold text-[#1C1917] mb-1">🪨 ¿Qué obstáculo encontraste?</p>
-            <p className="text-xs text-[#78716C] mb-2">Identificarlo ayuda a buscar soluciones (opcional)</p>
+            <p className="text-sm font-semibold text-text-primary mb-1">🪨 ¿Qué obstáculo encontraste?</p>
+            <p className="text-xs text-text-secondary mb-2">Identificarlo ayuda a buscar soluciones (opcional)</p>
             <textarea
               value={form.dificultad}
               onChange={e => set('dificultad', e.target.value)}
               placeholder="Ej: Me costó mantener la rutina..."
               rows={3}
               maxLength={500}
-              className="w-full px-4 py-3 rounded-xl border border-[#E2DDD6] bg-white focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] text-[#1C1917] placeholder:text-[#C4BDB5] text-sm resize-none"
+              className="w-full px-4 py-3 rounded-xl border bg-surface-card focus:outline-none focus:ring-2 focus:ring-[#2C4A6E] dark:focus:ring-[#3B82F6] text-text-primary placeholder:text-text-muted text-sm resize-none"
             />
           </div>
 
@@ -399,13 +399,13 @@ export default function StepperForm({
           )}
 
           <div className="flex gap-3">
-            <button onClick={() => setPaso(2)} disabled={loading} className="flex-1 bg-[#F7F6F3] hover:bg-[#EEEAE4] disabled:opacity-50 text-[#78716C] font-medium py-3 rounded-xl transition-colors text-sm border border-[#E2DDD6]">
+            <button onClick={() => setPaso(2)} disabled={loading} className="flex-1 bg-surface-subtle hover:bg-surface-hover disabled:opacity-50 text-text-secondary font-medium py-3 rounded-xl transition-colors text-sm border">
               ← Atrás
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 bg-[#2C4A6E] hover:bg-[#1E3550] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+              className="flex-1 bg-[#2C4A6E] dark:bg-[#3B82F6] hover:bg-[#1E3550] dark:hover:bg-[#2563EB] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors text-sm"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

@@ -40,9 +40,9 @@ export default function BienvenidaPersonalizada({
   let badge: { texto: string; bg: string; color: string } | null = null
   if (!esPrimerCheckin && semanaAnterior) {
     if (semanaAnterior.semaphore === 'green') {
-      badge = { texto: 'La semana pasada estuviste en zona verde 🌟 ¡Seguí así!', bg: '#D6EFE1', color: '#1A6B3C' }
+      badge = { texto: 'La semana pasada estuviste en zona verde 🌟 ¡Seguí así!', bg: 'var(--semaforo-verde-bg)', color: 'var(--semaforo-verde-text)' }
     } else if (semanaAnterior.semaphore === 'red') {
-      badge = { texto: 'Esta semana es una nueva oportunidad 💙', bg: '#E8ECF5', color: '#1B3A5C' }
+      badge = { texto: 'Esta semana es una nueva oportunidad 💙', bg: 'var(--brand-primary-soft)', color: 'var(--brand-primary)' }
     }
   }
 

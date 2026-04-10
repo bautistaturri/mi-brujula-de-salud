@@ -62,17 +62,21 @@ export default function RegistroDiarioForm({
 
   if (yaRegistrado || registrado) {
     return (
-      <div className="mx-5 mt-8 p-6 bg-[#D6EFE1] border border-[#A8D5B5] rounded-2xl text-center">
+      <div
+        className="mx-5 mt-8 p-6 rounded-2xl text-center border"
+        style={{ background: 'var(--semaforo-verde-bg)', borderColor: 'var(--semaforo-verde-border)' }}
+      >
         <p className="text-3xl mb-3">✅</p>
-        <p className="text-[#1A6B3C] font-semibold text-lg">
+        <p className="font-semibold text-lg" style={{ color: 'var(--semaforo-verde-text)' }}>
           Seguís construyendo tu semana.
         </p>
-        <p className="text-sm text-[#4A9E6B] mt-1">
+        <p className="text-sm mt-1" style={{ color: 'var(--semaforo-verde-text)', opacity: 0.8 }}>
           Ya registraste el día de hoy.
         </p>
         <button
           onClick={() => router.push('/inicio')}
-          className="mt-4 text-sm text-[#2A7B6F] underline"
+          className="mt-4 text-sm underline"
+          style={{ color: 'var(--brand-secondary)' }}
         >
           Volver al inicio →
         </button>
@@ -135,7 +139,6 @@ export default function RegistroDiarioForm({
 
   return (
     <>
-      {/* Modal de logros — se muestra después de guardar */}
       {logrosNuevos.length > 0 && logroActual < logrosNuevos.length && (
         <LogroDesbloqueadoModal
           logro={logrosNuevos[logroActual]}
@@ -145,20 +148,20 @@ export default function RegistroDiarioForm({
 
       <div className="pb-24">
         {/* Greeting */}
-        <div className="px-5 pt-6 pb-4 bg-white border-b border-[#E5E7EB]">
+        <div className="px-5 pt-6 pb-4 bg-surface-card border-b">
           <p className="text-2xl mb-1">{greeting.emoji}</p>
-          <h1 className="text-xl font-bold text-[#1A1A2E]">{greeting.texto}</h1>
-          <p className="text-sm text-[#6B7280] mt-0.5">{getPreguntaDia()}</p>
+          <h1 className="text-xl font-bold text-text-primary">{greeting.texto}</h1>
+          <p className="text-sm text-text-secondary mt-0.5">{getPreguntaDia()}</p>
         </div>
 
         {/* Barra de progreso */}
         <div className="px-5 pt-5 mb-6">
-          <div className="flex justify-between text-[11px] font-semibold text-[#9CA3AF] mb-2">
+          <div className="flex justify-between text-[11px] font-semibold text-text-muted mb-2">
             <span className={paso === 1 ? 'text-[#2A7B6F]' : ''}>Energía y ánimo</span>
             <span className={paso === 2 ? 'text-[#B8860B]' : ''}>Conductas</span>
-            <span className={paso === 3 ? 'text-[#1B3A5C]' : ''}>Nota libre</span>
+            <span className={paso === 3 ? 'text-[#1B3A5C] dark:text-[#93C5FD]' : ''}>Nota libre</span>
           </div>
-          <div className="h-1 bg-[#E5E7EB] rounded-full overflow-hidden">
+          <div className="h-1 bg-surface-subtle rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#2A7B6F] to-[#1B3A5C] transition-all duration-500"
               style={{ width: `${progreso}%` }}
@@ -169,17 +172,14 @@ export default function RegistroDiarioForm({
         {/* ── PASO 1: Energía y Ánimo ── */}
         {paso === 1 && (
           <div className="px-5 space-y-6">
-            {/* Energía */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+            <div className="bg-surface-card rounded-2xl border p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-semibold text-[#1F2937]">Energía</p>
+                <p className="text-sm font-semibold text-text-primary">Energía</p>
                 <span className="text-3xl">{EMOJI_ENERGÍA[energiaDia]}</span>
               </div>
               <input
                 type="range"
-                min={1}
-                max={5}
-                step={1}
+                min={1} max={5} step={1}
                 value={energiaDia}
                 onChange={e => setEnergiaDia(Number(e.target.value))}
                 className="w-full h-2 rounded-full cursor-pointer accent-[#2A7B6F]"
@@ -188,9 +188,7 @@ export default function RegistroDiarioForm({
                 {EMOJI_ENERGÍA.slice(1).map((em, i) => (
                   <span
                     key={i}
-                    className={`text-lg transition-all ${
-                      energiaDia === i + 1 ? 'scale-125' : 'opacity-30'
-                    }`}
+                    className={`text-lg transition-all ${energiaDia === i + 1 ? 'scale-125' : 'opacity-30'}`}
                   >
                     {em}
                   </span>
@@ -198,17 +196,14 @@ export default function RegistroDiarioForm({
               </div>
             </div>
 
-            {/* Ánimo */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 shadow-sm">
+            <div className="bg-surface-card rounded-2xl border p-5 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-semibold text-[#1F2937]">Ánimo</p>
+                <p className="text-sm font-semibold text-text-primary">Ánimo</p>
                 <span className="text-3xl">{EMOJI_ENERGÍA[animoDia]}</span>
               </div>
               <input
                 type="range"
-                min={1}
-                max={5}
-                step={1}
+                min={1} max={5} step={1}
                 value={animoDia}
                 onChange={e => setAnimoDia(Number(e.target.value))}
                 className="w-full h-2 rounded-full cursor-pointer accent-[#B8860B]"
@@ -217,9 +212,7 @@ export default function RegistroDiarioForm({
                 {EMOJI_ENERGÍA.slice(1).map((em, i) => (
                   <span
                     key={i}
-                    className={`text-lg transition-all ${
-                      animoDia === i + 1 ? 'scale-125' : 'opacity-30'
-                    }`}
+                    className={`text-lg transition-all ${animoDia === i + 1 ? 'scale-125' : 'opacity-30'}`}
                   >
                     {em}
                   </span>
@@ -240,10 +233,12 @@ export default function RegistroDiarioForm({
         {paso === 2 && (
           <div className="px-5 space-y-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FDF3D0] text-[#B8860B] mb-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3"
+                style={{ background: 'var(--status-warning-soft)', color: 'var(--status-warning-text)' }}
+              >
                 🎯 Conductas del día
               </span>
-              <p className="text-sm text-[#4B5563]">
+              <p className="text-sm text-text-secondary">
                 ¿Cuáles cumpliste hoy?
               </p>
             </div>
@@ -259,24 +254,26 @@ export default function RegistroDiarioForm({
                   }}
                   className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${
                     conductasHoy[i]
-                      ? 'border-[#2A7B6F] bg-[#D4EDEA]'
-                      : 'border-[#E5E7EB] bg-white hover:border-[#9CA3AF]'
+                      ? 'border-[#2A7B6F] bg-[#D4EDEA] dark:bg-[#064E3B]'
+                      : 'border bg-surface-card hover:border-[#9CA3AF]'
                   }`}
                 >
                   <span className="text-2xl">{conducta.icono}</span>
-                  <span className="flex-1 text-sm font-medium text-[#1F2937]">
+                  <span className="flex-1 text-sm font-medium text-text-primary">
                     {conducta.nombre}
                   </span>
-                  <span className={`text-xl ${conductasHoy[i] ? 'text-[#2A7B6F]' : 'text-[#D1D5DB]'}`}>
+                  <span className={`text-xl ${conductasHoy[i] ? 'text-[#2A7B6F]' : 'text-text-muted'}`}>
                     {conductasHoy[i] ? '✓' : '○'}
                   </span>
                 </button>
               ))}
             </div>
 
-            {/* Resumen rápido */}
-            <div className="bg-[#D4EDEA] rounded-xl px-4 py-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-[#2A7B6F]">
+            <div
+              className="rounded-xl px-4 py-3 flex items-center justify-between"
+              style={{ background: 'var(--semaforo-verde-bg)' }}
+            >
+              <span className="text-sm font-medium" style={{ color: 'var(--semaforo-verde-text)' }}>
                 {conductasHoy.filter(Boolean).length} de {conductas.length} cumplidas
               </span>
               <span className="text-lg">
@@ -288,7 +285,7 @@ export default function RegistroDiarioForm({
             <div className="flex gap-3">
               <button
                 onClick={() => setPaso(1)}
-                className="px-5 py-4 rounded-2xl border border-[#E5E7EB] text-[#6B7280] font-medium hover:bg-[#F9FAFB] transition"
+                className="px-5 py-4 rounded-2xl border text-text-secondary font-medium hover:bg-surface-subtle transition"
               >
                 ←
               </button>
@@ -306,10 +303,12 @@ export default function RegistroDiarioForm({
         {paso === 3 && (
           <div className="px-5 space-y-5">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E8ECF5] text-[#1B3A5C] mb-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-3"
+                style={{ background: 'var(--brand-primary-soft)', color: 'var(--status-info-text)' }}
+              >
                 ✍️ Nota del día (opcional)
               </span>
-              <p className="text-sm text-[#4B5563]">
+              <p className="text-sm text-text-secondary">
                 ¿Algo que quieras recordar de hoy?
               </p>
             </div>
@@ -322,11 +321,11 @@ export default function RegistroDiarioForm({
                 }}
                 placeholder="¿Algo que quieras recordar de hoy?"
                 rows={5}
-                className="w-full bg-white border border-[#E5E7EB] rounded-2xl p-4 text-sm text-[#1F2937] placeholder-[#9CA3AF] resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F]"
+                className="w-full bg-surface-card border rounded-2xl p-4 text-sm text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F]"
               />
               <span
                 className={`absolute bottom-3 right-4 text-xs ${
-                  notaLibre.length >= 260 ? 'text-[#C87020]' : 'text-[#9CA3AF]'
+                  notaLibre.length >= 260 ? 'text-[#C87020]' : 'text-text-muted'
                 }`}
               >
                 {notaLibre.length}/280
@@ -334,7 +333,9 @@ export default function RegistroDiarioForm({
             </div>
 
             {error && (
-              <div className="bg-[#FADDDD] border border-[#F5AEAE] rounded-xl p-3 text-sm text-[#8B1A1A]">
+              <div className="rounded-xl p-3 text-sm border"
+                style={{ background: 'var(--semaforo-rojo-bg)', borderColor: 'var(--semaforo-rojo-border)', color: 'var(--semaforo-rojo-text)' }}
+              >
                 {error}
               </div>
             )}
@@ -342,7 +343,7 @@ export default function RegistroDiarioForm({
             <div className="flex gap-3">
               <button
                 onClick={() => setPaso(2)}
-                className="px-5 py-4 rounded-2xl border border-[#E5E7EB] text-[#6B7280] font-medium hover:bg-[#F9FAFB] transition"
+                className="px-5 py-4 rounded-2xl border text-text-secondary font-medium hover:bg-surface-subtle transition"
               >
                 ←
               </button>
@@ -358,7 +359,7 @@ export default function RegistroDiarioForm({
             <button
               onClick={handleSubmit}
               disabled={guardando}
-              className="w-full text-sm text-[#9CA3AF] hover:text-[#6B7280] py-2 transition"
+              className="w-full text-sm text-text-muted hover:text-text-secondary py-2 transition"
             >
               Saltar nota y registrar
             </button>

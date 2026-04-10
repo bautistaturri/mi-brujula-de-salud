@@ -108,7 +108,7 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium"
               style={
                 activo
-                  ? { background: '#EFF6FF', color: 'var(--brand-primary)' }
+                  ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary)' }
                   : { color: 'var(--text-secondary)' }
               }
             >
@@ -149,7 +149,7 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
           onClick={handleLogout}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-text-muted hover:text-status-error transition-colors"
           style={{ '--hover-bg': '#FEF2F2' } as React.CSSProperties}
-          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--semaforo-rojo-bg)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

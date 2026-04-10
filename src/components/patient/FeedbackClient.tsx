@@ -41,8 +41,8 @@ export default function FeedbackClient({ userId }: Props) {
     return (
       <div className="px-5 pt-16 text-center">
         <p className="text-5xl mb-4">🙏</p>
-        <h2 className="font-serif text-[24px] text-[#1A1A2E] mb-2">¡Gracias!</h2>
-        <p className="text-sm text-[#6B7280]">Tu feedback nos ayuda a mejorar la app.</p>
+        <h2 className="font-serif text-[24px] text-text-primary mb-2">¡Gracias!</h2>
+        <p className="text-sm text-text-secondary">Tu feedback nos ayuda a mejorar la app.</p>
       </div>
     )
   }
@@ -50,15 +50,15 @@ export default function FeedbackClient({ userId }: Props) {
   return (
     <div className="pb-8">
       <div className="px-5 pt-6 pb-4">
-        <h1 className="font-serif text-[28px] text-[#1A1A2E] leading-tight">Tu opinión</h1>
-        <p className="text-sm text-[#6B7280] mt-1">Ayudanos a mejorar la experiencia</p>
+        <h1 className="font-serif text-[28px] text-text-primary leading-tight">Tu opinión</h1>
+        <p className="text-sm text-text-secondary mt-1">Ayudanos a mejorar la experiencia</p>
       </div>
 
       <div className="px-5 space-y-6">
         {/* Rating NPS */}
         <div>
-          <p className="text-sm font-semibold text-[#1F2937] mb-3">
-            ¿Cómo calificarías la app? <span className="text-[#9CA3AF] font-normal">(1–10)</span>
+          <p className="text-sm font-semibold text-text-primary mb-3">
+            ¿Cómo calificarías la app? <span className="text-text-muted font-normal">(1–10)</span>
           </p>
           <div className="grid grid-cols-5 gap-2">
             {[1,2,3,4,5,6,7,8,9,10].map(n => (
@@ -67,8 +67,8 @@ export default function FeedbackClient({ userId }: Props) {
                 onClick={() => setRating(n)}
                 className={`py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${
                   rating === n
-                    ? 'bg-[#1B3A5C] text-white border-[#1B3A5C]'
-                    : 'bg-white text-[#4B5563] border-[#E5E7EB] hover:border-[#9CA3AF]'
+                    ? 'bg-[#1B3A5C] dark:bg-[#3B82F6] text-white border-transparent'
+                    : 'bg-surface-card text-text-secondary hover:border-[#9CA3AF]'
                 }`}
               >
                 {n}
@@ -79,8 +79,8 @@ export default function FeedbackClient({ userId }: Props) {
 
         {/* Qué funciona */}
         <div>
-          <label className="block text-sm font-semibold text-[#1F2937] mb-2">
-            ¿Qué te está funcionando bien? <span className="text-[#9CA3AF] font-normal">(opcional)</span>
+          <label className="block text-sm font-semibold text-text-primary mb-2">
+            ¿Qué te está funcionando bien? <span className="text-text-muted font-normal">(opcional)</span>
           </label>
           <textarea
             value={queFunciona}
@@ -88,14 +88,14 @@ export default function FeedbackClient({ userId }: Props) {
             maxLength={500}
             rows={3}
             placeholder="Lo que más valoro es..."
-            className="w-full px-4 py-3 rounded-2xl border border-[#E5E7EB] bg-white text-sm text-[#1F2937] placeholder-[#9CA3AF] resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F] transition"
+            className="w-full px-4 py-3 rounded-2xl border bg-surface-card text-sm text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F] transition"
           />
         </div>
 
         {/* Qué mejorar */}
         <div>
-          <label className="block text-sm font-semibold text-[#1F2937] mb-2">
-            ¿Qué mejorarías? <span className="text-[#9CA3AF] font-normal">(opcional)</span>
+          <label className="block text-sm font-semibold text-text-primary mb-2">
+            ¿Qué mejorarías? <span className="text-text-muted font-normal">(opcional)</span>
           </label>
           <textarea
             value={queMejorar}
@@ -103,12 +103,15 @@ export default function FeedbackClient({ userId }: Props) {
             maxLength={500}
             rows={3}
             placeholder="Me gustaría que..."
-            className="w-full px-4 py-3 rounded-2xl border border-[#E5E7EB] bg-white text-sm text-[#1F2937] placeholder-[#9CA3AF] resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F] transition"
+            className="w-full px-4 py-3 rounded-2xl border bg-surface-card text-sm text-text-primary placeholder:text-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-[#2A7B6F]/30 focus:border-[#2A7B6F] transition"
           />
         </div>
 
         {error && (
-          <div className="bg-[#FADDDD] border border-[#F5AEAE] rounded-xl p-3 text-sm text-[#8B1A1A]">
+          <div
+            className="rounded-xl p-3 text-sm border"
+            style={{ background: 'var(--semaforo-rojo-bg)', borderColor: 'var(--semaforo-rojo-border)', color: 'var(--semaforo-rojo-text)' }}
+          >
             {error}
           </div>
         )}
