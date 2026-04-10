@@ -112,7 +112,7 @@ export default function RegisterPage() {
             Soy...
           </p>
           <div className="grid grid-cols-2 gap-3 mb-6">
-            {(Object.entries(ROLE_CONFIG) as [Role, typeof ROLE_CONFIG[Role]][]).map(([r, cfg]) => (
+            {(Object.entries(ROLE_CONFIG) as [keyof typeof ROLE_CONFIG, typeof ROLE_CONFIG[keyof typeof ROLE_CONFIG]][]).map(([r, cfg]) => (
               <button
                 key={r}
                 type="button"

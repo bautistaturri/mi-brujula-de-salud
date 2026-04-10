@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brújula de Salud — Lógica de Negocio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    color: #1a1a2e;
+    background: #fafaf8;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Merriweather', serif;
+    line-height: 1.3;
+  }
+
+  /* PORTADA */
+  .cover {
+    text-align: center;
+    padding: 60px 0 80px;
+    border-bottom: 2px solid #e5e0d8;
+    margin-bottom: 60px;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: #d6efe1;
+    color: #1a6b3c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .cover h1 {
+    font-size: 42px;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle {
+    font-size: 20px;
+    color: #5a6478;
+    margin-bottom: 32px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+  .cover .meta {
+    font-size: 13px;
+    color: #9a9590;
+  }
+
+  /* ÍNDICE */
+  .toc {
+    background: #f3f1ee;
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 60px;
+  }
+  .toc h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+  }
+  .toc ol {
+    padding-left: 20px;
+    line-height: 2.2;
+  }
+  .toc a {
+    color: #1b3a5c;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .toc a:hover { text-decoration: underline; }
+
+  /* SECCIONES */
+  section {
+    margin-bottom: 64px;
+  }
+  section h2 {
+    font-size: 28px;
+    color: #1a1a2e;
+    border-bottom: 2px solid #e5e0d8;
+    padding-bottom: 10px;
+    margin-bottom: 24px;
+  }
+  section h3 {
+    font-size: 20px;
+    color: #1b3a5c;
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+  section h4 {
+    font-size: 16px;
+    color: #2a7b6f;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* CAJAS */
+  .box {
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .box-verde   { background: #d6efe1; border-left: 4px solid #2a7b6f; }
+  .box-amarillo { background: #fde8cc; border-left: 4px solid #c87020; }
+  .box-rojo    { background: #fadddd; border-left: 4px solid #a83020; }
+  .box-azul    { background: #e8f0fa; border-left: 4px solid #1b3a5c; }
+  .box-gris    { background: #f3f1ee; border-left: 4px solid #9a9590; }
+
+  .box strong { display: block; margin-bottom: 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* FÓRMULA */
+  .formula {
+    background: #1a1a2e;
+    color: #e8f0fa;
+    border-radius: 12px;
+    padding: 20px 28px;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    margin: 20px 0;
+    line-height: 2;
+  }
+  .formula .comment { color: #6b8ba4; font-size: 13px; }
+
+  /* TABLA */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th {
+    background: #1b3a5c;
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e5e0d8;
+  }
+  tr:nth-child(even) td { background: #f7f5f2; }
+
+  /* SEMÁFORO VISUAL */
+  .semaforo-row {
+    display: flex;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .semaforo-card {
+    flex: 1;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .sem-verde   { background: #d6efe1; }
+  .sem-amarillo { background: #fde8cc; }
+  .sem-rojo    { background: #fadddd; }
+  .semaforo-card .dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+  }
+  .dot-verde   { background: #2a7b6f; }
+  .dot-amarillo { background: #c87020; }
+  .dot-rojo    { background: #a83020; }
+  .semaforo-card .score { font-size: 22px; font-weight: 700; margin-bottom: 4px; font-family: 'Merriweather', serif; }
+  .semaforo-card .label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+  .semaforo-card .desc  { font-size: 12px; color: #5a6478; margin-top: 8px; }
+
+  /* FLUJO / PASOS */
+  .steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 14px 14px 14px 60px;
+    position: relative;
+    border-left: 2px solid #e5e0d8;
+    margin-left: 20px;
+    margin-bottom: 8px;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -20px;
+    top: 14px;
+    width: 36px; height: 36px;
+    background: #1b3a5c;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .steps li:last-child { border-left: 2px solid transparent; }
+
+  /* ALERTA CARD */
+  .alert-card {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .alert-card .icon { font-size: 22px; flex-shrink: 0; }
+  .alert-card .content strong { display: block; font-size: 14px; margin-bottom: 3px; }
+  .alert-card .content span  { font-size: 13px; color: #5a6478; }
+  .alert-rojo   { background: #fadddd; border: 1px solid #f5c0c0; }
+  .alert-amber  { background: #fde8cc; border: 1px solid #f0c98a; }
+  .alert-verde  { background: #d6efe1; border: 1px solid #a8d5b5; }
+  .alert-interno { background: #f3f1ee; border: 1px solid #d5d0c8; }
+
+  /* NOTA AL PIE */
+  .nota {
+    font-size: 13px;
+    color: #78716c;
+    font-style: italic;
+    margin-top: -8px;
+    margin-bottom: 14px;
+  }
+
+  /* PRINT */
+  @media print {
+    body { padding: 24px; font-size: 13px; }
+    .cover { padding: 40px 0 60px; }
+    section { page-break-inside: avoid; }
+    h2 { page-break-before: always; }
+    .cover { page-break-after: always; }
+    .toc  { page-break-after: always; }
+  }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid #e5e0d8; margin: 40px 0; }
+
+  ul { padding-left: 22px; margin-bottom: 14px; }
+  ul li { margin-bottom: 6px; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-right: 6px;
+  }
+  .tag-rojo    { background: #fadddd; color: #8b2635; }
+  .tag-amber   { background: #fde8cc; color: #8b4800; }
+  .tag-verde   { background: #d6efe1; color: #1a6b3c; }
+  .tag-azul    { background: #e8f0fa; color: #1b3a5c; }
+  .tag-interno { background: #f3f1ee; color: #5a6478; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="badge">Documentación interna — Puente Diario © 2026</div>
+  <h1>Brújula de Salud</h1>
+  <p class="subtitle">Lógica de negocio completa del sistema<br>Health Compass — MVP Digital</p>
+  <p class="meta">Dra. Lucía Mabres &amp; Dra. María Recondo &nbsp;·&nbsp; Versión FASE 4 &nbsp;·&nbsp; Abril 2026</p>
+</div>
+
+<!-- ÍNDICE -->
+<div class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#s1">¿Qué es la Brújula de Salud?</a></li>
+    <li><a href="#s2">Roles y actores del sistema</a></li>
+    <li><a href="#s3">El check-in semanal — cómo se registra</a></li>
+    <li><a href="#s4">El Índice Compass Semanal (ICS) — el corazón del sistema</a></li>
+    <li><a href="#s5">El semáforo — cómo se clasifica cada semana</a></li>
+    <li><a href="#s6">Alertas especiales — señales de riesgo inmediato</a></li>
+    <li><a href="#s7">El motor de alertas automático — qué pasa los lunes</a></li>
+    <li><a href="#s8">El Saboteador y el Observador — la voz interna</a></li>
+    <li><a href="#s9">Las conductas ancla — el pilar conductual</a></li>
+    <li><a href="#s10">El registro diario — seguimiento entre semanas</a></li>
+    <li><a href="#s11">El sistema de logros</a></li>
+    <li><a href="#s12">El panel del equipo — cómo trabaja el equipo de salud</a></li>
+    <li><a href="#s13">Flujo completo de una semana — de principio a fin</a></li>
+    <li><a href="#s14">Decisiones de diseño y reglas no negociables</a></li>
+  </ol>
+</div>
+
+
+<!-- 1. QUÉ ES -->
+<section id="s1">
+  <h2>1. ¿Qué es la Brújula de Salud?</h2>
+
+  <p>La Brújula de Salud es una herramienta digital de seguimiento clínico diseñada por Puente Diario para acompañar pacientes crónicos durante un programa de tres meses. No es una app de bienestar genérica: es un sistema de medición y alerta clínica que permite al equipo de salud intervenir de forma oportuna cuando un paciente necesita apoyo.</p>
+
+  <p>El concepto central es el <strong>Índice Compass Semanal (ICS)</strong>: un número de 0 a 100 que resume el estado del paciente en tres dimensiones — lo que hace (comportamiento), cómo se siente (emociones) y cómo se habla a sí mismo (narrativa mental). Ese número se traduce en un semáforo: verde, amarillo o rojo.</p>
+
+  <div class="box box-azul">
+    <strong>Filosofía del sistema</strong>
+    El equipo de salud no puede estar presente en el día a día del paciente. La Brújula es los "ojos" del equipo durante la semana. Cuando algo cambia, el sistema notifica automáticamente a la persona correcta (coach o médica) para que pueda intervenir antes de que el problema se profundice.
+  </div>
+
+  <p>El programa tiene una duración fija de tres meses, organizado en cohortes de 10 a 15 pacientes. Cada cohorte tiene asignada una médica y hasta dos coaches. Los pacientes hacen un check-in por semana.</p>
+</section>
+
+
+<!-- 2. ROLES -->
+<section id="s2">
+  <h2>2. Roles y actores del sistema</h2>
+
+  <p>El sistema tiene tres tipos de usuario con accesos y responsabilidades distintas:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Rol</th>
+        <th>Quién es</th>
+        <th>Qué puede hacer</th>
+        <th>Qué recibe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Paciente</strong></td>
+        <td>La persona en tratamiento</td>
+        <td>Hacer check-in semanal, registro diario, ver su historial y logros, acceder al gimnasio mental</td>
+        <td>Ve su propio semáforo, su racha, su evolución. No ve scores numéricos crudos — solo narrativa y porcentajes.</td>
+      </tr>
+      <tr>
+        <td><strong>Coach</strong></td>
+        <td>Acompañante del programa</td>
+        <td>Ver el panel grupal, acceder al perfil 360 de cada paciente, registrar intervenciones, enviar mensajes</td>
+        <td>Alertas amarillas: semanas difíciles, saboteador sostenido, cero conductas, paciente sin check-in</td>
+      </tr>
+      <tr>
+        <td><strong>Médica</strong></td>
+        <td>Profesional a cargo clínicamente</td>
+        <td>Todo lo del coach + acceso a scores completos, gestión de la cohorte, exportar reportes PDF</td>
+        <td>Alertas rojas: semáforo rojo directo, energía emocional crítica</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="box box-gris">
+    <strong>Regla de privacidad</strong>
+    El paciente nunca ve el ICS numérico completo ni los scores internos de cada dominio. Ve su semáforo y un resumen narrativo. Los números exactos son para el equipo de salud, que puede contextualizarlos clínicamente.
+  </div>
+</section>
+
+
+<!-- 3. CHECK-IN -->
+<section id="s3">
+  <h2>3. El check-in semanal — cómo se registra</h2>
+
+  <p>Cada semana, el paciente completa un formulario de tres pasos. El objetivo es que tarde menos de dos minutos. La ventana de check-in va del domingo a las 7 PM al lunes a las 8 AM (hora Argentina, UTC-3). Si no completa el check-in dentro de esa ventana, el sistema genera automáticamente una alerta amarilla para el coach.</p>
+
+  <h3>Paso 1 — Conductas Ancla (dominio conductual)</h3>
+
+  <p>El paciente tiene entre 1 y 5 conductas ancla personalizadas, definidas en la etapa de onboarding con ayuda del equipo. Por cada conducta, mueve un slider de 0 a 7 para indicar cuántos días de la semana la cumplió.</p>
+
+  <p>Además responde una sola pregunta: "¿Superaste barreras para cumplirlas?" con opciones 0, 1, 2 o 3+. Esto mide autoeficacia — la capacidad de actuar a pesar de los obstáculos.</p>
+
+  <h3>Paso 2 — Brújula Emocional (dominio emocional)</h3>
+
+  <p>Dos preguntas:</p>
+  <ul>
+    <li><strong>Energía vital:</strong> un slider de 1 a 5 (sin energía → plena energía)</li>
+    <li><strong>Regulación emocional:</strong> tres opciones visuales — Tempestad (1), Nublado (3), Sol (5)</li>
+  </ul>
+
+  <p>Hay también una pregunta opcional: "¿Qué emoción estuvo presente la mayor parte de la semana?" con seis opciones: Alegre, En calma, Sensible, Preocupado/a, Cansado/a, Esperanzado/a. Esta respuesta no entra al cálculo del ICS — es información cualitativa para el equipo.</p>
+
+  <h3>Paso 3 — Mental Fitness (dominio cognitivo)</h3>
+
+  <p>Dos sliders de 1 a 7:</p>
+  <ul>
+    <li><strong>Saboteador:</strong> qué tanto estuvo presente la voz crítica, el boicot, el abandono</li>
+    <li><strong>Observador:</strong> qué tanto estuvo presente la conciencia, la compasión, el acompañamiento interno</li>
+  </ul>
+
+  <p>Estos dos valores tienen una regla especial: la suma de ambos no puede superar 10. Si el paciente sube uno, el otro se ajusta automáticamente para mantener la restricción. Esto evita que alguien se evalúe como "máximo en todo" — hay un juego de equilibrio real entre las dos voces.</p>
+
+  <p>El resultado de este paso se convierte en el <strong>ini_score</strong>: si Observador ≥ Saboteador (incluyendo empate), el score es 5. Si Saboteador domina, es 1. No hay término medio — o la voz interna acompaña o boicotea.</p>
+
+  <div class="box box-azul">
+    <strong>¿Por qué empate le gana el Observador?</strong>
+    La decisión de diseño es clínica: en salud conductual, el estado neutro se interpreta como ausencia de sabotaje activo. Si el paciente no está dominado por la voz crítica, el beneficio de la duda es positivo. Esto también evita que un empate sistemático genere alertas innecesarias.
+  </div>
+</section>
+
+
+<!-- 4. ICS -->
+<section id="s4">
+  <h2>4. El Índice Compass Semanal (ICS)</h2>
+
+  <p>El ICS es el número central del sistema. Representa el estado global del paciente en una semana determinada. Va de 0 a 100. Se calcula en el momento en que el paciente envía el check-in, usando solo funciones matemáticas puras — sin lógica de negocio adicional, sin efectos secundarios, completamente reproducible.</p>
+
+  <h3>Cómo se calcula cada dominio</h3>
+
+  <h4>Dominio 1 — ICA (Índice de Conductas Ancla)</h4>
+  <p>Mide la adherencia conductual de la semana. Combina los días cumplidos con el bonus de haber superado barreras.</p>
+
+  <div class="formula">
+    totalDias = suma de días por conducta (máximo 35 = 5 conductas × 7 días)<br>
+    baseScore = (totalDias / 35) × 100<br>
+    bonusBarreras = (barreras / 3) × 10  <span class="comment">// barreras: 0, 1, 2 o 3</span><br><br>
+    ICA = min(100, baseScore + bonusBarreras × (1 − baseScore/100))
+  </div>
+
+  <p>El bonus de barreras es inversamente proporcional a qué tan bien ya lo hizo el paciente: vale más cuando la base es baja (paciente que tuvo semana difícil pero igual se esforzó) y vale menos cuando la base es alta (semana casi perfecta no necesita bonus adicional).</p>
+
+  <h4>Dominio 2 — BE (Brújula Emocional)</h4>
+  <p>Combina energía y regulación emocional en una sola cifra en escala 1 a 5.</p>
+
+  <div class="formula">
+    BE = energia × 0.4 + regulacion × 0.6<br><br>
+    <span class="comment">// Regulación pesa más porque refleja capacidad de sostener el estado emocional</span>
+  </div>
+
+  <p>Luego se normaliza a escala 0-100 para poder combinarse con los otros dominios:</p>
+  <div class="formula">
+    BE_norm = ((BE − 1) / (5 − 1)) × 100
+  </div>
+
+  <h4>Dominio 3 — INI (Narrativa Interna)</h4>
+  <p>Se deriva de los sliders de Saboteador y Observador. El valor resultante es siempre 1 o 5:</p>
+
+  <div class="formula">
+    ini_score = 5  si Observador ≥ Saboteador (empate incluido)<br>
+    ini_score = 1  si Saboteador > Observador<br><br>
+    INI_norm = ((ini_score − 1) / (5 − 1)) × 100
+    <span class="comment">// ini=1 → 0% / ini=5 → 100%</span>
+  </div>
+
+  <h3>El ICS final — la fórmula ponderada</h3>
+
+  <div class="formula">
+    ICS = (ICA × 0.50) + (BE_norm × 0.30) + (INI_norm × 0.20)<br><br>
+    <span class="comment">// Conductual: 50% — Emocional: 30% — Mental: 20%</span>
+  </div>
+
+  <p>La ponderación refleja la teoría clínica del programa: el comportamiento concreto es el predictor más fuerte del progreso. Las emociones son importantes pero más volátiles. La narrativa interna es relevante pero más difícil de medir con precisión semanal.</p>
+
+  <h3>Ejemplo real</h3>
+
+  <table>
+    <thead>
+      <tr><th>Paciente</th><th>ICA</th><th>BE_norm</th><th>INI_norm</th><th>ICS</th><th>Semáforo</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Buena semana</td>
+        <td>88%</td>
+        <td>75%</td>
+        <td>100%</td>
+        <td>86</td>
+        <td><span class="tag tag-verde">Verde</span></td>
+      </tr>
+      <tr>
+        <td>Semana regular</td>
+        <td>46%</td>
+        <td>50%</td>
+        <td>50%</td>
+        <td>48</td>
+        <td><span class="tag tag-amber">Amarillo</span></td>
+      </tr>
+      <tr>
+        <td>Semana difícil</td>
+        <td>11%</td>
+        <td>12%</td>
+        <td>0%</td>
+        <td>9</td>
+        <td><span class="tag tag-rojo">Rojo</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+
+<!-- 5. SEMÁFORO -->
+<section id="s5">
+  <h2>5. El semáforo — cómo se clasifica cada semana</h2>
+
+  <p>El ICS se mapea a tres zonas. Los umbrales son fijos e intocables — no se adaptan por paciente ni por semana:</p>
+
+  <div class="semaforo-row">
+    <div class="semaforo-card sem-verde">
+      <div class="dot dot-verde"></div>
+      <div class="score">≥ 70</div>
+      <div class="label" style="color:#1a6b3c">Zona Verde</div>
+      <div class="desc">El paciente está construyendo bien. El equipo puede celebrar sin necesitar intervención activa.</div>
+    </div>
+    <div class="semaforo-card sem-amarillo">
+      <div class="dot dot-amarillo"></div>
+      <div class="score">45 – 69</div>
+      <div class="label" style="color:#8b4800">Zona Amarilla</div>
+      <div class="desc">Semana de desafíos. Requiere atención del coach. Puede ser puntual o sistémica.</div>
+    </div>
+    <div class="semaforo-card sem-rojo">
+      <div class="dot dot-rojo"></div>
+      <div class="score">&lt; 45</div>
+      <div class="label" style="color:#8b1a1a">Zona Roja</div>
+      <div class="desc">Señal de crisis. La médica debe tomar contacto en las próximas 24 horas.</div>
+    </div>
+  </div>
+
+  <h3>Amarillo circunstancial vs. sistémico</h3>
+
+  <p>No todo amarillo es igual. El sistema distingue dos tipos:</p>
+
+  <div class="alert-card alert-amber">
+    <div class="icon">⚠️</div>
+    <div class="content">
+      <strong>Amarillo circunstancial — semana difícil puntual</strong>
+      <span>Primera semana en amarillo después de al menos una semana no amarilla. El coach recibe una alerta de observación. Acción: mensaje de contención, verificar si hay algo específico que ocurrió.</span>
+    </div>
+  </div>
+
+  <div class="alert-card alert-amber">
+    <div class="icon">🔁</div>
+    <div class="content">
+      <strong>Amarillo sistémico — patrón sostenido</strong>
+      <span>Dos o más semanas consecutivas en amarillo. El coach urgente recibe la alerta. Acción recomendada: microencuentro virtual para revisar las conductas ancla y buscar barreras estructurales.</span>
+    </div>
+  </div>
+
+  <h3>Verde con ICA bajo — "verde enmascarado"</h3>
+
+  <p>Un caso particular que el sistema detecta pero no comunica al paciente: ICS en zona verde (≥ 70) pero el dominio conductual (ICA) por debajo del 55%. Esto puede ocurrir cuando el paciente tiene muy buena semana emocional y cognitiva que "levanta" el ICS, ocultando que las conductas ancla no se están cumpliendo bien.</p>
+
+  <div class="box box-gris">
+    En este caso el equipo recibe una nota interna silenciosa (sin notificación push) para monitorear si la tendencia se mantiene en semanas siguientes. No se penaliza al paciente con un cambio de color — simplemente el equipo está advertido.
+  </div>
+</section>
+
+
+<!-- 6. ALERTAS ESPECIALES -->
+<section id="s6">
+  <h2>6. Alertas especiales — señales de riesgo inmediato</h2>
+
+  <p>Hay cuatro alertas que se calculan de forma paralela al semáforo. Pueden activarse incluso cuando el ICS sea verde. Son señales de riesgo específico que el número global no captura.</p>
+
+  <div class="alert-card alert-rojo">
+    <div class="icon">🔴</div>
+    <div class="content">
+      <strong>be_critical — Energía emocional crítica</strong>
+      <span>Se activa cuando BE &lt; 1.5. Esto significa que la combinación de energía y regulación emocional está en el piso absoluto. Aunque el ICS pueda ser verde por buenas conductas, un BE tan bajo es señal de agotamiento severo. Acción: la médica debe contactar al paciente en las próximas horas.</span>
+    </div>
+  </div>
+
+  <div class="alert-card alert-amber">
+    <div class="icon">😤</div>
+    <div class="content">
+      <strong>ini_saboteador — Saboteador dominante esta semana</strong>
+      <span>Se activa cuando ini_score = 1, es decir, cuando el Saboteador superó al Observador. Una sola semana genera esta alerta interna. Si se repite tres semanas seguidas, escala a una alerta de alta prioridad para el coach (ini_saboteador_streak).</span>
+    </div>
+  </div>
+
+  <div class="alert-card alert-amber">
+    <div class="icon">🚫</div>
+    <div class="content">
+      <strong>ica_zero — Cero conductas cumplidas</strong>
+      <span>Se activa cuando todos los sliders de conductas están en cero. Es la señal de abandono temprano más clara del sistema. Incluso si el paciente reporta buen estado emocional, cero conductas es una señal clínica preocupante. El coach recibe alerta de alta prioridad.</span>
+    </div>
+  </div>
+
+  <div class="alert-card alert-rojo">
+    <div class="icon">⛔</div>
+    <div class="content">
+      <strong>combined_risk — Riesgo combinado</strong>
+      <span>Se activa cuando ICA &lt; 40% Y BE &lt; 2 al mismo tiempo. La combinación de bajo comportamiento y bajo bienestar emocional crea un patrón de riesgo mayor que cualquiera de los dos por separado. Esta alerta puede coexistir con un semáforo rojo.</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- 7. MOTOR DE ALERTAS -->
+<section id="s7">
+  <h2>7. El motor de alertas automático — qué pasa los lunes</h2>
+
+  <p>Todos los lunes a las 8:00 AM (hora Argentina), el sistema ejecuta automáticamente un proceso que revisa a todos los pacientes activos y genera las alertas correspondientes para el equipo. Este proceso es completamente automático — no requiere ninguna acción manual.</p>
+
+  <h3>¿Qué analiza el proceso?</h3>
+
+  <ol class="steps">
+    <li>
+      <strong>¿El paciente hizo check-in la semana pasada?</strong><br>
+      Verifica si existe un check-in enviado entre el lunes anterior a las 00:00 y el domingo anterior a las 23:59. Si no existe, genera alerta <em>missing_checkin</em> para el coach y termina el análisis de ese paciente (no hay datos que analizar).
+    </li>
+    <li>
+      <strong>¿Cuál es el semáforo de la última semana?</strong><br>
+      Si es rojo → alerta urgente para la médica.<br>
+      Si es amarillo → verifica si las semanas anteriores también fueron amarillas para determinar si es circunstancial o sistémico.
+    </li>
+    <li>
+      <strong>¿Hay alertas especiales activas?</strong><br>
+      Revisa las alertas calculadas en el check-in: be_critical, ica_zero. Si están presentes, genera las alertas correspondientes independientemente del color del semáforo.
+    </li>
+    <li>
+      <strong>¿El Saboteador lleva tres semanas seguidas dominando?</strong><br>
+      Cuenta cuántas semanas consecutivas el ini_score fue 1. Si son tres o más, genera alerta para el coach con recomendación de microencuentro motivacional.
+    </li>
+    <li>
+      <strong>¿El paciente lleva una racha de semanas verdes?</strong><br>
+      Si el semáforo es verde y la racha llegó a 3, 6 o 12 semanas consecutivas, genera una alerta de celebración. El sistema envía automáticamente un mensaje de reconocimiento al paciente.
+    </li>
+  </ol>
+
+  <h3>Priorización de alertas</h3>
+
+  <p>Cuando un paciente genera múltiples alertas en la misma semana (por ejemplo, semáforo rojo + ica_zero + be_critical), se ordenan por prioridad:</p>
+
+  <table>
+    <thead>
+      <tr><th>Prioridad</th><th>Tipo de alerta</th><th>Asignada a</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1 — Crítica</td><td>red_semaphore, be_critical</td><td>Médica</td></tr>
+      <tr><td>1.5 — Alta</td><td>amber_systemic</td><td>Coach urgente</td></tr>
+      <tr><td>1.8 — Alta</td><td>ica_zero, ini_saboteador_streak</td><td>Coach</td></tr>
+      <tr><td>2 — Normal</td><td>missing_checkin, amber_circumstantial</td><td>Coach</td></tr>
+      <tr><td>3 — Baja</td><td>green_with_low_ica (interna)</td><td>Nota coach (sin notificación)</td></tr>
+      <tr><td>4 — Info</td><td>green_streak_milestone</td><td>Automático (mensaje al paciente)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-azul">
+    <strong>Nota técnica</strong>
+    El cron usa la función <code>wasLastWeek()</code> que verifica que la fecha del check-in esté en el rango [lunes pasado 00:00, lunes actual 00:00). Esto corrige un bug histórico donde <code>isThisWeek()</code> calculaba "esta semana" — que al correr el lunes temprano estaba vacía para todos, generando falsas alertas de missing_checkin masivas.
+  </div>
+</section>
+
+
+<!-- 8. SABOTEADOR/OBSERVADOR -->
+<section id="s8">
+  <h2>8. El Saboteador y el Observador — la voz interna</h2>
+
+  <p>El tercer dominio del check-in mide la calidad del diálogo interno del paciente durante la semana. El modelo proviene de la psicología positiva y las neurociencias del hábito: la forma en que nos hablamos a nosotros mismos es un predictor fuerte de si podremos sostener cambios conductuales en el tiempo.</p>
+
+  <h3>Las dos voces</h3>
+
+  <div class="alert-card alert-rojo">
+    <div class="icon">😤</div>
+    <div class="content">
+      <strong>El Saboteador</strong>
+      <span>Es la voz que critica, juzga, abandona antes de tiempo, compara desfavorablemente, o boicotea activamente los intentos de cambio. "Para qué seguir si no puedo", "soy un desastre", "nunca voy a poder". Escala de 1 (casi ausente) a 7 (muy presente).</span>
+    </div>
+  </div>
+
+  <div class="alert-card alert-verde">
+    <div class="icon">👁️</div>
+    <div class="content">
+      <strong>El Observador</strong>
+      <span>Es la voz que acompaña con compasión, reconoce el esfuerzo, mantiene la perspectiva sin dramatizar, y permite aprender de los errores sin castigarse. Es la voz del aliado interno. Escala de 1 (casi ausente) a 7 (muy presente).</span>
+    </div>
+  </div>
+
+  <h3>La regla de la suma máxima (Opción A)</h3>
+
+  <p>La suma de ambos scores no puede superar 10. Si el paciente mueve el Saboteador a 7, el Observador se ajusta automáticamente a 3 (y viceversa). Esto refleja que ambas voces compiten por espacio mental — hay un intercambio real. No es posible ser "máximo en ambas voces" al mismo tiempo.</p>
+
+  <div class="formula">
+    Saboteador + Observador ≤ 10  (invariante del sistema)<br><br>
+    Ejemplos válidos:   Sab=4, Obs=6  → suma=10  ✓<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sab=7, Obs=2  → suma=9   ✓<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sab=5, Obs=5  → suma=10  ✓ (empate → Observador gana)<br>
+    Ejemplo inválido:  Sab=7, Obs=7  → suma=14  ✗
+  </div>
+
+  <h3>Conversión a ini_score</h3>
+
+  <p>Los valores numéricos de los sliders se convierten a un score simplificado para el cálculo del ICS:</p>
+  <ul>
+    <li>Si <strong>Observador ≥ Saboteador</strong> (incluyendo empate): <strong>ini_score = 5</strong> → narrativa aliada</li>
+    <li>Si <strong>Saboteador > Observador</strong>: <strong>ini_score = 1</strong> → narrativa saboteadora</li>
+  </ul>
+
+  <p>El empate se resuelve a favor del Observador porque en salud conductual, la ausencia de sabotaje activo ya es un logro. No hay término medio en este dominio — o la voz interna acompaña o no.</p>
+</section>
+
+
+<!-- 9. CONDUCTAS ANCLA -->
+<section id="s9">
+  <h2>9. Las conductas ancla — el pilar conductual</h2>
+
+  <p>Las conductas ancla son comportamientos específicos, concretos y personales que el paciente se compromete a realizar durante el programa. Son el núcleo del seguimiento conductual. Sin conductas ancla no hay check-in.</p>
+
+  <h3>Definición en el onboarding</h3>
+
+  <p>En las primeras semanas del programa, el paciente define sus conductas con guía del equipo. Cada conducta tiene:</p>
+  <ul>
+    <li>Un nombre descriptivo (ej: "Caminar 30 minutos")</li>
+    <li>Un icono representativo</li>
+    <li>Un orden de prioridad (1 al 5)</li>
+  </ul>
+
+  <p>El sistema permite entre 1 y 5 conductas activas. No es obligatorio tener las 5 — por ejemplo, un paciente que no toma medicación puede no tener esa conducta. Esta flexibilidad es intencional.</p>
+
+  <h3>Conductas y el ICA</h3>
+
+  <p>El cálculo del ICA siempre trabaja con un denominador de 35 (5 conductas × 7 días), independientemente de cuántas conductas tenga el paciente. Si el paciente tiene 3 conductas y registra días perfectos en las 3, su ICA máximo es (21/35)×100 = 60%. Esto está diseñado así — tener menos conductas implica un "rango" menor, lo que incentiva a comprometerse con las 5.</p>
+
+  <div class="box box-amarillo">
+    <strong>Pendiente clínico</strong>
+    Según la especificación, las conductas ancla deberían poder editarse cada 4 semanas (con aprobación del equipo). Esta funcionalidad está planificada para una versión futura. Por ahora, las conductas se definen en el onboarding y permanecen activas durante todo el programa.
+  </div>
+</section>
+
+
+<!-- 10. REGISTRO DIARIO -->
+<section id="s10">
+  <h2>10. El registro diario — seguimiento entre semanas</h2>
+
+  <p>Además del check-in semanal, el paciente puede registrar su estado cada día. El registro diario es opcional pero potencia el check-in semanal: cuando llega el momento del check-in, el sistema pre-puebla automáticamente los sliders de conductas con los datos de los registros diarios de esa semana.</p>
+
+  <h3>¿Qué registra el paciente?</h3>
+  <ul>
+    <li><strong>Energía del día:</strong> escala 1 a 5</li>
+    <li><strong>Ánimo del día:</strong> escala 1 a 5</li>
+    <li><strong>Conductas cumplidas hoy:</strong> una casilla por cada conducta ancla activa (booleano: sí/no)</li>
+    <li><strong>Nota libre:</strong> texto opcional, máximo 280 caracteres</li>
+  </ul>
+
+  <h3>Pre-población del check-in semanal</h3>
+
+  <p>Si el paciente hizo registros diarios durante la semana, el sistema calcula cuántos días cumplió cada conducta (sumando los "sí" de cada día) y pre-carga esos valores en los sliders del check-in. El paciente puede ajustar antes de enviar — la pre-población es una sugerencia, no un dato definitivo.</p>
+
+  <p>La energía promedio de los registros diarios también se usa como sugerencia inicial para el slider de energía vital en el paso 2.</p>
+</section>
+
+
+<!-- 11. LOGROS -->
+<section id="s11">
+  <h2>11. El sistema de logros</h2>
+
+  <p>Los logros son reconocimientos desbloqueables que refuerzan el comportamiento positivo del paciente. Son visibles en la sección "Avances". Se calculan automáticamente cada vez que el paciente guarda un registro.</p>
+
+  <h3>Logros semanales</h3>
+
+  <table>
+    <thead>
+      <tr><th>Logro</th><th>Condición</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🥇 Primera semana</td><td>Completar el primer registro semanal</td></tr>
+      <tr><td>🔥 Racha de 3</td><td>3 semanas consecutivas completadas</td></tr>
+      <tr><td>🏆 Constancia total</td><td>8 semanas consecutivas completadas</td></tr>
+      <tr><td>⭐ Semana perfecta</td><td>Score de 90 o más en una semana</td></tr>
+      <tr><td>💪 Atleta</td><td>Actividad física 6 o 7 días en una semana</td></tr>
+      <tr><td>😴 Descanso maestro</td><td>Calidad de sueño 5/5 tres semanas seguidas</td></tr>
+      <tr><td>📈 En ascenso</td><td>Score mayor que la semana anterior 3 veces seguidas</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Logros diarios</h3>
+
+  <table>
+    <thead>
+      <tr><th>Logro</th><th>Condición</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🌱 Primer día</td><td>Completar el primer registro diario</td></tr>
+      <tr><td>📅 Semana completa</td><td>7 registros diarios en una misma semana calendario</td></tr>
+      <tr><td>🔗 Constancia diaria</td><td>14 días consecutivos con registro diario</td></tr>
+      <tr><td>🌅 Madrugador</td><td>3 registros completados antes de las 9 AM (hora Argentina)</td></tr>
+      <tr><td>✍️ Reflexivo</td><td>10 notas libres escritas en registros diarios</td></tr>
+    </tbody>
+  </table>
+
+  <p>Los logros son permanentes — una vez desbloqueados no se pierden. El sistema evalúa solo los logros que aún no tiene el paciente, evitando duplicados.</p>
+</section>
+
+
+<!-- 12. PANEL EQUIPO -->
+<section id="s12">
+  <h2>12. El panel del equipo — cómo trabaja el equipo de salud</h2>
+
+  <p>El equipo accede a un panel separado del del paciente. Desde ahí pueden ver toda la cohorte y cada paciente individualmente.</p>
+
+  <h3>Vista de alertas</h3>
+  <p>La pantalla principal del panel muestra todas las alertas activas, ordenadas por prioridad y color. Las rojas van primero. Cada alerta muestra el nombre del paciente, el tipo de alerta, el ICS de la última semana y un acceso directo al perfil 360.</p>
+
+  <h3>Perfil 360 del paciente</h3>
+  <p>Incluye: ICS actual y su semáforo, histórico de las últimas 12 semanas con gráfico de evolución, breakdown de los tres dominios, conductas ancla activas, timeline de intervenciones registradas y alertas del historial.</p>
+
+  <h3>Registro de intervenciones</h3>
+  <p>El equipo puede registrar cada contacto con el paciente: tipo de intervención (mensaje, microencuentro, entrevista, derivación), barrera identificada, resumen del encuentro, acción acordada y fecha de seguimiento.</p>
+
+  <h3>Mensajes al paciente</h3>
+  <p>El equipo tiene acceso a una biblioteca de mensajes por tipo de semáforo. Los mensajes usan variables personales como el nombre del paciente y sus conductas ancla. El sistema diferencia entre mensajes automáticos (celebración de rachas) y mensajes manuales del equipo.</p>
+</section>
+
+
+<!-- 13. FLUJO COMPLETO -->
+<section id="s13">
+  <h2>13. Flujo completo de una semana — de principio a fin</h2>
+
+  <ol class="steps">
+    <li>
+      <strong>Lunes AM — Cron de alertas</strong><br>
+      A las 8:00 AM el sistema procesa todos los pacientes activos. Genera alertas según los check-ins de la semana pasada. Los miembros del equipo reciben notificaciones push y email con las alertas de sus pacientes.
+    </li>
+    <li>
+      <strong>Lunes a domingo — Registro diario (opcional)</strong><br>
+      El paciente puede registrar su estado cada día. Los datos se guardan localmente y se sincronizan. No hay ventana obligatoria para el registro diario.
+    </li>
+    <li>
+      <strong>Domingo 7 PM — Apertura del check-in</strong><br>
+      La ventana de check-in se abre. El paciente recibe notificación push recordándole completar su check-in antes del lunes 8 AM.
+    </li>
+    <li>
+      <strong>Domingo / Lunes — El paciente completa el check-in</strong><br>
+      En menos de 2 minutos completa los tres pasos. Al enviar, el sistema calcula el ICS en tiempo real y le muestra su semáforo. Si la semana fue verde, puede haber un mensaje de celebración.
+    </li>
+    <li>
+      <strong>Al enviar — Cálculo y almacenamiento atómico</strong><br>
+      El ICS se calcula en el cliente antes de enviar. Se persiste en la base de datos en una única operación (función RPC <code>save_checkin_ics</code>) que guarda el check-in y el resultado del ICS juntos, garantizando consistencia.
+    </li>
+    <li>
+      <strong>Al enviar — Evaluación de logros</strong><br>
+      El sistema evalúa si el paciente desbloqueó algún logro con este check-in. Si sí, aparece una notificación de celebración.
+    </li>
+    <li>
+      <strong>Lunes siguiente — Vuelta al paso 1</strong><br>
+      El cron vuelve a correr. El ciclo se repite durante las 12 semanas del programa.
+    </li>
+  </ol>
+</section>
+
+
+<!-- 14. REGLAS NO NEGOCIABLES -->
+<section id="s14">
+  <h2>14. Decisiones de diseño y reglas no negociables</h2>
+
+  <p>Hay decisiones que no deben cambiarse sin revisión clínica del equipo médico. Están documentadas aquí para que cualquier desarrollador entienda por qué existen.</p>
+
+  <table>
+    <thead>
+      <tr><th>Regla</th><th>Valor</th><th>Por qué existe</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pesos del ICS</td>
+        <td>50% / 30% / 20%</td>
+        <td>Definidos clínicamente. El comportamiento concreto predice más el progreso que las variables emocionales o cognitivas a corto plazo.</td>
+      </tr>
+      <tr>
+        <td>Umbral verde</td>
+        <td>≥ 70</td>
+        <td>No es 60 ni 75. El equipo médico lo calibró contra cohortes piloto.</td>
+      </tr>
+      <tr>
+        <td>Umbral rojo</td>
+        <td>&lt; 45</td>
+        <td>Por debajo de 45 hay evidencia de deterioro en múltiples dimensiones simultáneas.</td>
+      </tr>
+      <tr>
+        <td>be_critical</td>
+        <td>BE &lt; 1.5</td>
+        <td>Energía + regulación en el piso absoluto. Señal de posible crisis de salud mental que requiere evaluación médica.</td>
+      </tr>
+      <tr>
+        <td>Empate Saboteador/Observador</td>
+        <td>→ Observador gana</td>
+        <td>En duda, el beneficio es positivo. Evita alertas clínicas por estados neutros.</td>
+      </tr>
+      <tr>
+        <td>Suma máxima sliders</td>
+        <td>≤ 10</td>
+        <td>Las dos voces compiten. No es posible estar "máximo en ambas" simultáneamente.</td>
+      </tr>
+      <tr>
+        <td>Rojo → médica</td>
+        <td>Siempre</td>
+        <td>El coach no tiene formación para intervención clínica en crisis. La médica sí.</td>
+      </tr>
+      <tr>
+        <td>Amarillo sistémico</td>
+        <td>≥ 2 semanas</td>
+        <td>Una sola semana puede ser ruido. Dos consecutivas es señal.</td>
+      </tr>
+      <tr>
+        <td>ini_saboteador_streak</td>
+        <td>≥ 3 semanas</td>
+        <td>El Saboteador sostenido tres semanas es predictor de abandono del programa.</td>
+      </tr>
+      <tr>
+        <td>Green streak hitos</td>
+        <td>3, 6 y 12 semanas</td>
+        <td>Refuerzo positivo en momentos estadísticamente críticos de abandono de hábitos.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="box box-verde">
+    <strong>Principio rector del sistema</strong>
+    La Brújula no reemplaza al equipo de salud — lo potencia. Ninguna alerta toma decisiones clínicas. El sistema hace el trabajo de monitorear y priorizar. Los humanos del equipo deciden qué hacer con esa información.
+  </div>
+
+  <p class="nota" style="margin-top: 32px; text-align: center;">
+    Puente Diario © 2026 — Dra. Lucía Mabres &amp; Dra. María Recondo<br>
+    Documento generado: Abril 2026 — Versión FASE 4
+  </p>
+</section>
+
+</body>
+</html>

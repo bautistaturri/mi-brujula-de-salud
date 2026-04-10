@@ -1,4 +1,4 @@
-export type Role = 'paciente' | 'facilitador'
+export type Role = 'paciente' | 'facilitador' | 'coach' | 'medica'
 export type Semaforo = 'verde' | 'amarillo' | 'rojo'
 export type Emocion = '😄' | '🙂' | '😐' | '😔' | '😰'
 export type Turno = 'manana' | 'noche'
@@ -32,11 +32,13 @@ export interface User {
   id: string
   email: string
   nombre: string
+  apellido: string | null
   role: Role
   avatar_url: string | null
   whatsapp: string | null
   onboarding_completado: boolean
-  // ── Perfil clínico basal (migración 012) ──
+  // ── Perfil clínico basal en users (migración 012) ──
+  // @deprecated — usar perfiles_clinicos (migración 017). Conservado por retrocompat.
   peso_inicial: number | null
   altura: number | null
   toma_medicacion: boolean | null
@@ -92,13 +94,19 @@ export interface Checkin {
   updated_at: string
 }
 
+export type EstadoGrupo = 'activo' | 'completado' | 'pausado'
+
 export interface Grupo {
   id: string
   nombre: string
   descripcion: string | null
   facilitador_id: string
   activo: boolean
+  fecha_inicio: string | null  // YYYY-MM-DD
+  fecha_fin: string | null     // YYYY-MM-DD
+  estado: EstadoGrupo
   created_at: string
+  updated_at: string
 }
 
 export interface GrupoMiembro {
@@ -169,6 +177,7 @@ export interface CheckinSemanal {
     ics: number
   }
   dominant_domain: 'ica' | 'be' | 'ini'
+  formula_version: string    // '1.0' — permite recomputar ICS histórico si cambia la fórmula
   submitted_at: string
   created_at: string
 }
@@ -277,6 +286,7 @@ export interface ContenidoGimnasio {
   orden: number
   activo: boolean
   created_at: string
+  updated_at: string
 }
 
 export interface ProgresoGimnasio {
@@ -285,6 +295,7 @@ export interface ProgresoGimnasio {
   contenido_id: string
   completado_at: string
   minutos_vistos: number
+  updated_at: string
 }
 
 // ── Feedback ──────────────────────────────────────────────────
@@ -336,3 +347,65 @@ export const SEMAFORO_CONFIG = {
     border: 'border-semaforo-rojo-border',
   },
 } as const
+
+// ── Perfil clínico separado (migración 017) ───────────────────
+export interface PerfilClinico {
+  paciente_id: string
+  peso_inicial: number | null
+  altura: number | null
+  toma_medicacion: boolean | null
+  detalle_medicacion: string | null
+  antec_tabaquismo: boolean
+  antec_alcohol: boolean
+  antec_otras_sustancias: boolean
+  antec_cirugia: boolean
+  antec_cancer: boolean
+  antec_tiroides: boolean
+  antec_otros: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type InsertPerfilClinico = Omit<PerfilClinico, 'created_at' | 'updated_at'>
+
+// ── Intervenciones (migración 017) ────────────────────────────
+export type TipoIntervencion = 'consulta' | 'ajuste_plan' | 'crisis' | 'seguimiento' | 'nota'
+
+export interface Intervencion {
+  id: string
+  profesional_id: string
+  paciente_id: string
+  tipo: TipoIntervencion
+  barrera: string | null
+  resumen: string
+  accion_acordada: string | null
+  fecha_seguimiento: string | null  // YYYY-MM-DD
+  created_at: string
+  updated_at: string
+}
+
+export type InsertIntervencion = Omit<Intervencion, 'id' | 'created_at' | 'updated_at'>
+
+// ── Historial de conductas ancla (migración 017) ──────────────
+export type AccionConducta = 'creada' | 'activada' | 'desactivada' | 'modificada'
+
+export interface ConductaAnclaHistorial {
+  id: string
+  conducta_id: string
+  user_id: string
+  accion: AccionConducta
+  nombre_anterior: string | null
+  icono_anterior: string | null
+  created_at: string
+}
+
+// ── Equipo profesional por grupo (migración 017) ──────────────
+export type RolEnGrupo = 'coach' | 'medica' | 'facilitador'
+
+export interface GrupoEquipo {
+  grupo_id: string
+  profesional_id: string
+  rol_en_grupo: RolEnGrupo
+  activo: boolean
+  created_at: string
+}
