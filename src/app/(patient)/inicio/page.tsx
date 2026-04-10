@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { getWeekStart } from '@/lib/utils'
+import { getWeekStart, getTodayAR } from '@/lib/utils'
 import DashboardPacienteView from '@/components/patient/DashboardPacienteView'
 
 export default async function InicioPacientePage() {
@@ -9,7 +9,7 @@ export default async function InicioPacientePage() {
   if (!user) redirect('/login')
 
   const weekStart  = getWeekStart()
-  const fechaHoy   = new Date().toISOString().split('T')[0]
+  const fechaHoy   = getTodayAR()
 
   // Lunes de la semana actual (para filtrar registros diarios de la semana)
   const lunesSemana = weekStart  // getWeekStart() ya retorna el lunes ISO

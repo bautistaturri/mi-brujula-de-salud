@@ -6,15 +6,16 @@ import { describe, it, expect } from 'vitest'
 import { processPatientAlerts, processWeeklyAlerts } from '../alerts/alert_engine'
 import type { CheckinData, PatientData } from '../alerts/alert_engine'
 
-// ── Helpers — fechas de esta semana ──────────────────────────
-function thisMonday(): Date {
+// ── Helpers — fecha de la semana PASADA (el cron corre los lunes) ──────────
+function lastMonday(): Date {
   const d = new Date()
-  d.setDate(d.getDate() - d.getDay() + 1)
+  const dow = d.getDay()
+  d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1) - 7)
   d.setHours(12, 0, 0, 0)
   return d
 }
 
-const NOW_ISO = thisMonday().toISOString()
+const NOW_ISO = lastMonday().toISOString()
 
 // ── Fixtures de check-ins ─────────────────────────────────────
 const checkinGreen: CheckinData = {

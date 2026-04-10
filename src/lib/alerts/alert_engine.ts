@@ -36,13 +36,43 @@ export interface AlertData {
 }
 
 /**
- * Determina si una fecha corresponde a la semana en curso
- * (desde el lunes pasado a las 00:00)
+ * Determina si una fecha corresponde a la semana ANTERIOR
+ * (desde el lunes pasado hasta el domingo pasado inclusive).
+ *
+ * El cron corre los lunes a las 8am para detectar pacientes que NO hicieron
+ * check-in la semana que recién terminó. La función original `isThisWeek`
+ * calculaba "esta semana" (que acaba de empezar), por lo que NADIE cumplía
+ * la condición y todos recibían alerta de `missing_checkin`.
+ *
+ * Bug adicional corregido: en domingo `getDay()=0` → el cálculo anterior daba
+ * `setDate(getDate() + 1)` = próximo lunes, no el pasado.
+ */
+export function wasLastWeek(date: string | Date): boolean {
+  const now = new Date()
+  // Lunes de la semana actual (corrección para domingo: day=0 → diff=6)
+  const dayOfWeek = now.getDay()
+  const diffToThisMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+  const thisMonday = new Date(now)
+  thisMonday.setDate(now.getDate() - diffToThisMonday)
+  thisMonday.setHours(0, 0, 0, 0)
+  // Lunes de la semana pasada
+  const lastMonday = new Date(thisMonday)
+  lastMonday.setDate(thisMonday.getDate() - 7)
+  // La fecha debe estar en [lastMonday, thisMonday)
+  const d = new Date(date)
+  return d >= lastMonday && d < thisMonday
+}
+
+/**
+ * @deprecated Usar wasLastWeek para el cron semanal.
+ * Mantenida por retrocompatibilidad con tests existentes.
  */
 export function isThisWeek(date: string | Date): boolean {
   const now   = new Date()
+  const dayOfWeek = now.getDay()
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
   const start = new Date(now)
-  start.setDate(now.getDate() - now.getDay() + 1) // Lunes
+  start.setDate(now.getDate() - diffToMonday)
   start.setHours(0, 0, 0, 0)
   return new Date(date) >= start
 }
@@ -118,8 +148,8 @@ export function processPatientAlerts(patient: PatientData): AlertData[] {
   const lastCheckin  = patient.checkins[0]
   const prevCheckins = patient.checkins.slice(1)
 
-  // ── CASO 1: Sin check-in esta semana ──────────────────────────
-  if (!lastCheckin || !isThisWeek(lastCheckin.submitted_at)) {
+  // ── CASO 1: Sin check-in la semana pasada ─────────────────────
+  if (!lastCheckin || !wasLastWeek(lastCheckin.submitted_at)) {
     alerts.push({
       patient_id:   patient.id,
       patient_name: patient.name,

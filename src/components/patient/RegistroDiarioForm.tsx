@@ -13,7 +13,6 @@ interface ConductaAncla {
 }
 
 interface Props {
-  userId: string
   nombre: string
   conductas: ConductaAncla[]
   fechaHoy: string   // YYYY-MM-DD

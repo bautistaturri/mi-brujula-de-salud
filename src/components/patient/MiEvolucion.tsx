@@ -32,7 +32,7 @@ interface Props {
 const DOMAIN_LABELS: Record<string, string> = {
   ica: 'Conductual',
   be:  'Emocional',
-  ini: 'Cognitivo',
+  ini: 'Mental',
 }
 
 const SEMAPHORE_COLOR: Record<string, string> = {
@@ -189,8 +189,10 @@ function MiniCalendario({
   colorMap: Record<string, string>
 }) {
   const semanas: { label: string; semaphore: string | null }[] = []
+  // Lunes de la semana actual — usar weekStart prop si está disponible para evitar
+  // discrepancias UTC. En cliente se aproxima con fecha local.
   const now = new Date()
-  // Lunes de la semana actual
+  // getDay() en cliente usa zona horaria del navegador (correcto para el usuario)
   const diffToMonday = now.getDay() === 0 ? 6 : now.getDay() - 1
   const lunes = new Date(now)
   lunes.setDate(now.getDate() - diffToMonday)
@@ -199,7 +201,11 @@ function MiniCalendario({
   for (let i = 11; i >= 0; i--) {
     const d = new Date(lunes)
     d.setDate(lunes.getDate() - i * 7)
-    const ws = d.toISOString().split('T')[0]
+    // Sin toISOString() para evitar conversión UTC que puede cambiar la fecha
+    const y  = d.getFullYear()
+    const m  = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    const ws = `${y}-${m}-${dd}`
     const found = historial.find(c => c.week_start === ws)
     const label = d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })
     semanas.push({ label, semaphore: found?.semaphore ?? null })

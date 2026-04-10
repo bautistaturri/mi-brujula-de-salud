@@ -84,7 +84,7 @@ const SEMAPHORE_COLOR: Record<string, string> = {
 const DOMAIN_LABELS: Record<string, string> = {
   ica: 'conductual',
   be:  'emocional',
-  ini: 'cognitivo',
+  ini: 'mental',
 }
 
 export default function DashboardPacienteView({

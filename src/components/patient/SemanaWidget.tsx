@@ -21,11 +21,15 @@ function getLunesDeSemana(fecha: string): Date {
 }
 
 // Genera los 7 días YYYY-MM-DD de la semana del lunes
+// Sin toISOString() para evitar conversión UTC que puede cambiar la fecha
 function diasDeSemana(lunes: Date): string[] {
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(lunes)
     d.setDate(lunes.getDate() + i)
-    return d.toISOString().split('T')[0]
+    const y  = d.getFullYear()
+    const m  = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${dd}`
   })
 }
 
@@ -33,7 +37,12 @@ function diasDeSemana(lunes: Date): string[] {
 function diasConsecutivos(fechas: Set<string>, fechaHoy: string): number {
   let count = 0
   let current = new Date(fechaHoy + 'T00:00:00')
-  while (fechas.has(current.toISOString().split('T')[0])) {
+  while (true) {
+    const y  = current.getFullYear()
+    const m  = String(current.getMonth() + 1).padStart(2, '0')
+    const dd = String(current.getDate()).padStart(2, '0')
+    const key = `${y}-${m}-${dd}`
+    if (!fechas.has(key)) break
     count++
     current.setDate(current.getDate() - 1)
   }

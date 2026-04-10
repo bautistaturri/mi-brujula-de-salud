@@ -216,12 +216,19 @@ export function evaluarLogrosDiarios(
     }
   }
 
-  // 🌅 Madrugador — 3 registros antes de las 9am
-  // Detecta por el campo created_at (hora local del servidor, UTC)
+  // 🌅 Madrugador — 3 registros antes de las 9am (hora Argentina, UTC-3)
+  // created_at viene en UTC desde Supabase. Convertir a hora local Argentina.
   if (falta('madrugador') && total >= 3) {
     const antesDeNueve = todosRegistrosDiarios.filter(r => {
-      const hora = new Date(r.created_at).getHours()
-      return hora < 9  // hora UTC; ajustar si el servidor está en zona horaria local
+      const horaLocal = parseInt(
+        new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric',
+          hour12: false,
+          timeZone: 'America/Argentina/Buenos_Aires',
+        }).format(new Date(r.created_at)),
+        10
+      )
+      return horaLocal < 9
     })
     if (antesDeNueve.length >= 3) {
       nuevos.push('madrugador')

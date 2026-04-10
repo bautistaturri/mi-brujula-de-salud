@@ -2,20 +2,15 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import StepperForm from '@/components/registro-semanal/StepperForm'
 import type { RegistroParaLogros } from '@/lib/logros'
+import { getWeekStart } from '@/lib/utils'
 
-function getSemanaActual(): { inicio: string; fin: string } {
-  const now = new Date()
-  const dow = now.getDay() // 0=Dom, 1=Lun...
-  const daysToMonday = dow === 0 ? -6 : 1 - dow
-  const monday = new Date(now)
-  monday.setDate(now.getDate() + daysToMonday)
-  monday.setHours(0, 0, 0, 0)
-  const sunday = new Date(monday)
-  sunday.setDate(monday.getDate() + 6)
-  return {
-    inicio: monday.toISOString().split('T')[0],
-    fin: sunday.toISOString().split('T')[0],
-  }
+function getSemanaFin(inicio: string): string {
+  const d = new Date(inicio + 'T00:00:00')
+  d.setDate(d.getDate() + 6)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${dd}`
 }
 
 export default async function RegistroSemanalPage() {
@@ -23,7 +18,8 @@ export default async function RegistroSemanalPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { inicio, fin } = getSemanaActual()
+  const inicio = getWeekStart()
+  const fin    = getSemanaFin(inicio)
 
   // Verificar si ya existe registro para esta semana
   const { data: registroExistente } = await supabase

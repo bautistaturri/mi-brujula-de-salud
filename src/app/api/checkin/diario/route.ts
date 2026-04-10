@@ -19,7 +19,12 @@ function checkRateLimit(userId: string): { ok: boolean; remaining: number } {
   const entry = rateLimitStore.get(userId)
 
   if (!entry || now - entry.windowStart > RL_WINDOW_MS) {
-    // Nueva ventana
+    // Purge entradas expiradas para evitar memory leak en servidores long-lived
+    if (rateLimitStore.size > 500) {
+      Array.from(rateLimitStore.entries()).forEach(([key, val]) => {
+        if (now - val.windowStart > RL_WINDOW_MS) rateLimitStore.delete(key)
+      })
+    }
     rateLimitStore.set(userId, { count: 1, windowStart: now })
     return { ok: true, remaining: RL_MAX - 1 }
   }
@@ -127,16 +132,17 @@ export async function POST(request: Request) {
       (logrosYaRes.data ?? []).map(l => l.logro_key)
     )
 
-    // Insertar logros nuevos (ignorar conflictos por si la race condition da duplicados)
+    // Insertar logros nuevos (upsert para ignorar conflictos por race conditions)
     if (logrosNuevosKeys.length > 0) {
       await supabase
         .from('logros_paciente')
-        .insert(
+        .upsert(
           logrosNuevosKeys.map(key => ({
             paciente_id: user.id,
             logro_key:   key,
             video_visto: false,
-          }))
+          })),
+          { onConflict: 'paciente_id,logro_key', ignoreDuplicates: true }
         )
     }
 

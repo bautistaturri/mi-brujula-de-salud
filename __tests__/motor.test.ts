@@ -239,16 +239,18 @@ describe('Motor ICS — Validaciones de input', () => {
 
 describe('Alert Engine — processPatientAlerts()', () => {
 
-  const thisMonday = new Date()
-  thisMonday.setDate(thisMonday.getDate() - thisMonday.getDay() + 1)
-  thisMonday.setHours(12, 0, 0, 0)
+  // El cron corre los lunes y evalúa check-ins de LA SEMANA PASADA
+  const lastMonday = new Date()
+  const dow = lastMonday.getDay()
+  lastMonday.setDate(lastMonday.getDate() - (dow === 0 ? 6 : dow - 1) - 7)
+  lastMonday.setHours(12, 0, 0, 0)
 
   const checkinGreen = {
     semaphore: 'green' as const,
     ini_score: 5,
     alerts: [],
     scores: { ics: 78, ica: 82, be: 3.8 },
-    submitted_at: thisMonday.toISOString(),
+    submitted_at: lastMonday.toISOString(),
   }
 
   const checkinRed = {
@@ -256,7 +258,7 @@ describe('Alert Engine — processPatientAlerts()', () => {
     ini_score: 1,
     alerts: ['be_critical'],
     scores: { ics: 32, ica: 35, be: 1.2 },
-    submitted_at: thisMonday.toISOString(),
+    submitted_at: lastMonday.toISOString(),
   }
 
   const checkinAmber = {
@@ -264,7 +266,7 @@ describe('Alert Engine — processPatientAlerts()', () => {
     ini_score: 3,
     alerts: [],
     scores: { ics: 56, ica: 58, be: 2.8 },
-    submitted_at: thisMonday.toISOString(),
+    submitted_at: lastMonday.toISOString(),
   }
 
   test('Paciente sin check-in → alerta amarilla de ausencia', () => {
@@ -350,13 +352,14 @@ describe('Alert Engine — processPatientAlerts()', () => {
 describe('Alert Engine — processWeeklyAlerts()', () => {
 
   test('Procesa múltiples pacientes sin errores', () => {
-    const thisMonday = new Date()
-    thisMonday.setDate(thisMonday.getDate() - thisMonday.getDay() + 1)
-    thisMonday.setHours(12, 0, 0, 0)
+    const lm = new Date()
+    const d = lm.getDay()
+    lm.setDate(lm.getDate() - (d === 0 ? 6 : d - 1) - 7)
+    lm.setHours(12, 0, 0, 0)
 
     const patients = [
-      { id: 'p1', name: 'Ana G.',    checkins: [{ semaphore: 'green' as const, ini_score: 5, alerts: [], scores: { ics: 78 }, submitted_at: thisMonday.toISOString() }] },
-      { id: 'p2', name: 'Pedro M.',  checkins: [{ semaphore: 'amber' as const, ini_score: 3, alerts: [], scores: { ics: 56 }, submitted_at: thisMonday.toISOString() }] },
+      { id: 'p1', name: 'Ana G.',    checkins: [{ semaphore: 'green' as const, ini_score: 5, alerts: [], scores: { ics: 78 }, submitted_at: lm.toISOString() }] },
+      { id: 'p2', name: 'Pedro M.',  checkins: [{ semaphore: 'amber' as const, ini_score: 3, alerts: [], scores: { ics: 56 }, submitted_at: lm.toISOString() }] },
       { id: 'p3', name: 'Carmen R.', checkins: [] },
     ]
 
@@ -367,12 +370,13 @@ describe('Alert Engine — processWeeklyAlerts()', () => {
   })
 
   test('Retorna array aunque todos estén en verde', () => {
-    const thisMonday = new Date()
-    thisMonday.setDate(thisMonday.getDate() - thisMonday.getDay() + 1)
-    thisMonday.setHours(12, 0, 0, 0)
+    const lm = new Date()
+    const d = lm.getDay()
+    lm.setDate(lm.getDate() - (d === 0 ? 6 : d - 1) - 7)
+    lm.setHours(12, 0, 0, 0)
 
     const patients = [
-      { id: 'p1', name: 'Ana G.', checkins: [{ semaphore: 'green' as const, ini_score: 5, alerts: [], scores: { ics: 78 }, submitted_at: thisMonday.toISOString() }] },
+      { id: 'p1', name: 'Ana G.', checkins: [{ semaphore: 'green' as const, ini_score: 5, alerts: [], scores: { ics: 78 }, submitted_at: lm.toISOString() }] },
     ]
     const result = processWeeklyAlerts(patients)
     expect(Array.isArray(result)).toBe(true)

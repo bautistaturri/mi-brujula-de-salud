@@ -26,8 +26,7 @@ function calcIcaDaysDesdeRegistrosDiarios(
     }
   }
 
-  // Escalar: si registró 4 de 7 días, extrapolar linealmente
-  // pero no superar 7. Se mantiene honesto (redondeo hacia abajo).
+  // Clampear a 7 (máximo posible por semana)
   const icaDays = sumas.map(s => Math.min(7, s))
 
   return { icaDays, energiaPromedio: null, diasRegistrados }

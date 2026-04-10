@@ -1,14 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import RegistroDiarioForm from '@/components/patient/RegistroDiarioForm'
+import { getTodayAR } from '@/lib/utils'
 
 export default async function RegistroDiarioPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Fecha de hoy en formato YYYY-MM-DD (zona horaria del servidor)
-  const fechaHoy = new Date().toISOString().split('T')[0]
+  // Fecha de hoy en zona horaria Argentina (UTC-3)
+  const fechaHoy = getTodayAR()
 
   const [profileRes, conductasRes, registroHoyRes] = await Promise.all([
     supabase
@@ -58,7 +59,6 @@ export default async function RegistroDiarioPage() {
       </div>
 
       <RegistroDiarioForm
-        userId={user.id}
         nombre={profileRes.data.nombre ?? ''}
         conductas={conductasRes.data}
         fechaHoy={fechaHoy}

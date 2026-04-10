@@ -192,9 +192,14 @@ export default function StepperForm({
       ]
       const logrosNuevos = evaluarLogros(todosRegistros, logrosObtenidos)
       if (logrosNuevos.length > 0) {
-        await supabase.from('logros_paciente').insert(
-          logrosNuevos.map(key => ({ paciente_id: pacienteId, logro_key: key }))
-        )
+        // upsert ignorando conflictos: evita error si el logro ya existe
+        // (puede ocurrir por re-submit o race condition)
+        await supabase
+          .from('logros_paciente')
+          .upsert(
+            logrosNuevos.map(key => ({ paciente_id: pacienteId, logro_key: key, video_visto: false })),
+            { onConflict: 'paciente_id,logro_key', ignoreDuplicates: true }
+          )
       }
 
       setResultado({ ...scoreResult, logrosNuevos })
@@ -240,7 +245,7 @@ export default function StepperForm({
             logro_personal={form.logro_personal}
             dificultad={form.dificultad}
             logrosNuevos={resultado.logrosNuevos}
-            onVerLogros={() => router.push('/logros')}
+            onVerLogros={() => router.push('/avances')}
           />
         </div>
       </>

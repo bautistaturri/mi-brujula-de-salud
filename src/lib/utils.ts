@@ -71,15 +71,29 @@ export function getDiasUltimaSemana(): string[] {
 }
 
 /**
- * Devuelve el lunes de la semana actual en formato YYYY-MM-DD (hora local).
+ * Devuelve la fecha de hoy en formato YYYY-MM-DD en zona horaria Argentina (UTC-3).
+ * Usar siempre en lugar de `new Date().toISOString().split('T')[0]` en el servidor,
+ * que usa UTC y produce fecha incorrecta para usuarios argentinos después de las 21hs.
+ */
+export function getTodayAR(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+  }).format(new Date())
+}
+
+/**
+ * Devuelve el lunes de la semana actual en formato YYYY-MM-DD (zona Argentina).
  * Usado para agrupar check-ins y registros semanales.
  */
 export function getWeekStart(): string {
-  const now = new Date()
-  const day = now.getDay() // 0=dom, 1=lun...
+  const today = getTodayAR()               // YYYY-MM-DD en zona AR
+  const d = new Date(today + 'T00:00:00')  // sin conversión UTC
+  const day = d.getDay()                   // 0=dom, 1=lun...
   const diff = day === 0 ? -6 : 1 - day
-  const monday = new Date(now)
-  monday.setDate(now.getDate() + diff)
-  monday.setHours(0, 0, 0, 0)
-  return monday.toISOString().split('T')[0]
+  d.setDate(d.getDate() + diff)
+  // Formatear como YYYY-MM-DD sin toISOString (evita volver a UTC)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${dd}`
 }
