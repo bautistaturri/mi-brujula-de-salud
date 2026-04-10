@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { calcICS } from '@/lib/scoring/motor_ics'
+import { EMOCIONES_PRINCIPALES } from '@/types/database'
 import type { EmocionPrincipal } from '@/types/database'
 
 interface ConductaAncla {
@@ -55,20 +56,10 @@ const DOMAIN_LABELS = {
   ini: 'Mental',
 }
 
-const EMOCIONES_MF: { key: EmocionPrincipal; label: string; emoji: string }[] = [
-  { key: 'alegre',   label: 'Alegre',    emoji: '😊' },
-  { key: 'sorpresa', label: 'Sorpresa',  emoji: '😮' },
-  { key: 'miedo',    label: 'Miedo',     emoji: '😨' },
-  { key: 'triste',   label: 'Triste',    emoji: '😢' },
-  { key: 'enojado',  label: 'Enojado/a', emoji: '😠' },
-  { key: 'asco',     label: 'Asco',      emoji: '🤢' },
-]
-
-/** Deriva el ini_score legacy (1|3|5) a partir de saboteador vs observador */
+/** Deriva el ini_score (1|5) a partir de saboteador vs observador. Empate → Observador gana */
 function derivarIniScore(saboteador: number, observador: number): 1 | 3 | 5 {
-  if (observador > saboteador) return 5
-  if (observador < saboteador) return 1
-  return 3
+  if (observador >= saboteador) return 5
+  return 1
 }
 
 export default function CheckinICS({
@@ -134,48 +125,62 @@ export default function CheckinICS({
     )
   }
 
+  // Saboteador/Observador con tope de suma ≤ 10
+  const MAX_SUMA = 10
+  function handleSaboteadorChange(val: number) {
+    setSaboteadorScore(val)
+    if (val + observadorScore > MAX_SUMA) setObservadorScore(MAX_SUMA - val)
+  }
+  function handleObservadorChange(val: number) {
+    setObservadorScore(val)
+    if (saboteadorScore + val > MAX_SUMA) setSaboteadorScore(MAX_SUMA - val)
+  }
+
   async function guardar() {
     setGuardando(true)
     setErrorMsg(null)
+    try {
+      const iniScore = derivarIniScore(saboteadorScore, observadorScore)
 
-    const iniScore = derivarIniScore(saboteadorScore, observadorScore)
+      const res = calcICS({
+        ica_days: icaDays,
+        ica_barriers: icaBarriers,
+        be_energy: beEnergy,
+        be_regulation: beRegulation,
+        ini_score: iniScore,
+      })
 
-    const res = calcICS({
-      ica_days: icaDays,
-      ica_barriers: icaBarriers,
-      be_energy: beEnergy,
-      be_regulation: beRegulation,
-      ini_score: iniScore,
-    })
+      setResultado(res)
 
-    setResultado(res)
+      const supabase = createClient()
+      const { error } = await supabase.rpc('save_checkin_ics', {
+        p_user_id:           userId,
+        p_week_start:        weekStart,
+        p_ica_days:          icaDays,
+        p_ica_barriers:      icaBarriers,
+        p_be_energy:         beEnergy,
+        p_be_regulation:     beRegulation,
+        p_ini_score:         iniScore,
+        p_semaphore:         res.semaphore,
+        p_alerts:            res.alerts,
+        p_scores:            res.scores,
+        p_dominant:          res.dominant_domain,
+        p_emocion_principal: emocionPrincipal,
+        p_saboteador_score:  saboteadorScore,
+        p_observador_score:  observadorScore,
+      })
 
-    const supabase = createClient()
-    const { error } = await supabase.rpc('save_checkin_ics', {
-      p_user_id:           userId,
-      p_week_start:        weekStart,
-      p_ica_days:          icaDays,
-      p_ica_barriers:      icaBarriers,
-      p_be_energy:         beEnergy,
-      p_be_regulation:     beRegulation,
-      p_ini_score:         iniScore,
-      p_semaphore:         res.semaphore,
-      p_alerts:            res.alerts,
-      p_scores:            res.scores,
-      p_dominant:          res.dominant_domain,
-      p_emocion_principal: emocionPrincipal,
-      p_saboteador_score:  saboteadorScore,
-      p_observador_score:  observadorScore,
-    })
+      if (error) {
+        setErrorMsg(error.message)
+        return
+      }
 
-    if (error) {
-      setErrorMsg(error.message)
+      setPaso('resultado')
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Error inesperado. Intentá de nuevo.')
+    } finally {
       setGuardando(false)
-      return
     }
-
-    setPaso('resultado')
-    setGuardando(false)
   }
 
   const progreso = paso === 'resultado' ? 100 : ((paso as number) / 3) * 100
@@ -357,7 +362,7 @@ export default function CheckinICS({
             </p>
             <p className="text-xs text-text-secondary mb-3">Opcional</p>
             <div className="grid grid-cols-3 gap-2">
-              {EMOCIONES_MF.map(em => (
+              {EMOCIONES_PRINCIPALES.map(em => (
                 <button
                   key={em.key}
                   onClick={() => setEmocionPrincipal(
@@ -438,7 +443,7 @@ export default function CheckinICS({
               max={7}
               step={1}
               value={saboteadorScore}
-              onChange={e => setSaboteadorScore(Number(e.target.value))}
+              onChange={e => handleSaboteadorChange(Number(e.target.value))}
               className="w-full h-1.5 rounded-full cursor-pointer accent-[#A83020] mt-3"
             />
             <div className="flex justify-between text-[10px] text-text-muted mt-1">
@@ -465,7 +470,7 @@ export default function CheckinICS({
               max={7}
               step={1}
               value={observadorScore}
-              onChange={e => setObservadorScore(Number(e.target.value))}
+              onChange={e => handleObservadorChange(Number(e.target.value))}
               className="w-full h-1.5 rounded-full cursor-pointer accent-[#2A4F7A] mt-3"
             />
             <div className="flex justify-between text-[10px] text-text-muted mt-1">
@@ -555,7 +560,7 @@ export default function CheckinICS({
             {emocionPrincipal && (
               <ResultRow
                 label="Emoción principal"
-                value={EMOCIONES_MF.find(e => e.key === emocionPrincipal)?.label ?? emocionPrincipal}
+                value={EMOCIONES_PRINCIPALES.find(e => e.key === emocionPrincipal)?.label ?? emocionPrincipal}
               />
             )}
             <ResultRow

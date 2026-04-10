@@ -13,7 +13,7 @@ interface Props {
 const CATEGORIA_CONFIG: Record<CategoriaContenido, { label: string; emoji: string; bgVar: string; textVar: string }> = {
   conductas_ancla:   { label: 'Conductas Ancla',    emoji: '🎯', bgVar: 'var(--semaforo-verde-bg)',    textVar: 'var(--semaforo-verde-text)'    },
   saboteador_sabio:  { label: 'Saboteador y Sabio', emoji: '🧠', bgVar: 'var(--brand-primary-soft)',   textVar: 'var(--status-info-text)'       },
-  gimnasia_mental:   { label: 'Gimnasia Mental',    emoji: '💪', bgVar: 'var(--status-warning-soft)',  textVar: 'var(--status-warning-text)'    },
+  gimnasia_mental:   { label: 'Mental Fitness',     emoji: '🧠', bgVar: 'var(--status-warning-soft)',  textVar: 'var(--status-warning-text)'    },
   habitos:           { label: 'Hábitos',            emoji: '🌱', bgVar: 'var(--status-success-soft)',  textVar: 'var(--status-success-text)'    },
   general:           { label: 'General',            emoji: '📚', bgVar: 'var(--surface-subtle)',       textVar: 'var(--text-secondary)'         },
 }
@@ -49,8 +49,8 @@ export default function GimnasioClient({ userId, contenidos, progreso }: Props) 
     <div className="pb-8">
       {/* Header */}
       <div className="px-5 pt-6 pb-4">
-        <h1 className="font-serif text-[28px] text-text-primary leading-tight">Gimnasio Mental</h1>
-        <p className="text-sm text-text-secondary mt-1">Entrenamiento para el bienestar cognitivo</p>
+        <h1 className="font-serif text-[28px] text-text-primary leading-tight">Mental Fitness</h1>
+        <p className="text-sm text-text-secondary mt-1">Entrenamiento cerebral para construir hábitos</p>
       </div>
 
       {/* Progreso general */}

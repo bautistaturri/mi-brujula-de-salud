@@ -84,13 +84,13 @@ export default async function CheckinPage() {
     : null
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB]">
+    <div className="min-h-screen bg-surface-subtle">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB] px-5 py-4 flex items-center gap-3">
-        <a href="/inicio" className="text-[#6B7280] hover:text-[#1F2937]">←</a>
+      <div className="sticky top-0 z-10 bg-surface-card border-b px-5 py-4 flex items-center gap-3">
+        <a href="/inicio" className="text-text-secondary hover:text-text-primary">←</a>
         <div>
-          <h1 className="text-base font-bold text-[#1A1A2E]">Check-in semanal</h1>
-          <p className="text-xs text-[#9CA3AF]">
+          <h1 className="text-base font-bold text-text-primary">Check-in semanal</h1>
+          <p className="text-xs text-text-muted">
             Semana del {new Date(weekStart + 'T00:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
           </p>
         </div>
@@ -98,11 +98,14 @@ export default async function CheckinPage() {
 
       {/* Aviso de pre-población si hay datos diarios */}
       {prepoblado.diasRegistrados > 0 && !checkinExistenteRes.data && (
-        <div className="mx-5 mt-4 p-3 bg-[#D4EDEA] border border-[#A8D5B5] rounded-xl text-sm text-[#1A6B3C]">
-          <p className="font-semibold mb-0.5">
+        <div
+          className="mx-5 mt-4 p-3 rounded-xl text-sm border"
+          style={{ background: 'var(--semaforo-verde-bg)', borderColor: 'var(--semaforo-verde-border)' }}
+        >
+          <p className="font-semibold mb-0.5" style={{ color: 'var(--semaforo-verde-text)' }}>
             📅 Basado en tus registros diarios de esta semana:
           </p>
-          <p className="text-xs text-[#4A9E6B]">
+          <p className="text-xs" style={{ color: 'var(--semaforo-verde-text)', opacity: 0.85 }}>
             {prepoblado.diasRegistrados} día{prepoblado.diasRegistrados !== 1 ? 's' : ''} registrado{prepoblado.diasRegistrados !== 1 ? 's' : ''} ·
             {energiaPromedio ? ` Energía promedio: ${energiaPromedio}/5` : ''}
             {' · '}Podés ajustar los valores antes de enviar.

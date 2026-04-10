@@ -119,8 +119,8 @@ export type UpdatePasswordInput = z.infer<typeof UpdatePasswordSchema>
 export const RegistroDiarioSchema = z.object({
   energia_dia:   z.number().int().min(1).max(5),
   animo_dia:     z.number().int().min(1).max(5),
-  // Exactamente 5 booleans (una por conducta ancla)
-  conductas_hoy: z.array(z.boolean()).length(5),
+  // 1 a 5 booleans (según cuántas conductas ancla tenga el paciente)
+  conductas_hoy: z.array(z.boolean()).min(1).max(5),
   nota_libre:    textoOpcional(280),
   fecha: z
     .string()

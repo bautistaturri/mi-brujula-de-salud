@@ -26,7 +26,7 @@ export type AlertColor = 'red' | 'amber' | 'celebration' | 'internal'
 export type TipoAlerta = 'ausencia' | 'iem_bajo' | 'semaforo_rojo' | 'racha_rota' | 'riesgo_alto'
 export type PrioridadAlerta = 'urgente' | 'observacion'
 
-export type EmocionPrincipal = 'enojado' | 'triste' | 'miedo' | 'sorpresa' | 'asco' | 'alegre'
+export type EmocionPrincipal = 'alegre' | 'en_calma' | 'sensible' | 'preocupado' | 'cansado' | 'esperanzado'
 
 export interface User {
   id: string
@@ -305,12 +305,12 @@ export interface FeedbackRespuesta {
 
 // ── Emociones principales (Brújula Emocional) ──────────────────
 export const EMOCIONES_PRINCIPALES: { key: EmocionPrincipal; label: string; emoji: string }[] = [
-  { key: 'alegre',    label: 'Alegre',    emoji: '😊' },
-  { key: 'sorpresa',  label: 'Sorpresa',  emoji: '😮' },
-  { key: 'miedo',     label: 'Miedo',     emoji: '😨' },
-  { key: 'triste',    label: 'Triste',    emoji: '😢' },
-  { key: 'enojado',   label: 'Enojado/a', emoji: '😠' },
-  { key: 'asco',      label: 'Asco',      emoji: '🤢' },
+  { key: 'alegre',       label: 'Alegre',        emoji: '😊' },
+  { key: 'en_calma',     label: 'En calma',       emoji: '😌' },
+  { key: 'sensible',     label: 'Sensible',       emoji: '🥹' },
+  { key: 'preocupado',   label: 'Preocupado/a',   emoji: '😟' },
+  { key: 'cansado',      label: 'Cansado/a',      emoji: '😴' },
+  { key: 'esperanzado',  label: 'Esperanzado/a',  emoji: '🌱' },
 ]
 
 export const SEMAFORO_CONFIG = {
