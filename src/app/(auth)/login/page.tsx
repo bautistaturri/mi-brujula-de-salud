@@ -84,7 +84,7 @@ function LoginForm() {
       {/* Panel izquierdo — solo desktop */}
       <div
         className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 100%)' }}
+        style={{ background: 'var(--gradient-hero)' }}
       >
         {/* Patrón de fondo decorativo */}
         <div className="absolute inset-0 opacity-30" style={{
@@ -117,7 +117,7 @@ function LoginForm() {
             { value: '3min', label: 'Por día' },
             { value: '24/7', label: 'Seguimiento' },
           ].map(s => (
-            <div key={s.label} className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-white/80">
+            <div key={s.label} className="rounded-xl p-4 text-center" style={{ background: 'var(--surface-card)', border: '1px solid var(--border-default)' }}>
               <div className="font-metric font-bold text-2xl text-brand-primary">{s.value}</div>
               <div className="text-xs text-text-secondary mt-0.5">{s.label}</div>
             </div>
@@ -143,7 +143,7 @@ function LoginForm() {
           {info && (
             <div
               className="rounded-xl p-3 text-sm font-medium flex items-center gap-2 mb-4"
-              style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }}
+              style={{ background: 'var(--status-success-soft)', color: 'var(--status-success-text)', border: '1px solid var(--status-success)' }}
             >
               <span>✓</span> {info}
             </div>
@@ -194,7 +194,7 @@ function LoginForm() {
             {error && (
               <div
                 className="rounded-xl p-3 text-sm font-medium flex items-center gap-2"
-                style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}
+                style={{ background: 'var(--status-danger-soft)', color: 'var(--status-danger-text)', border: '1px solid var(--status-danger)' }}
               >
                 <span>⚠️</span> {error}
               </div>

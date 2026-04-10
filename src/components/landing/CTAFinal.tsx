@@ -16,7 +16,7 @@ export default function CTAFinal() {
           href="mailto:hola@mibrujulasalud.com?subject=Solicitud%20acceso%20anticipado"
           className="inline-flex items-center gap-2 bg-white text-[#1E3A5F] font-bold px-8 py-4 rounded-xl hover:bg-[#F0F9FF] transition-colors text-[15px]"
         >
-          Solicitar acceso anticipado
+          Solicitar información
         </a>
 
         <p className="mt-5 text-xs text-[#64748B]">

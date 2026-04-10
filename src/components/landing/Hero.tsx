@@ -120,7 +120,7 @@ export default function Hero() {
                 href="#acceso"
                 className="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#162d4a] text-white font-semibold px-6 py-3.5 rounded-xl transition-colors text-[15px]"
               >
-                Solicitar acceso anticipado
+                Solicitar información
               </a>
               <a
                 href="#como-funciona"

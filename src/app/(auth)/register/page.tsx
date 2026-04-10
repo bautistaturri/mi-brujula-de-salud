@@ -119,8 +119,8 @@ export default function RegisterPage() {
                 onClick={() => setRole(r)}
                 className="p-4 rounded-xl border-2 text-left transition-all"
                 style={role === r
-                  ? { borderColor: '#2563EB', background: '#EFF6FF' }
-                  : { borderColor: '#E2E8F0', background: '#FFFFFF' }
+                  ? { borderColor: 'var(--brand-primary)', background: 'var(--brand-primary-soft)' }
+                  : { borderColor: 'var(--border-default)', background: 'var(--surface-card)' }
                 }
               >
                 <div className="text-2xl mb-2">{cfg.emoji}</div>
@@ -128,7 +128,7 @@ export default function RegisterPage() {
                 <div className="text-xs text-text-muted mt-1 leading-snug">{cfg.desc}</div>
                 <ul className="mt-2.5 space-y-1">
                   {cfg.features.map(f => (
-                    <li key={f} className="text-[10px] flex items-center gap-1.5" style={{ color: role === r ? '#1E40AF' : '#94A3B8' }}>
+                    <li key={f} className="text-[10px] flex items-center gap-1.5" style={{ color: role === r ? 'var(--brand-primary)' : 'var(--text-muted)' }}>
                       <span>{role === r ? '✓' : '○'}</span> {f}
                     </li>
                   ))}
@@ -204,7 +204,7 @@ export default function RegisterPage() {
 
             {error && (
               <div className="rounded-xl p-3 text-sm flex items-center gap-2"
-                style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
+                style={{ background: 'var(--status-danger-soft)', color: 'var(--status-danger-text)', border: '1px solid var(--status-danger)' }}>
                 <span>⚠️</span> {error}
               </div>
             )}
