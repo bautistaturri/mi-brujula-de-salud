@@ -120,15 +120,15 @@ export default function RegisterPage() {
                 className="p-4 rounded-xl border-2 text-left transition-all"
                 style={role === r
                   ? { borderColor: 'var(--brand-primary)', background: 'var(--brand-primary-soft)' }
-                  : { borderColor: 'var(--border-default)', background: 'var(--surface-card)' }
+                  : { borderColor: 'var(--border-default)', background: 'var(--surface-subtle)' }
                 }
               >
                 <div className="text-2xl mb-2">{cfg.emoji}</div>
                 <div className="font-semibold text-sm text-text-primary">{cfg.label}</div>
-                <div className="text-xs text-text-muted mt-1 leading-snug">{cfg.desc}</div>
+                <div className="text-xs text-text-secondary mt-1 leading-snug">{cfg.desc}</div>
                 <ul className="mt-2.5 space-y-1">
                   {cfg.features.map(f => (
-                    <li key={f} className="text-[10px] flex items-center gap-1.5" style={{ color: role === r ? 'var(--brand-primary)' : 'var(--text-muted)' }}>
+                    <li key={f} className="text-[10px] flex items-center gap-1.5" style={{ color: role === r ? 'var(--brand-primary)' : 'var(--text-secondary)' }}>
                       <span>{role === r ? '✓' : '○'}</span> {f}
                     </li>
                   ))}

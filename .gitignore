@@ -19,13 +19,23 @@
 
 # Build
 /build
+/dist
+
+# Vercel
+.vercel/
+
+# Testing
+/coverage/
 
 # Misc
 .DS_Store
+Thumbs.db
 *.pem
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
@@ -33,3 +43,8 @@ next-env.d.ts
 
 # Claude Code (internal session data — no subir)
 .claude/
+
+# Editor
+.idea/
+*.swp
+*.swo
