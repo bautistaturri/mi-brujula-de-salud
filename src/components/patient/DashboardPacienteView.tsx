@@ -102,24 +102,27 @@ export default function DashboardPacienteView({
 
       {/* ── Hero semáforo ── */}
       {tieneCheckin && config && checkinActual ? (
-        <div className={`mx-5 mt-5 bg-gradient-to-br ${config.gradiente} rounded-3xl p-6 text-white relative overflow-hidden`}>
-          <div className="absolute top-[-40px] right-[-40px] w-48 h-48 rounded-full bg-white/10 pointer-events-none" />
-
-          <p className="text-[11px] font-bold tracking-widest uppercase opacity-70 mb-1">
-            Índice Compass Semanal
-          </p>
-          <h2 className="font-serif text-3xl leading-tight mb-1">
-            Zona {config.label}
-          </h2>
-          <p className="text-sm opacity-80 max-w-[180px] leading-relaxed">
-            {config.mensaje[checkinActual.dominant_domain as keyof typeof config.mensaje] ?? ''}
-          </p>
-
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-center">
-            <span className="font-serif text-6xl opacity-90 leading-none block">
-              {checkinActual.scores.ics}
-            </span>
-            <span className="text-[10px] font-semibold tracking-widest uppercase opacity-60">ICS</span>
+        <div className={`mx-5 mt-5 bg-gradient-to-br ${config.gradiente} rounded-3xl p-5 text-white overflow-hidden`}>
+          <div className="flex items-start gap-4">
+            {/* Columna izquierda — texto */}
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold tracking-widest uppercase opacity-70 mb-1">
+                Índice Compass Semanal
+              </p>
+              <h2 className="font-serif text-2xl leading-tight mb-1">
+                Zona {config.label}
+              </h2>
+              <p className="text-sm opacity-80 leading-relaxed line-clamp-3">
+                {config.mensaje[checkinActual.dominant_domain as keyof typeof config.mensaje] ?? ''}
+              </p>
+            </div>
+            {/* Columna derecha — score */}
+            <div className="text-center flex-shrink-0 pt-1">
+              <span className="font-serif text-5xl opacity-90 leading-none block tabular-nums">
+                {checkinActual.scores.ics}
+              </span>
+              <span className="text-[10px] font-semibold tracking-widest uppercase opacity-60">ICS</span>
+            </div>
           </div>
 
           {rachaVerde > 0 && (
@@ -188,7 +191,7 @@ export default function DashboardPacienteView({
                     <div className="h-1 bg-surface-subtle rounded-full mt-1.5 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          pct >= 0.7 ? 'bg-[#2A7B6F]' : pct >= 0.4 ? 'bg-[#C87020]' : 'bg-text-muted'
+                          pct >= 0.7 ? 'bg-[#2A7B6F] dark:bg-[#34D399]' : pct >= 0.4 ? 'bg-[#C87020] dark:bg-[#F59E0B]' : 'bg-text-muted'
                         }`}
                         style={{ width: `${pct * 100}%` }}
                       />

@@ -10,6 +10,7 @@ import {
   ReferenceLine,
   CartesianGrid,
 } from 'recharts'
+import { useTheme } from 'next-themes'
 
 interface CheckinSemanal {
   week_start: string
@@ -43,6 +44,16 @@ const SEMAPHORE_VAR: Record<string, string> = {
 }
 
 export default function MiEvolucion({ historial, rachaVerde }: Props) {
+  const { resolvedTheme } = useTheme()
+  const dark = resolvedTheme === 'dark'
+
+  const CHART_COLORS = {
+    ics: dark ? '#93C5FD' : '#1B3A5C',
+    ica: dark ? '#60A5FA' : '#2563EB',
+    be:  dark ? '#34D399' : '#2A7B6F',
+    ini: dark ? '#C4B5FD' : '#7C3AED',
+  }
+
   if (historial.length < 3) {
     return (
       <div className="mx-5 mt-5 bg-surface-card rounded-2xl border p-6 text-center shadow-sm">
@@ -119,20 +130,20 @@ export default function MiEvolucion({ historial, rachaVerde }: Props) {
             />
             <ReferenceLine y={70} stroke="#1A6B3C" strokeDasharray="3 3" strokeOpacity={0.4} />
             <ReferenceLine y={45} stroke="#C87020" strokeDasharray="3 3" strokeOpacity={0.4} />
-            <Line type="monotone" dataKey="ics" stroke="#1B3A5C" strokeWidth={2.5} dot={false} name="ics" />
-            <Line type="monotone" dataKey="ica" stroke="#2563EB" strokeWidth={1.5} dot={false} name="ica" />
-            <Line type="monotone" dataKey="be"  stroke="#2A7B6F" strokeWidth={1.5} dot={false} name="be"  />
-            <Line type="monotone" dataKey="ini" stroke="#7C3AED" strokeWidth={1.5} dot={false} name="ini" />
+            <Line type="monotone" dataKey="ics" stroke={CHART_COLORS.ics} strokeWidth={2.5} dot={false} name="ics" />
+            <Line type="monotone" dataKey="ica" stroke={CHART_COLORS.ica} strokeWidth={1.5} dot={false} name="ica" />
+            <Line type="monotone" dataKey="be"  stroke={CHART_COLORS.be}  strokeWidth={1.5} dot={false} name="be"  />
+            <Line type="monotone" dataKey="ini" stroke={CHART_COLORS.ini} strokeWidth={1.5} dot={false} name="ini" />
           </LineChart>
         </ResponsiveContainer>
 
         {/* Leyenda */}
         <div className="flex items-center gap-3 mt-2 justify-center flex-wrap">
           {[
-            { label: 'ICS',  color: '#1B3A5C', bold: true  },
-            { label: 'ICA',  color: '#2563EB', bold: false },
-            { label: 'BE',   color: '#2A7B6F', bold: false },
-            { label: 'INI',  color: '#7C3AED', bold: false },
+            { label: 'ICS',  color: CHART_COLORS.ics, bold: true  },
+            { label: 'ICA',  color: CHART_COLORS.ica, bold: false },
+            { label: 'BE',   color: CHART_COLORS.be,  bold: false },
+            { label: 'INI',  color: CHART_COLORS.ini, bold: false },
           ].map(l => (
             <div key={l.label} className="flex items-center gap-1">
               <div

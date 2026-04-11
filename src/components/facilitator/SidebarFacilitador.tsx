@@ -71,7 +71,7 @@ export default function SidebarFacilitador({ nombre, alertasCount }: Props) {
 
   return (
     <aside
-      className="w-[260px] flex flex-col min-h-screen bg-surface-card border-r border-border-default"
+      className="hidden md:flex w-[260px] flex-col min-h-screen bg-surface-card border-r border-border-default"
       style={{ boxShadow: '1px 0 0 var(--border-default)' }}
     >
       {/* Logo */}

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import SidebarFacilitador from '@/components/facilitator/SidebarFacilitador'
+import NavDashboardMobile from '@/components/facilitator/NavDashboardMobile'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -41,9 +42,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
         nombre={profile.nombre}
         alertasCount={alertasCount ?? 0}
       />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <NavDashboardMobile
+          nombre={profile.nombre}
+          alertasCount={alertasCount ?? 0}
+        />
+        <main className="flex-1 overflow-auto pb-20 md:pb-0">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
