@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getWeekStart } from '@/lib/utils'
+import { getWeekStart, getTodayAR } from '@/lib/utils'
 import GrupoOverview from '@/components/facilitator/GrupoOverview'
 import type { EstadoPaciente } from '@/types/database'
 
@@ -22,7 +22,7 @@ export default async function DashboardPage() {
     .in('grupo_id', (grupos ?? []).map(g => g.id))
     .order('score_riesgo', { ascending: false })
 
-  const hoy = new Date().toISOString().split('T')[0]
+  const hoy = getTodayAR()
   const totalPacientes = (pacientes ?? []).length
   const registradosHoy = (pacientes ?? []).filter(p => p.ultimo_checkin === hoy).length
   const enAmarillo = (pacientes ?? []).filter(p => p.semaforo === 'amarillo').length
