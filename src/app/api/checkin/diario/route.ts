@@ -6,9 +6,12 @@ import { NextResponse } from 'next/server'
 
 // ── Rate limiting en memoria (por user_id) ───────────────────────────────
 // Límite: 3 intentos por usuario por ventana de 24 horas
-// Nota: se resetea al reiniciar el servidor. Para producción de alta escala
-// usar @upstash/ratelimit + Redis. En una app de salud personal con pocos
-// usuarios activos simultáneos, este límite es suficiente.
+// ⚠️  LIMITACIÓN: En Vercel serverless cada invocación puede arrancar en un proceso
+// nuevo, por lo que este Map NO persiste entre requests fríos. El rate limiting
+// es efectivo dentro de una misma instancia caliente pero NO entre cold starts.
+// Para un límite real en producción con muchos usuarios: @upstash/ratelimit + Redis.
+// La protección principal contra duplicados es la constraint UNIQUE(paciente_id, fecha)
+// en la tabla registros_diarios (verificada en la query de "existente" más abajo).
 const RL_WINDOW_MS = 24 * 60 * 60 * 1000  // 24 horas
 const RL_MAX       = 3                      // máx 3 registros diarios
 

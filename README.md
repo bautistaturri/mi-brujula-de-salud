@@ -119,7 +119,8 @@ supabase/migrations/004_fix_conductas_default_idempotente.sql
 supabase/migrations/005_fix_conductas_duplicadas.sql
 supabase/migrations/006_fix_rls_recursion.sql
 supabase/migrations/007_ics_model.sql
-supabase/security-rls.sql        # Aplicar al final (RLS para tablas nuevas)
+supabase/security-rls.sql        # RLS tablas originales
+supabase/security-rls-ics.sql    # RLS tablas ICS (checkins_semanales, alerts, rachas, registros_diarios)
 ```
 
 3. Copiar **Project URL** y **anon key** a `.env.local`
@@ -147,6 +148,7 @@ npm run dev
 | `npm run build` | Build de producción |
 | `npm start` | Servidor de producción (tras build) |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | Verificación de tipos TypeScript (sin emitir) |
 | `npm test` | Tests unitarios (Vitest) |
 | `npm run test:watch` | Tests en modo watch |
 
@@ -160,9 +162,10 @@ npm test
 
 Los tests unitarios cubren:
 - `src/lib/__tests__/utils.test.ts` — semáforo, labels IEM, score riesgo
-- `src/lib/__tests__/scoring.test.ts` — cálculo score bienestar semanal
-- `src/lib/__tests__/logros.test.ts` — evaluación de logros
-- `src/lib/__tests__/alert_engine.test.ts` — motor de alertas ICS
+- `src/lib/__tests__/scoring.test.ts` — cálculo ICS (calcICA, calcBE, calcICS)
+- `src/lib/__tests__/logros.test.ts` — evaluación de logros semanales y diarios
+- `src/lib/__tests__/alert_engine.test.ts` — motor de alertas ICS (7 casos clínicos)
+- `src/lib/__tests__/validations.test.ts` — esquemas Zod de validación
 
 ---
 
